@@ -1,26 +1,254 @@
 @import "tailwindcss";
 
+/* Custom font classes */
+.font-nunito {
+  font-family: var(--font-nunito), 'Nunito', sans-serif;
+}
+
 :root {
+  /* Modern Color Palette */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
+  --primary: #0ea5e9;
+  --primary-foreground: #ffffff;
+  --secondary: #f8fafc;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f59e0b;
+  --accent-foreground: #ffffff;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #0ea5e9;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  
+  /* Travel-specific colors */
+  --travel-blue: #0ea5e9;
+  --travel-teal: #14b8a6;
+  --travel-orange: #f97316;
+  --travel-purple: #8b5cf6;
+  --travel-green: #10b981;
+  
+  /* Typography */
+  --font-poppins: 'Poppins', sans-serif;
+  --font-open-sans: 'Open Sans', sans-serif;
+  --font-nunito: 'Nunito', sans-serif;
+  --font-sans: var(--font-open-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-travel-blue: var(--travel-blue);
+  --color-travel-teal: var(--travel-teal);
+  --color-travel-orange: var(--travel-orange);
+  --color-travel-purple: var(--travel-purple);
+  --color-travel-green: var(--travel-green);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #f8fafc;
+    --card: #0a0a0a;
+    --card-foreground: #f8fafc;
+    --muted: #1a1a1a;
+    --muted-foreground: #a1a1aa;
+    --border: #27272a;
+    --input: #27272a;
   }
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-open-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-variation-settings: normal;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+/* Card content styling */
+.card-content p,
+.card-content span,
+.card-content div:not(:has(h1, h2, h3, h4, h5, h6)),
+.modern-card p,
+.modern-card span,
+.modern-card div:not(:has(h1, h2, h3, h4, h5, h6)) {
+  font-family: var(--font-open-sans), 'Open Sans', sans-serif;
+  font-weight: 400;
+}
+
+/* Ensure all paragraph text in cards uses Open Sans */
+.card p,
+.modern-card p,
+[class*="card"] p {
+  font-family: var(--font-open-sans), 'Open Sans', sans-serif;
+  font-weight: 400;
+}
+
+/* Ensure all span and div text in cards uses Open Sans (except headings) */
+.card span,
+.card div:not(:has(h1, h2, h3, h4, h5, h6)),
+.modern-card span,
+.modern-card div:not(:has(h1, h2, h3, h4, h5, h6)) {
+  font-family: var(--font-open-sans), 'Open Sans', sans-serif;
+  font-weight: 400;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 600;
+}
+
+h3 {
+  font-size: clamp(1.25rem, 3vw, 1.875rem);
+  font-weight: 600;
+}
+
+p {
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+
+/* Modern text shadows */
+.text-shadow {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow-lg {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Modern hover effects */
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--travel-blue), var(--travel-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Modern card styles */
+.modern-card {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Container with better spacing */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
+
+/* Section spacing */
+.section-padding {
+  padding: 4rem 0;
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding: 6rem 0;
+  }
+}
+
+/* Focus styles */
+.focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Loading states */
+.skeleton {
+  background: linear-gradient(90deg, var(--muted) 25%, var(--border) 50%, var(--muted) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
