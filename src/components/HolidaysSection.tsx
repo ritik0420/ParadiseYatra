@@ -40,17 +40,19 @@ const HolidaysSection = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {categories.map((category, index) => (
-            <Card key={index} className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-              <div className="h-48 relative">
+            <Card key={index} className="overflow-hidden modern-card hover-lift">
+              <div className="h-48 relative card-image">
                 <img 
                   src={category.image} 
                   alt={category.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-black/20"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               </div>
-              <CardContent className="p-6">
-                <h3 className="mt-5 !text-xl font-semibold mb-3 text-gray-800">{category.title}</h3>
+              <CardContent className="p-6 card-content">
+                <h3 className="!text-xl font-semibold mb-3 text-gray-800 group-hover:text-blue-600 transition-colors duration-200">
+                  {category.title}
+                </h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
                   {category.description}
                 </p>

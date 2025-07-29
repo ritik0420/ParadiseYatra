@@ -133,16 +133,21 @@ const HeroSection = () => {
           </motion.span>
           {['Bali', 'Thailand', 'Europe', 'Dubai', 'Singapore'].map((dest, index) => (
             <motion.button
-              key={dest}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 2.4 + index * 0.1 }}
-              whileHover={{ scale: 1.1, backgroundColor: "rgba(255, 255, 255, 0.2)" }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full hover:bg-white/20 transition-all duration-200 text-sm font-medium"
-            >
-              {dest}
-            </motion.button>
+            key={dest}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 2.4 + index * 0.1 }}
+            whileHover={{
+              scale: 0.95,
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              transition: { duration: 0.3 }
+            }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full transition-all duration-200 text-sm font-medium cursor-pointer"
+          >
+            {dest}
+          </motion.button>
+          
           ))}
         </motion.div>
       </div>

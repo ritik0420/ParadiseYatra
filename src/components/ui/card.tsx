@@ -6,7 +6,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className = '', children, ...props }, ref) => {
-    const baseClasses = 'rounded-lg border bg-[#f8fafc] text-card-foreground shadow-sm';
+    const baseClasses = 'rounded-lg border bg-white text-card-foreground shadow-sm';
     
     return (
       <div
@@ -30,7 +30,7 @@ const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
   ({ className = '', children, ...props }, ref) => {
     return (
       <div
-        className={`p-6 pt-0 ${className}`}
+        className={`p-6 ${className}`}
         ref={ref}
         {...props}
       >

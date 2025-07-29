@@ -189,16 +189,148 @@ p {
 
 /* Modern card styles */
 .modern-card {
-  background: #f8fafc;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
 }
 
 .modern-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+  transform: translateY(-4px);
+  border-color: #d1d5db;
+}
+
+.modern-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modern-card:hover::before {
+  opacity: 1;
+}
+
+/* Enhanced hover lift effect */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-6px);
+}
+
+/* Card content styling improvements */
+.modern-card .card-content {
+  padding: 1.5rem;
+}
+
+.modern-card h3 {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+  transition: color 0.2s ease;
+}
+
+.modern-card:hover h3 {
+  color: #2563eb;
+}
+
+.modern-card p {
+  color: #6b7280;
+  line-height: 1.6;
+  font-size: 0.875rem;
+}
+
+/* Card image styling */
+.modern-card .card-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+}
+
+.modern-card .card-image img {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-card:hover .card-image img {
+  transform: scale(1.05);
+}
+
+/* Badge styling improvements */
+.modern-card .badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Rating badge styling */
+.modern-card .rating-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  padding: 0.25rem 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Price styling improvements */
+.modern-card .price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2563eb;
+  margin-bottom: 0.25rem;
+}
+
+.modern-card .original-price {
+  color: #9ca3af;
+  text-decoration: line-through;
+  font-size: 0.875rem;
+}
+
+.modern-card .savings {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Button styling improvements */
+.modern-card .book-button {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.modern-card .book-button:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 /* Container with better spacing */

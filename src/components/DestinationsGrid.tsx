@@ -87,7 +87,7 @@ const DestinationsGrid = () => {
               whileHover={{ y: -10, scale: 1.02 }}
               className="group cursor-pointer modern-card overflow-hidden hover-lift"
             >
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-48 overflow-hidden card-image">
                 <img 
                   src={destination.image} 
                   alt={destination.name}
@@ -95,15 +95,17 @@ const DestinationsGrid = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
+              <div className="p-6 card-content">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200">
                   {destination.name}
                 </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">
                   {destination.description}
                 </p>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-blue-600 font-medium text-sm">Explore →</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-blue-600 font-medium text-sm group-hover:text-blue-700 transition-colors duration-200">
+                    Explore →
+                  </span>
                   <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200">
                     <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

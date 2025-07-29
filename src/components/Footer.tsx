@@ -71,7 +71,8 @@ const Footer = () => {
               className="mb-6"
             >
               <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-200">
-                Paradise Yatra
+                <p>Paradise Yatra</p>
+                <img src="/logo.png" alt="logo" className="h-35 w-35" />
               </span>
             </motion.div>
             <motion.p 

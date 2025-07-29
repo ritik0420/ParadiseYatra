@@ -84,69 +84,69 @@ const TrendingDestinations = () => {
               whileHover={{ y: -10 }}
             >
               <Card className="group overflow-hidden modern-card hover-lift">
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={pkg.image} 
-                  alt={pkg.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                
-                {/* Badge */}
-                <div className="absolute top-4 left-4">
-                  <Badge className="bg-orange-500 text-white border-0 font-medium">
-                    {pkg.badge}
-                  </Badge>
-                </div>
-                
-                {/* Rating */}
-                <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1">
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-light text-gray-800">{pkg.rating}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <CardContent className="p-6 font-nunito font-light">
-                <div className="mb-4">
-                  <h3 className="mt-5 !text-xl font-light text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
-                    {pkg.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                    {pkg.description}
-                  </p>
+                <div className="relative h-56 overflow-hidden card-image">
+                  <img 
+                    src={pkg.image} 
+                    alt={pkg.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   
-                  <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                  {/* Badge */}
+                  <div className="absolute top-4 left-4">
+                    <Badge className="badge">
+                      {pkg.badge}
+                    </Badge>
+                  </div>
+                  
+                  {/* Rating */}
+                  <div className="absolute top-4 right-4 rating-badge">
                     <div className="flex items-center space-x-1">
-                      <Clock className="w-4 h-4" />
-                      <span>{pkg.duration}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <MapPin className="w-4 h-4" />
-                      <span>{pkg.location}</span>
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-medium text-gray-800">{pkg.rating}</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <div className="text-2xl font-light text-blue-600">{pkg.price}</div>
-                    <div className="text-sm text-gray-500 line-through">{pkg.originalPrice}</div>
-                    <div className="text-xs text-gray-600">Starting From Per Person</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs text-green-600 font-light bg-green-50 px-2 py-1 rounded">
-                      Save ₹{(parseInt(pkg.originalPrice.replace('₹', '').replace(',', '')) - parseInt(pkg.price.replace('₹', '').replace(',', ''))).toLocaleString()}
+                <CardContent className="p-6 card-content">
+                  <div className="mb-6">
+                    <h3 className="!text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200">
+                      {pkg.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                      {pkg.description}
+                    </p>
+                    
+                    <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                      <div className="flex items-center space-x-2">
+                        <Clock className="w-4 h-4 text-blue-500" />
+                        <span className="font-medium">{pkg.duration}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <MapPin className="w-4 h-4 text-blue-500" />
+                        <span className="font-medium">{pkg.location}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-light py-3 rounded-lg transition-all duration-200">
-                  Book Now
-                </Button>
-              </CardContent>
-            </Card>
+                  
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <div className="price">{pkg.price}</div>
+                      <div className="original-price">{pkg.originalPrice}</div>
+                      <div className="text-xs text-gray-500 mt-1">Starting From Per Person</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="savings">
+                        Save ₹{(parseInt(pkg.originalPrice.replace('₹', '').replace(',', '')) - parseInt(pkg.price.replace('₹', '').replace(',', ''))).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button className="book-button">
+                    Book Now
+                  </Button>
+                </CardContent>
+              </Card>
             </motion.div>
           ))}
         </div>

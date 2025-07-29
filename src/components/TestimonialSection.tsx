@@ -73,7 +73,7 @@ const TestimonialSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: index * 0.2 }}
               whileHover={{ y: -10 }}
-              className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover-lift"
+              className="bg-white rounded-2xl p-8 modern-card hover-lift"
             >
               {/* Rating */}
               <div className="flex items-center mb-6">
@@ -123,14 +123,14 @@ const TestimonialSection = () => {
 
         {/* Video testimonial */}
         <div className="mt-16 max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+          <div className="bg-white rounded-2xl overflow-hidden modern-card">
             <div className="grid md:grid-cols-2 gap-0">
               {/* Video section */}
-              <div className="relative h-64 md:h-full">
+              <div className="relative h-64 md:h-full card-image">
                 <img 
                   src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                   alt="Travel experience"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-black/30"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -146,7 +146,7 @@ const TestimonialSection = () => {
               </div>
 
               {/* Content section */}
-              <div className="p-8 flex flex-col justify-center">
+              <div className="p-8 flex flex-col justify-center card-content">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   See Our Travelers in Action
                 </h3>
