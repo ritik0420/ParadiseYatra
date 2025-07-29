@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 /* Custom font classes */
+.font-playfair-display {
+  font-family: var(--font-playfair-display), 'Playfair Display', serif;
+}
+
 .font-nunito {
   font-family: var(--font-nunito), 'Nunito', sans-serif;
 }
@@ -33,10 +37,9 @@
   --travel-green: #10b981;
   
   /* Typography */
-  --font-poppins: 'Poppins', sans-serif;
-  --font-open-sans: 'Open Sans', sans-serif;
+  --font-playfair-display: 'Playfair Display', serif;
   --font-nunito: 'Nunito', sans-serif;
-  --font-sans: var(--font-open-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: var(--font-nunito), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
@@ -87,25 +90,29 @@
 
 html {
   scroll-behavior: smooth;
+  height: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-open-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-nunito), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   font-variation-settings: normal;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
 }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-poppins), 'Poppins', sans-serif;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
+  font-family: var(--font-playfair-display), 'Playfair Display', serif;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
 }
 
 /* Card content styling */
@@ -115,24 +122,24 @@ h1, h2, h3, h4, h5, h6 {
 .modern-card p,
 .modern-card span,
 .modern-card div:not(:has(h1, h2, h3, h4, h5, h6)) {
-  font-family: var(--font-open-sans), 'Open Sans', sans-serif;
+  font-family: var(--font-nunito), 'Nunito', sans-serif;
   font-weight: 400;
 }
 
-/* Ensure all paragraph text in cards uses Open Sans */
+/* Ensure all paragraph text in cards uses Nunito */
 .card p,
 .modern-card p,
 [class*="card"] p {
-  font-family: var(--font-open-sans), 'Open Sans', sans-serif;
+  font-family: var(--font-nunito), 'Nunito', sans-serif;
   font-weight: 400;
 }
 
-/* Ensure all span and div text in cards uses Open Sans (except headings) */
+/* Ensure all span and div text in cards uses Nunito (except headings) */
 .card span,
 .card div:not(:has(h1, h2, h3, h4, h5, h6)),
 .modern-card span,
 .modern-card div:not(:has(h1, h2, h3, h4, h5, h6)) {
-  font-family: var(--font-open-sans), 'Open Sans', sans-serif;
+  font-family: var(--font-nunito), 'Nunito', sans-serif;
   font-weight: 400;
 }
 
@@ -383,4 +390,33 @@ p {
   100% {
     background-position: -200% 0;
   }
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.line-clamp-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
 }

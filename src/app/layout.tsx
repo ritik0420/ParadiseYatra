@@ -1,23 +1,17 @@
 import type { Metadata } from "next";
-import { Poppins, Open_Sans, Nunito } from "next/font/google";
+import { Playfair_Display, Nunito } from "next/font/google";
 import "./globals.css";
+import { BlogProvider } from "@/context/BlogContext";
 
-const poppins = Poppins({
-  weight: ["700"], // Bold for headings
+const playfairDisplay = Playfair_Display({
+  weight: ["400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
-  variable: "--font-poppins",
-  display: "swap",
-});
-
-const openSans = Open_Sans({
-  weight: ["400"], // Regular for body
-  subsets: ["latin"],
-  variable: "--font-open-sans",
+  variable: "--font-playfair-display",
   display: "swap",
 });
 
 const nunito = Nunito({
-  weight: ["300"], // Light weight
+  weight: ["300", "400", "500", "600", "700", "800"],
   subsets: ["latin"],
   variable: "--font-nunito",
   display: "swap",
@@ -29,6 +23,11 @@ export const metadata: Metadata = {
   keywords: "travel, tours, international tours, India tours, trekking, adventure, vacation packages",
   authors: [{ name: "Paradise Yatra" }],
   viewport: "width=device-width, initial-scale=1",
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -39,9 +38,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${poppins.variable} ${openSans.variable} ${nunito.variable} antialiased`}
+        className={`${playfairDisplay.variable} ${nunito.variable} antialiased`}
       >
-        {children}
+        <BlogProvider>
+          {children}
+        </BlogProvider>
       </body>
     </html>
   );

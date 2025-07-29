@@ -9,8 +9,8 @@ import DestinationsGrid from "@/components/DestinationsGrid";
 import PremiumPackages from "@/components/PremiumPackages";
 import AdventureEscapes from "@/components/AdventureEscapes";
 import TestimonialSection from "@/components/TestimonialSection";
-import QuoteSection from "@/components/QuoteSection";
 import CTASection from "@/components/CTASection";
+import BlogSection from "@/components/BlogSection";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 
@@ -30,8 +30,8 @@ const Index = () => {
       <DestinationsGrid />
       <PremiumPackages />
       <AdventureEscapes />
+      <BlogSection />
       <TestimonialSection />
-      <QuoteSection />
       <CTASection />
       <Footer />
     </motion.div>
