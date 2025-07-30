@@ -27,7 +27,6 @@ const Index = () => {
       <LazyHeader />
       <LazyHeroSection />
       <LazyTrendingDestinations />
-      <LazyRecentlyBooked />
       <LazyHolidaysSection />
       <LazyDestinationsGrid />
       <LazyPremiumPackages />
