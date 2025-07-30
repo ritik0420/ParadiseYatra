@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+// Removed unused useState import
 import { 
   BarChart3, 
   FolderOpen, 
@@ -17,7 +16,7 @@ import {
 
 interface AdminSidebarProps {
   activeSection: string;
-  setActiveSection: (section: any) => void;
+  setActiveSection: (section: string) => void;
   expandedSections: Set<string>;
   toggleSection: (section: string) => void;
 }
@@ -28,7 +27,7 @@ const AdminSidebar = ({
   expandedSections, 
   toggleSection 
 }: AdminSidebarProps) => {
-  const [showSubMenu, setShowSubMenu] = useState(false);
+  // Removed unused showSubMenu state
 
   const menuItems = [
     {

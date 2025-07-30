@@ -49,7 +49,7 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="text-lg md:text-xl lg:text-2xl mb-4 opacity-95 text-shadow max-w-3xl mx-auto leading-relaxed"
           >
-            Experience the world's most breathtaking destinations with our curated travel experiences
+            Experience the world&apos;s most breathtaking destinations with our curated travel experiences
           </motion.p>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -57,7 +57,7 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 1.0 }}
             className="text-base md:text-lg mb-8 opacity-80 text-shadow max-w-2xl mx-auto leading-relaxed"
           >
-            Trusted by thousands of travelers – start your journey now!
+            Trusted by thousands of travelers &ndash; start your journey now!
           </motion.p>
         </motion.div>
         

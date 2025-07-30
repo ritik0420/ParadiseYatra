@@ -157,7 +157,7 @@ const AdminRecentlyBooked = () => {
                     <div className="flex space-x-2">
                       <select
                         value={booking.status}
-                        onChange={(e) => updateBookingStatus(booking.id, e.target.value as any)}
+                        onChange={(e) => updateBookingStatus(booking.id, e.target.value as "confirmed" | "pending" | "cancelled")}
                         className="text-xs border border-gray-300 rounded px-2 py-1"
                       >
                         <option value="pending">Pending</option>

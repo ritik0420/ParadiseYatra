@@ -10,7 +10,7 @@ interface AdminBlogsProps {
 
 const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
   const { blogs, addBlog, updateBlog, deleteBlog, toggleBlogStatus } = useBlogs();
-  const [showAddForm, setShowAddForm] = useState(false);
+  // Removed unused showAddForm state
   const [editingBlog, setEditingBlog] = useState<BlogPost | null>(null);
   const [activeTab, setActiveTab] = useState<"create" | "all">("all");
 
@@ -18,7 +18,6 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
   useEffect(() => {
     if (initialAction === 'create') {
       setActiveTab("create");
-      setShowAddForm(true);
       setEditingBlog(null);
       onActionComplete?.();
     }
@@ -62,7 +61,6 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
       image: "📝",
       slug: "",
     });
-    setShowAddForm(false);
   };
 
   const handleEditBlog = (blog: BlogPost) => {
@@ -108,7 +106,6 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
       image: "📝",
       slug: "",
     });
-    setShowAddForm(false);
   };
 
   const handleDeleteBlog = (id: string) => {
@@ -131,7 +128,6 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
           <button
             onClick={() => {
               setActiveTab("create");
-              setShowAddForm(true);
               setEditingBlog(null);
             }}
             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
@@ -163,7 +159,6 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
           <button
             onClick={() => {
               setActiveTab("create");
-              setShowAddForm(true);
             }}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === "create"

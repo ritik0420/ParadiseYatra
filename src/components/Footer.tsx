@@ -1,6 +1,6 @@
 "use client";
 
-import { Facebook, Twitter, Instagram, Youtube, Linkedin, Phone, Mail, MapPin, MessageCircle, ArrowRight } from "lucide-react";
+import { Facebook, Twitter, Instagram, Youtube, Linkedin, Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Footer = () => {

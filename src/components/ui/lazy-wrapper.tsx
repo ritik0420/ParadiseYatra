@@ -24,17 +24,21 @@ const LazyWrapper = ({
 };
 
 // Helper function to create lazy components with consistent loading
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createLazyComponent = <T extends ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
   fallback?: ReactNode
 ) => {
   const LazyComponent = lazy(importFunc);
   
-  return (props: React.ComponentProps<T>) => (
+  const LazyWrappedComponent = (props: React.ComponentProps<T>) => (
     <LazyWrapper fallback={fallback}>
       <LazyComponent {...props} />
     </LazyWrapper>
   );
+  
+  LazyWrappedComponent.displayName = 'LazyWrappedComponent';
+  return LazyWrappedComponent;
 };
 
 export default LazyWrapper; 

@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -104,7 +104,7 @@ const Header = () => {
                 <div 
                   key={index}
                   className="relative"
-                  onMouseEnter={() => setActiveDropdown(index as any)}
+                  onMouseEnter={() => setActiveDropdown(index)}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
                   <motion.button

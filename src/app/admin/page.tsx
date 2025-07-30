@@ -81,7 +81,7 @@ const AdminPage = () => {
     <div className="flex min-h-screen bg-gray-100">
       <LazyAdminSidebar
         activeSection={activeSection}
-        setActiveSection={setActiveSection}
+        setActiveSection={setActiveSection as (section: string) => void}
         expandedSections={expandedSections}
         toggleSection={toggleSection}
       />
