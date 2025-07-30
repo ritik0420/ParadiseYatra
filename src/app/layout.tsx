@@ -28,6 +28,22 @@ export const metadata: Metadata = {
     shortcut: "/favicon.png",
     apple: "/favicon.png",
   },
+  // Performance optimizations
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  // Preload critical resources
+  other: {
+    'theme-color': '#1e40af',
+  },
 };
 
 export default function RootLayout({

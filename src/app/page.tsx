@@ -1,18 +1,20 @@
 "use client";
 
-import Header from "@/components/Header";
-import HeroSection from "@/components/HeroSection";
-import TrendingDestinations from "@/components/TrendingDestinations";
-import RecentlyBooked from "@/components/RecentlyBooked";
-import HolidaysSection from "@/components/HolidaysSection";
-import DestinationsGrid from "@/components/DestinationsGrid";
-import PremiumPackages from "@/components/PremiumPackages";
-import AdventureEscapes from "@/components/AdventureEscapes";
-import TestimonialSection from "@/components/TestimonialSection";
-import CTASection from "@/components/CTASection";
-import BlogSection from "@/components/BlogSection";
-import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import {
+  LazyHeader,
+  LazyHeroSection,
+  LazyTrendingDestinations,
+  LazyRecentlyBooked,
+  LazyHolidaysSection,
+  LazyDestinationsGrid,
+  LazyPremiumPackages,
+  LazyAdventureEscapes,
+  LazyBlogSection,
+  LazyTestimonialSection,
+  LazyCTASection,
+  LazyFooter,
+} from "@/components/lazy-components";
 
 const Index = () => {
   return (
@@ -22,18 +24,18 @@ const Index = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-background"
     >
-      <Header />
-      <HeroSection />
-      <TrendingDestinations />
-      <RecentlyBooked />
-      <HolidaysSection />
-      <DestinationsGrid />
-      <PremiumPackages />
-      <AdventureEscapes />
-      <BlogSection />
-      <TestimonialSection />
-      <CTASection />
-      <Footer />
+      <LazyHeader />
+      <LazyHeroSection />
+      <LazyTrendingDestinations />
+      <LazyRecentlyBooked />
+      <LazyHolidaysSection />
+      <LazyDestinationsGrid />
+      <LazyPremiumPackages />
+      <LazyAdventureEscapes />
+      <LazyBlogSection />
+      <LazyTestimonialSection />
+      <LazyCTASection />
+      <LazyFooter />
     </motion.div>
   );
 };

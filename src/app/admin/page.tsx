@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import AdminSidebar from "@/components/admin/AdminSidebar";
-import AdminDashboard from "@/components/admin/AdminDashboard";
-import AdminPackages from "@/components/admin/AdminPackages";
-import AdminBlogs from "@/components/admin/AdminBlogs";
-import AdminSEO from "@/components/admin/AdminSEO";
-import AdminMenu from "@/components/admin/AdminMenu";
-import AdminTrendingDestinations from "@/components/admin/AdminTrendingDestinations";
-import AdminRecentlyBooked from "@/components/admin/AdminRecentlyBooked";
-import AdminPremiumPackages from "@/components/admin/AdminPremiumPackages";
-import AdminAdventurePackages from "@/components/admin/AdminAdventurePackages";
+import {
+  LazyAdminSidebar,
+  LazyAdminDashboard,
+  LazyAdminPackages,
+  LazyAdminBlogs,
+  LazyAdminSEO,
+  LazyAdminMenu,
+  LazyAdminTrendingDestinations,
+  LazyAdminRecentlyBooked,
+  LazyAdminPremiumPackages,
+  LazyAdminAdventurePackages,
+} from "@/components/lazy-admin-components";
 
 type AdminSection = 
   | "dashboard"
@@ -53,31 +55,31 @@ const AdminPage = () => {
   const renderActiveSection = () => {
     switch (activeSection) {
       case "dashboard":
-        return <AdminDashboard />;
+        return <LazyAdminDashboard />;
       case "menu":
-        return <AdminMenu />;
+        return <LazyAdminMenu />;
       case "packages":
-        return <AdminPackages />;
+        return <LazyAdminPackages />;
       case "seo":
-        return <AdminSEO />;
+        return <LazyAdminSEO />;
       case "blogs":
-        return <AdminBlogs initialAction={blogAction} onActionComplete={() => setBlogAction(null)} />;
+        return <LazyAdminBlogs initialAction={blogAction} onActionComplete={() => setBlogAction(null)} />;
       case "trending-destinations":
-        return <AdminTrendingDestinations />;
+        return <LazyAdminTrendingDestinations />;
       case "recently-booked":
-        return <AdminRecentlyBooked />;
+        return <LazyAdminRecentlyBooked />;
       case "premium-packages":
-        return <AdminPremiumPackages />;
+        return <LazyAdminPremiumPackages />;
       case "adventure-packages":
-        return <AdminAdventurePackages />;
+        return <LazyAdminAdventurePackages />;
       default:
-        return <AdminDashboard />;
+        return <LazyAdminDashboard />;
     }
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <AdminSidebar
+      <LazyAdminSidebar
         activeSection={activeSection}
         setActiveSection={setActiveSection}
         expandedSections={expandedSections}

@@ -47,9 +47,17 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="text-lg md:text-xl lg:text-2xl mb-8 opacity-95 text-shadow max-w-3xl mx-auto leading-relaxed"
+            className="text-lg md:text-xl lg:text-2xl mb-4 opacity-95 text-shadow max-w-3xl mx-auto leading-relaxed"
           >
             Experience the world's most breathtaking destinations with our curated travel experiences
+          </motion.p>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.0 }}
+            className="text-base md:text-lg mb-8 opacity-80 text-shadow max-w-2xl mx-auto leading-relaxed"
+          >
+            Trusted by thousands of travelers – start your journey now!
           </motion.p>
         </motion.div>
         
@@ -57,33 +65,21 @@ const HeroSection = () => {
         <motion.div 
           initial={{ opacity: 0, y: 30, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, delay: 1.0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
           whileHover={{ scale: 1.02 }}
-          className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 max-w-2xl mx-auto shadow-2xl border border-white/20"
+          className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 md:p-8 max-w-2xl mx-auto shadow-2xl border border-white/20"
         >
-          <div className="flex flex-col lg:flex-row gap-4">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 1.2 }}
-              className="flex-1 relative"
-            >
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <Input 
-                placeholder="Where do you want to go?" 
-                className="pl-10 border-0 bg-transparent text-gray-800 focus-visible:ring-0 flex-1 placeholder-gray-500 text-lg"
-              />
-            </motion.div>
+          <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 1.4 }}
               className="flex-1 relative"
             >
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
               <Input 
-                placeholder="When?" 
-                className="pl-10 border-0 bg-transparent text-gray-800 focus-visible:ring-0 flex-1 placeholder-gray-500"
+                placeholder="Where do you want to go?" 
+                className="pl-10 md:pl-12 border-0 bg-transparent text-gray-800 focus-visible:ring-0 flex-1 placeholder-gray-500 text-base md:text-lg py-3 md:py-4"
               />
             </motion.div>
             <motion.div 
@@ -92,24 +88,36 @@ const HeroSection = () => {
               transition={{ duration: 0.5, delay: 1.6 }}
               className="flex-1 relative"
             >
-              <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
+              <Input 
+                placeholder="When?" 
+                className="pl-10 md:pl-12 border-0 bg-transparent text-gray-800 focus-visible:ring-0 flex-1 placeholder-gray-500 text-base md:text-lg py-3 md:py-4"
+              />
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 1.8 }}
+              className="flex-1 relative"
+            >
+              <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
               <Input 
                 placeholder="Travelers" 
-                className="pl-10 border-0 bg-transparent text-gray-800 focus-visible:ring-0 flex-1 placeholder-gray-500"
+                className="pl-10 md:pl-12 border-0 bg-transparent text-gray-800 focus-visible:ring-0 flex-1 placeholder-gray-500 text-base md:text-lg py-3 md:py-4"
               />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 1.8 }}
+              transition={{ duration: 0.5, delay: 2.0 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <Button 
                 size="lg" 
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-200 shadow-lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 md:px-8 py-3 md:py-4 rounded-xl transition-all duration-200 shadow-lg text-base md:text-lg w-full lg:w-auto"
               >
-                <Search className="w-5 h-5 mr-2" />
+                <Search className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                 Search
               </Button>
             </motion.div>
@@ -120,13 +128,13 @@ const HeroSection = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 2.0 }}
+          transition={{ duration: 0.8, delay: 2.2 }}
           className="mt-12 flex flex-wrap justify-center gap-4 text-sm"
         >
           <motion.span 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 2.2 }}
+            transition={{ duration: 0.5, delay: 2.4 }}
             className="text-white/80"
           >
             Popular:
@@ -136,7 +144,7 @@ const HeroSection = () => {
             key={dest}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 2.4 + index * 0.1 }}
+            transition={{ duration: 0.5, delay: 2.6 + index * 0.1 }}
             whileHover={{
               scale: 0.95,
               backgroundColor: "rgba(255, 255, 255, 0.2)",

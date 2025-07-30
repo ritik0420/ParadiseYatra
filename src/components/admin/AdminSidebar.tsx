@@ -119,7 +119,7 @@ const AdminSidebar = ({
   };
 
   return (
-    <div className="w-64 bg-blue-900 text-white min-h-screen flex flex-col">
+    <div className="w-64 p-2 m-2 bg-blue-900 text-white min-h-screen flex flex-col rounded-lg">
       {/* Logo and Title */}
       <div className="p-4 border-b border-blue-700">
         <div className="flex items-center space-x-3">

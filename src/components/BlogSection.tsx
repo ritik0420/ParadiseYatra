@@ -64,7 +64,8 @@ const BlogSection = () => {
             <motion.article
               key={post.id}
               variants={itemVariants}
-              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
+              whileHover={{ y: -10 }}
+              className="bg-white rounded-xl shadow-lg hover:cursor-pointer transition-all duration-500 overflow-hidden group"
             >
               {/* Blog Image */}
               <div className="h-48 bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-6xl">
