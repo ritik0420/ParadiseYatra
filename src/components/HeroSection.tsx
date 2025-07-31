@@ -13,14 +13,17 @@ const HeroSection = () => {
 
   // Custom Input for DatePicker to match other fields
   const CustomDateInput = forwardRef<HTMLInputElement, any>(({ value, onClick, placeholder }, ref) => (
-    <Input
-      ref={ref}
-      onClick={onClick}
-      value={value}
-      readOnly
-      placeholder={placeholder}
-      className="w-full pl-8 md:pl-12 border-0 bg-transparent text-gray-800 focus-visible:ring-0 placeholder-gray-500 text-base md:text-lg py-3 md:py-4 cursor-pointer"
-    />
+    <div className="relative w-full">
+      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" />
+      <input
+        ref={ref}
+        onClick={onClick}
+        value={value}
+        readOnly
+        placeholder={placeholder}
+        className="w-full h-12 pl-10 pr-3 bg-white/90 backdrop-blur-sm border border-gray-200/40 rounded-2xl text-gray-800 placeholder-gray-500 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-all duration-200"
+      />
+    </div>
   ));
   CustomDateInput.displayName = "CustomDateInput";
 
@@ -87,74 +90,71 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.8 }}
           whileHover={{ scale: 1.02 }}
-          className="bg-white/90 backdrop-blur-md rounded-2xl p-4 md:p-8 max-w-4xl mx-auto shadow-2xl border border-white/30"
+          className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 md:p-8 max-w-4xl mx-auto shadow-2xl border border-white/30"
         >
-          <div className="flex flex-col lg:flex-row gap-3 md:gap-6 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 w-full">
             {/* Destination input */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 1.0 }}
-              className="flex-[2] min-w-0 relative w-full mb-3 lg:mb-0"
+              className="relative"
             >
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-              <Input
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" />
+              <input
                 placeholder="Where do you want to go?"
-                className="w-full pl-8 md:pl-12 border-0 bg-transparent text-gray-800 focus-visible:ring-0 placeholder-gray-500 text-base md:text-lg py-3 md:py-4"
+                className="w-full h-12 pl-10 pr-3 bg-white/90 backdrop-blur-sm border border-gray-200/40 rounded-2xl text-gray-800 placeholder-gray-500 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-all duration-200"
               />
             </motion.div>
+            
             {/* Date input with DatePicker */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 1.2 }}
-              className="flex-[2] min-w-0 relative w-full mb-3 lg:mb-0"
+              className="relative"
             >
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400 pointer-events-none" />
-              <div className="w-full">
-                <DatePicker
-                  selected={selectedDate}
-                  onChange={date => setSelectedDate(date)}
-                  placeholderText="When?"
-                  customInput={<CustomDateInput />}
-                  calendarClassName="!z-50"
-                  popperPlacement="bottom"
-                />
-              </div>
+              <DatePicker
+                selected={selectedDate}
+                onChange={date => setSelectedDate(date)}
+                placeholderText="When?"
+                customInput={<CustomDateInput />}
+                calendarClassName="!z-50"
+                popperPlacement="bottom"
+              />
             </motion.div>
+            
             {/* Travelers input */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 1.4 }}
-              className="flex-[2] min-w-0 relative w-full mb-3 lg:mb-0"
+              className="relative"
             >
-              <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-              <Input
+              <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" />
+              <input
                 placeholder="Travelers"
-                className="w-full pl-8 md:pl-12 border-0 bg-transparent text-gray-800 focus-visible:ring-0 placeholder-gray-500 text-base md:text-lg py-3 md:py-4"
+                className="w-full h-12 pl-10 pr-3 bg-white/90 backdrop-blur-sm border border-gray-200/40 rounded-2xl text-gray-800 placeholder-gray-500 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-all duration-200"
               />
             </motion.div>
+            
             {/* Search button */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 1.6 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex-[1] min-w-[120px] flex items-center w-full"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center"
             >
-              <Button
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 md:px-8 py-3 md:py-4 rounded-xl transition-all duration-200 shadow-lg text-base md:text-lg w-full"
-              >
-                <Search className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+              <button className="w-full h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-4 rounded-2xl transition-all duration-200 shadow-lg text-sm flex items-center justify-center gap-2 group">
+                <Search className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                 Search
-              </Button>
+              </button>
             </motion.div>
           </div>
         </motion.div>
-        {/* Popular destinations (as before) */}
+        {/* Popular destinations */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
