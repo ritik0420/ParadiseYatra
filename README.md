@@ -126,14 +126,6 @@ The application is fully responsive and optimized for:
 - **Code Splitting**: Automatic code splitting by routes
 - **Bundle Analysis**: Built-in bundle analyzer support
 
-## 🔒 Environment Variables
-
-Create a `.env.local` file in the root directory for environment-specific configurations:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-```
 
 ## 🧪 Development Guidelines
 
