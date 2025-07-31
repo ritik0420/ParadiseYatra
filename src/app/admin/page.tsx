@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   LazyAdminSidebar,
   LazyAdminDashboard,
@@ -29,6 +30,57 @@ const AdminPage = () => {
   const [activeSection, setActiveSection] = useState<AdminSection>("dashboard");
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["blogs"]));
   const [blogAction, setBlogAction] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("adminToken");
+      const userStr = localStorage.getItem("adminUser");
+
+      if (!token || !userStr) {
+        router.push("/admin/login");
+        return;
+      }
+
+      try {
+        const user = JSON.parse(userStr);
+        
+        // Check if user is admin
+        if (user.role !== "admin") {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminUser");
+          router.push("/admin/login");
+          return;
+        }
+
+        // Verify token with backend
+        const response = await fetch("/api/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminUser");
+          router.push("/admin/login");
+          return;
+        }
+
+        setIsAuthenticated(true);
+      } catch (error) {
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminUser");
+        router.push("/admin/login");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   useEffect(() => {
     const handleBlogAction = (event: CustomEvent) => {
@@ -50,6 +102,12 @@ const AdminPage = () => {
       newExpanded.add(section);
     }
     setExpandedSections(newExpanded);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminUser");
+    router.push("/admin/login");
   };
 
   const renderActiveSection = () => {
@@ -77,6 +135,21 @@ const AdminPage = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect to login
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       <LazyAdminSidebar
@@ -84,6 +157,7 @@ const AdminPage = () => {
         setActiveSection={setActiveSection as (section: string) => void}
         expandedSections={expandedSections}
         toggleSection={toggleSection}
+        onLogout={handleLogout}
       />
       <main className="flex-1 overflow-auto">
         <div className="p-6">

@@ -11,7 +11,8 @@ import {
   Star, 
   Compass,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  LogOut
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -19,13 +20,15 @@ interface AdminSidebarProps {
   setActiveSection: (section: string) => void;
   expandedSections: Set<string>;
   toggleSection: (section: string) => void;
+  onLogout?: () => void;
 }
 
 const AdminSidebar = ({ 
   activeSection, 
   setActiveSection, 
   expandedSections, 
-  toggleSection 
+  toggleSection,
+  onLogout
 }: AdminSidebarProps) => {
   // Removed unused showSubMenu state
 
@@ -129,18 +132,18 @@ const AdminSidebar = ({
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="  flex-1 p-4 space-y-2">
         {menuItems.map((item) => (
           <div key={item.id}>
             {item.isHeader ? (
-              <div className="text-blue-300 text-sm font-semibold uppercase tracking-wider py-2">
+              <div className="text-blue-300  text-sm font-semibold uppercase tracking-wider py-2">
                 {item.label}
               </div>
             ) : (
               <div>
                 <button
                   onClick={() => handleItemClick(item.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
+                  className={`w-full hover:cursor-pointer flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
                     activeSection === item.id
                       ? "bg-blue-700 text-white"
                       : "text-gray-300 hover:bg-blue-800 hover:text-white"
@@ -178,7 +181,7 @@ const AdminSidebar = ({
                             window.dispatchEvent(new CustomEvent('blogAction', { detail: 'create' }));
                           }
                         }}
-                        className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                        className={`w-full text-left px-3 py-2 hover:cursor-pointer rounded-lg transition-colors ${
                           activeSection === "blogs"
                             ? "bg-blue-700 text-white"
                             : "text-gray-300 hover:bg-blue-800 hover:text-white"
@@ -194,6 +197,19 @@ const AdminSidebar = ({
           </div>
         ))}
       </nav>
+
+      {/* Logout Button */}
+      {onLogout && (
+        <div className="p-4 border-t border-blue-700">
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors text-gray-300 hover:cursor-pointer hover:bg-red-500 hover:text-white"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Logout</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

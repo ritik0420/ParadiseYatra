@@ -6,7 +6,18 @@ import { motion } from "framer-motion";
 
 const CTASection = () => {
   return (
-    <section className="py-20 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white relative overflow-hidden">
+    <section 
+      className="py-20 text-white relative overflow-hidden" 
+      style={{
+        backgroundImage: 'url(/banner.jpeg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      {/* Dark overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/50"></div>
+      
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-10 w-32 h-32 border-2 border-white/20 rounded-full animate-float"></div>
@@ -73,7 +84,7 @@ const CTASection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 1.0 + index * 0.2 }}
                 whileHover={{ y: -10, scale: 1.05 }}
-                className="flex flex-col items-center space-y-3 p-6 bg-white/5 backdrop-blur-sm rounded-xl hover:bg-white/10 transition-all duration-300"
+                className="flex flex-col items-center space-y-3 p-6 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-all duration-300 border border-white/20"
               >
                 <motion.div 
                   whileHover={{ rotate: 360 }}
