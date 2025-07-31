@@ -180,7 +180,8 @@ export const Component: React.FC<ComponentProps> = ({ props }) => {
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This is a personal project. All rights reserved © Paradise Yatra, 2025.
+Not licensed for reuse, redistribution, or commercial use without explicit permission.
 
 ## 🆘 Support
 
