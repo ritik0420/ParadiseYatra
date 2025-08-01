@@ -126,14 +126,6 @@ The application is fully responsive and optimized for:
 - **Code Splitting**: Automatic code splitting by routes
 - **Bundle Analysis**: Built-in bundle analyzer support
 
-## 🔒 Environment Variables
-
-Create a `.env.local` file in the root directory for environment-specific configurations:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-```
 
 ## 🧪 Development Guidelines
 
@@ -188,7 +180,8 @@ export const Component: React.FC<ComponentProps> = ({ props }) => {
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This is a personal project. All rights reserved © Paradise Yatra, 2025.
+Not licensed for reuse, redistribution, or commercial use without explicit permission.
 
 ## 🆘 Support
 
