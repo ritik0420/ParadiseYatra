@@ -9,6 +9,10 @@
   font-family: var(--font-nunito), 'Nunito', sans-serif;
 }
 
+.font-roboto {
+  font-family: var(--font-roboto), 'Roboto', sans-serif;
+}
+
 :root {
   /* Modern Color Palette */
   --background: #ffffff;
@@ -39,6 +43,7 @@
   /* Typography */
   --font-playfair-display: 'Playfair Display', serif;
   --font-nunito: 'Nunito', sans-serif;
+  --font-roboto: 'Roboto', sans-serif;
   --font-sans: var(--font-nunito), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }

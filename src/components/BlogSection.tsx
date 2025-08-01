@@ -5,6 +5,7 @@ import { Calendar, Clock, User, ArrowRight, BookOpen, Heart, Share2 } from "luci
 import { useBlogs } from "@/context/BlogContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 const BlogSection = () => {
   const { getPublishedBlogs } = useBlogs();
@@ -162,10 +163,12 @@ const BlogSection = () => {
 
                 {/* Read More Button */}
                 <div className="mt-auto">
-                  <Button className="w-full flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 group font-semibold">
-                    <span>Read More</span>
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
+                  <Link href={`/blog/${post.id}`}>
+                    <Button className="w-full flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 hover:cursor-pointer transition-all duration-300 group font-semibold">
+                      <span>Read More</span>
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </motion.article>
@@ -179,10 +182,12 @@ const BlogSection = () => {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-center mt-12"
         >
-          <Button className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
-            <span>View All Blog Posts</span>
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+          <Link href="/blog">
+            <Button className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-indigo-700 hover:cursor-pointer transition-all  duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+              <span>View All Blog Posts</span>
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>

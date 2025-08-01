@@ -157,7 +157,7 @@ const AdminMenu = () => {
                     </button>
                     <button
                       onClick={() => handleEditItem(item)}
-                      className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                      className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 hover:cursor-pointer hover:scale-105 transition-all"
                     >
                       Edit
                     </button>

@@ -28,7 +28,7 @@ const HeroSection = () => {
   CustomDateInput.displayName = "CustomDateInput";
 
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden">
+    <section className="relative min-h-[80vh] flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden pt-8 sm:pt-12 md:pt-16">
       {/* Image background */}
       <img src="https://wallpapercave.com/wp/wp10918600.jpg" alt="hero" className="absolute inset-0 w-full h-full object-cover z-0" />
       {/* Animated gradient overlay */}
@@ -47,10 +47,10 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-5xl md:text-7xl font-extrabold mb-4 drop-shadow-lg leading-tight"
+          className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-4 drop-shadow-lg leading-tight px-2"
         >
           <span className="inline-flex items-center gap-2">
-            <Sparkles className="w-8 h-8 text-yellow-200 animate-bounce" />
+            <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-200 animate-bounce" />
             Your Next Adventure Awaits
           </span>
         </motion.h1>
@@ -59,7 +59,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-xl md:text-2xl mb-6 opacity-95 max-w-2xl mx-auto"
+          className="text-lg sm:text-xl md:text-2xl mb-6 opacity-95 max-w-2xl mx-auto px-2"
         >
           Unforgettable journeys, handpicked for you. Explore, dream, and discover with Paradise Yatra.
         </motion.p>
@@ -68,7 +68,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8 w-full max-w-2xl mx-auto"
+          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8 w-full max-w-2xl mx-auto px-2"
         >
           <Button
             size="lg"
@@ -84,15 +84,16 @@ const HeroSection = () => {
             See Popular Packages
           </Button>
         </motion.div>
-        {/* Enhanced Search Bar */}
+        {/* Enhanced Search Bar - Mobile Optimized */}
         <motion.div
           initial={{ opacity: 0, y: 30, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.8 }}
           whileHover={{ scale: 1.02 }}
-          className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 md:p-8 max-w-4xl mx-auto shadow-2xl border border-white/30"
+          className="bg-white/10 backdrop-blur-sm rounded-3xl p-4 sm:p-6 md:p-8 max-w-4xl mx-auto shadow-2xl border border-white/30"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 w-full">
+          {/* Mobile: Stacked layout, Desktop: Grid layout */}
+          <div className="flex flex-col lg:grid lg:grid-cols-4 gap-3 sm:gap-4 w-full">
             {/* Destination input */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -159,7 +160,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.2 }}
-          className="mt-12 flex flex-wrap justify-center gap-4 text-sm"
+          className="mt-8 sm:mt-12 flex flex-wrap justify-center gap-3 sm:gap-4 text-sm px-2"
         >
           <motion.span
             initial={{ opacity: 0 }}
@@ -181,7 +182,7 @@ const HeroSection = () => {
                 transition: { duration: 0.3 }
               }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-full transition-all duration-200 text-sm font-medium cursor-pointer"
+              className="bg-white/10 backdrop-blur-sm text-white px-3 sm:px-4 py-2 mb-4 rounded-full transition-all duration-200 text-sm font-medium cursor-pointer"
             >
               {dest}
             </motion.button>

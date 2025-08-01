@@ -142,7 +142,7 @@ const AdminTrendingDestinations = () => {
                   </div>
                   <button
                     onClick={() => handleEditDestination(destination)}
-                    className="text-blue-600 hover:text-blue-900 text-sm"
+                    className="hover:cursor-pointer hover:scale-105 text-blue-600 hover:text-blue-900 text-sm transition-transform"
                   >
                     Edit
                   </button>

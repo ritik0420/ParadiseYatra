@@ -52,4 +52,39 @@ export const LazyAdminPremiumPackages = createLazyComponent(
 export const LazyAdminAdventurePackages = createLazyComponent(
   () => import("./admin/AdminAdventurePackages"),
   <Loading size="lg" className="min-h-[400px]" />
+);
+
+export const LazyAdminHeroSection = createLazyComponent(
+  () => import("./admin/AdminHeroSection"),
+  <Loading size="lg" className="min-h-[400px]" />
+);
+
+export const LazyAdminHeader = createLazyComponent(
+  () => import("./admin/AdminHeader"),
+  <Loading size="lg" className="min-h-[400px]" />
+);
+
+export const LazyAdminFooter = createLazyComponent(
+  () => import("./admin/AdminFooter"),
+  <Loading size="lg" className="min-h-[400px]" />
+);
+
+export const LazyAdminTestimonials = createLazyComponent(
+  () => import("./admin/AdminTestimonials"),
+  <Loading size="lg" className="min-h-[400px]" />
+);
+
+export const LazyAdminCTASection = createLazyComponent(
+  () => import("./admin/AdminCTASection"),
+  <Loading size="lg" className="min-h-[400px]" />
+);
+
+export const LazyAdminStats = createLazyComponent(
+  () => import("./admin/AdminStats"),
+  <Loading size="lg" className="min-h-[400px]" />
+);
+
+export const LazyAdminItinerary = createLazyComponent(
+  () => import("./admin/AdminItinerary"),
+  <Loading size="lg" className="min-h-[400px]" />
 ); 

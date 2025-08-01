@@ -13,10 +13,23 @@ import {
   LazyAdminRecentlyBooked,
   LazyAdminPremiumPackages,
   LazyAdminAdventurePackages,
+  LazyAdminHeroSection,
+  LazyAdminHeader,
+  LazyAdminFooter,
+  LazyAdminTestimonials,
+  LazyAdminCTASection,
+  LazyAdminStats,
+  LazyAdminItinerary,
 } from "@/components/lazy-admin-components";
 
 type AdminSection = 
   | "dashboard"
+  | "hero-section"
+  | "header"
+  | "footer"
+  | "testimonials"
+  | "cta-section"
+  | "stats"
   | "menu"
   | "packages"
   | "seo"
@@ -24,7 +37,8 @@ type AdminSection =
   | "trending-destinations"
   | "recently-booked"
   | "premium-packages"
-  | "adventure-packages";
+  | "adventure-packages"
+  | "itinerary";
 
 const AdminPage = () => {
   const [activeSection, setActiveSection] = useState<AdminSection>("dashboard");
@@ -114,6 +128,18 @@ const AdminPage = () => {
     switch (activeSection) {
       case "dashboard":
         return <LazyAdminDashboard />;
+      case "hero-section":
+        return <LazyAdminHeroSection />;
+      case "header":
+        return <LazyAdminHeader />;
+      case "footer":
+        return <LazyAdminFooter />;
+      case "testimonials":
+        return <LazyAdminTestimonials />;
+      case "cta-section":
+        return <LazyAdminCTASection />;
+      case "stats":
+        return <LazyAdminStats />;
       case "menu":
         return <LazyAdminMenu />;
       case "packages":
@@ -130,6 +156,8 @@ const AdminPage = () => {
         return <LazyAdminPremiumPackages />;
       case "adventure-packages":
         return <LazyAdminAdventurePackages />;
+      case "itinerary":
+        return <LazyAdminItinerary />;
       default:
         return <LazyAdminDashboard />;
     }

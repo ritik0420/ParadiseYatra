@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Star, MapPin, Clock, Users, ArrowRight, ChevronLeft, ChevronRight, Mountain, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import React from "react";
+import Link from "next/link";
 
 const AdventureEscapes = () => {
   const adventurePackages = [
@@ -211,9 +212,11 @@ const AdventureEscapes = () => {
                   </div>
                   
                   <div className="mt-auto">
-                    <Button className="book-button w-full py-3 text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl shadow-lg hover:from-green-700 hover:to-emerald-700 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-green-300 animate-pulse">
-                      Book Adventure
-                    </Button>
+                    <Link href={`/itinerary/royal-rajasthan`}>
+                      <Button className="book-button w-full py-3 text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl shadow-lg hover:from-green-700 hover:to-emerald-700 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-green-300 animate-pulse">
+                        Book Adventure
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
@@ -229,9 +232,12 @@ const AdventureEscapes = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="flex justify-center mt-12"
         >
-          <Button className="px-8 py-3 text-lg font-bold border-2 border-green-600 text-green-700 rounded-full shadow hover:bg-green-600 hover:text-white hover:cursor-pointer hover:scale-105 transition-all duration-200">
-            View All Adventure Packages
-          </Button>
+          <Link href="/packages/adventure">
+            <Button className="px-8 py-3 text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-full shadow hover:from-green-700 hover:to-emerald-700 hover:cursor-pointer hover:scale-105 transition-all duration-200 inline-flex items-center group">
+              <Mountain className="w-5 h-5 mr-2 group-hover:text-green-200 transition-colors" />
+              View All Adventure Packages
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Star, MapPin, Clock, Users, ArrowRight, ChevronLeft, ChevronRight, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 import React from "react";
+import Link from "next/link";
 
 const PremiumPackages = () => {
   const premiumPackages = [
@@ -204,9 +205,11 @@ const PremiumPackages = () => {
                   </div>
                   
                   <div className="mt-auto">
-                    <Button className="book-button w-full py-3 text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-purple-300 animate-pulse">
-                      Book Premium Package
-                    </Button>
+                    <Link href={`/itinerary/royal-rajasthan`}>
+                      <Button className="book-button w-full py-3 text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-purple-300 animate-pulse">
+                        Book Premium Package
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
@@ -222,10 +225,12 @@ const PremiumPackages = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="flex justify-center mt-12"
         >
-          <Button className="px-8 py-3 text-lg font-bold border-2 border-purple-200 text-white rounded-full shadow hover:bg-purple-600 hover:text-white hover:cursor-pointer hover:scale-105 transition-all duration-200">
-            View All Premium Packages
-
-          </Button>
+          <Link href="/packages/premium">
+            <Button className="px-8 py-3 text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full shadow-lg hover:from-purple-700 hover:to-indigo-700 hover:cursor-pointer hover:scale-105 transition-all duration-200 inline-flex items-center group">
+              <Crown className="w-5 h-5 mr-2 group-hover:text-purple-200 transition-colors" />
+              View All Premium Packages
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>

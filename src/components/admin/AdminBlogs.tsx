@@ -399,7 +399,7 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
                       <div className="flex space-x-4">
                         <button
                           onClick={() => handleEditBlog(blog)}
-                          className=" hover-lift hover:cursor-pointer text-blue-600 hover:text-blue-900"
+                          className="hover:cursor-pointer hover:scale-105 text-blue-600 hover:text-blue-900 transition-transform"
                         >
                           Edit
                         </button>

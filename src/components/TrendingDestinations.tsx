@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Star, MapPin, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import React from "react";
+import Link from "next/link";
 
 function getRatingLabel(rating: number) {
   if (rating >= 4.7) return "Excellent";
@@ -113,12 +114,14 @@ const TrendingDestinations = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />
                   {/* Floating View Details Button */}
-                  <Button 
-                    className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold px-6 py-2 rounded-full shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-300 border-2 border-white/80"
-                    size="sm"
-                  >
-                    View Details
-                  </Button>
+                  <Link href={`/itinerary/royal-rajasthan`}>
+                    <Button 
+                      className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-white/20 backdrop-blur-lg text-black px-4 py-1 rounded-full shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-300 border-2 border-white/20 text-xs"
+                      size="sm"
+                    >
+                      View Details
+                    </Button>
+                  </Link>
                   {/* Badge */}
                   <div className="absolute top-4 left-4 z-20">
                     <Badge className="badge bg-blue-600 text-white px-3 py-1 text-xs font-bold shadow-md">
@@ -178,9 +181,11 @@ const TrendingDestinations = () => {
                     </div>
                   </div>
                   <div className="mt-auto">
-                    <Button className="book-button w-full py-3 text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-blue-300 animate-bounce">
-                      Book Now
-                    </Button>
+                    <Link href={`/itinerary/royal-rajasthan`}>
+                      <Button className="book-button w-full py-3 text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-blue-300 animate-bounce">
+                        Book Now
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
@@ -189,9 +194,11 @@ const TrendingDestinations = () => {
         </div>
         {/* See All Packages Button */}
         <div className="flex justify-center mt-10">
-          <Button className="px-8 py-3 text-lg font-bold border-2 border-blue-600 text-blue-700 rounded-full shadow hover:bg-blue-600 hover:text-white hover:cursor-pointer hover:scale-105 transition-all duration-200">
-            See All Packages
-          </Button>
+          <Link href="/packages/trending">
+            <Button className="px-8 py-3 text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-full shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-200">
+              View All Trending Packages
+            </Button>
+          </Link>
         </div>
         
         {/* Navigation arrows */}

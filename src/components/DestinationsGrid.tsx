@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, MapPin, Clock, Users, ArrowRight, Heart } from "lucide-react";
+import Link from "next/link";
 
 const DestinationsGrid = () => {
   const destinations = [
@@ -228,10 +229,12 @@ const DestinationsGrid = () => {
                       </div>
                     </div>
                   </div>
-                  <Button className="w-full py-2 text-sm font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-blue-300 group">
-                    <span>Explore Now</span>
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
+                  <Link href={`/itinerary/royal-rajasthan`}>
+                    <Button className="w-full py-2 text-sm font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-blue-300 group">
+                      <span>Explore Now</span>
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </motion.div>
@@ -246,9 +249,12 @@ const DestinationsGrid = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="flex justify-center mt-12"
         >
-          <Button className="px-8 py-3 text-lg font-bold border-2 border-blue-600 text-blue-700 rounded-full shadow hover:bg-blue-600 hover:text-white hover:cursor-pointer hover:scale-105 transition-all duration-200">
-            View All Destinations
-          </Button>
+          <Link href="/packages/popular">
+            <Button className="px-8 py-3 text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-full shadow hover:from-blue-700 hover:to-blue-600 hover:cursor-pointer hover:scale-105 transition-all duration-200 inline-flex items-center group">
+              <MapPin className="w-5 h-5 mr-2 group-hover:text-blue-200 transition-colors" />
+              View All Popular Destinations
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>

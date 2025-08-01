@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Menu, Shield, Users, Headphones, Star, Phone, ChevronDown } from "lucide-react";
+import { Menu, Shield, Users, Headphones, Star, Phone, ChevronDown, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
@@ -9,6 +9,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,6 +18,24 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.mobile-menu-container')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   const navItems = [
     {
@@ -175,18 +194,80 @@ const Header = () => {
             <motion.div 
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="lg:hidden"
+              className="lg:hidden mobile-menu-container"
             >
               <Button 
                 variant="ghost" 
                 size="sm" 
                 className="p-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                <Menu className="w-5 h-5" />
+                {isMobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
               </Button>
             </motion.div>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="lg:hidden bg-white/95 backdrop-blur-lg border-t border-gray-200"
+            >
+              <div className="container mx-auto px-4 py-4">
+                {/* Mobile Navigation Items */}
+                <nav className="space-y-2">
+                  {navItems.map((item, index) => (
+                    <div key={index} className="border-b border-gray-100 last:border-b-0">
+                      <div className="py-3">
+                        <div className="font-medium text-gray-800 mb-2">{item.name}</div>
+                        <div className="space-y-1 ml-4">
+                          {item.submenu.map((subItem, subIndex) => (
+                            <a
+                              key={subIndex}
+                              href={subItem.href}
+                              className="block py-2 text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              {subItem.name}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </nav>
+
+                {/* Mobile Contact Info */}
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <motion.div 
+                    whileHover={{ scale: 1.02 }}
+                    className="flex items-center space-x-2 text-sm text-gray-600 mb-4 p-3 rounded-lg bg-gradient-to-r from-gray-50 to-blue-50 hover:from-blue-50 hover:to-blue-100 transition-all duration-300 cursor-pointer"
+                  >
+                    <Phone className="w-4 h-4 text-blue-600" />
+                    <span className="font-medium">+91 8979396413</span>
+                  </motion.div>
+                  
+                  <Button 
+                    size="sm" 
+                    className="p-5 h-5 mb-5 bg-gradient-to-r from-blue-600 to-blue-700 hover:scale-105 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-300 shadow-lg"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Pay Now
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </header>
   );
