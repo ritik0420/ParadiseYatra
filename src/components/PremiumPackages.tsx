@@ -1,55 +1,74 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, MapPin, Clock, Users, ArrowRight, ChevronLeft, ChevronRight, Crown } from "lucide-react";
 import { motion } from "framer-motion";
+import Loading from "@/components/ui/loading";
 import React from "react";
 import Link from "next/link";
 
+interface Package {
+  _id: string;
+  title: string;
+  duration: string;
+  destination: string;
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  images: string[];
+  category: string;
+  shortDescription: string;
+  reviews?: any[];
+}
+
 const PremiumPackages = () => {
-  const premiumPackages = [
-    {
-      title: "Luxury Maldives Escape",
-      duration: "7N-8D",
-      location: "Maldives",
-      price: "₹2,50,000",
-      originalPrice: "₹3,00,000",
-      rating: "4.9",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Premium",
-      description: "Overwater villas, private beaches, and world-class spa experiences",
-      booked: 850,
-      features: ["All Inclusive", "Private Pool", "Spa Access", "Water Sports"]
-    },
-    {
-      title: "Swiss Alps Luxury",
-      duration: "8N-9D",
-      location: "Switzerland",
-      price: "₹3,20,000",
-      originalPrice: "₹3,80,000",
-      rating: "4.8",
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Exclusive",
-      description: "Luxury mountain resorts with panoramic views and gourmet dining",
-      booked: 650,
-      features: ["5-Star Hotels", "Gourmet Meals", "Ski Pass", "Concierge"]
-    },
-    {
-      title: "Dubai Royal Experience",
-      duration: "6N-7D",
-      location: "Dubai, UAE",
-      price: "₹1,80,000",
-      originalPrice: "₹2,20,000",
-      rating: "4.7",
-      image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Luxury",
-      description: "Burj Al Arab stay, desert safari, and exclusive city tours",
-      booked: 1200,
-      features: ["Burj Al Arab", "Desert Safari", "City Tours", "Luxury Transfer"]
-    }
-  ];
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPremiumPackages = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/packages?category=premium');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch premium packages');
+        }
+        
+        const data = await response.json();
+
+        
+        // Ensure data is an array before calling slice
+        if (Array.isArray(data)) {
+          setPackages(data.slice(0, 3)); // Show only first 3 packages
+          setError(null);
+        } else if (data.packages && Array.isArray(data.packages)) {
+          setPackages(data.packages.slice(0, 3));
+          setError(null);
+        } else {
+          console.error('Unexpected data structure:', data);
+          setPackages([]);
+          setError('Invalid data format received');
+        }
+      } catch (err) {
+        console.error('Error fetching premium packages:', err);
+        setError('Failed to load premium packages');
+        setPackages([]); // Don't show static data, show empty state
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPremiumPackages();
+  }, []);
+
+  if (loading) {
+    return <Loading size="lg" className="min-h-[400px]" />;
+  }
 
   return (
     <section className="section-padding bg-gradient-to-br from-purple-50 to-indigo-50">
@@ -110,8 +129,9 @@ const PremiumPackages = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
-          {premiumPackages.map((pkg, index) => (
+        {packages.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
+            {packages.map((pkg, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 50 }}
@@ -124,7 +144,7 @@ const PremiumPackages = () => {
               <Card className="group overflow-hidden modern-card hover-lift rounded-3xl shadow-xl border-0 relative bg-gradient-to-br from-white via-purple-50 to-purple-100 h-full flex flex-col min-h-[580px]">
                 <div className="relative h-60 overflow-hidden card-image rounded-t-3xl">
                   <img 
-                    src={pkg.image} 
+                    src={pkg.images?.[0] || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
                     alt={pkg.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -133,7 +153,7 @@ const PremiumPackages = () => {
                   {/* Premium Badge */}
                   <div className="absolute top-4 left-4 z-20">
                     <Badge className="badge bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 py-1 text-xs font-bold shadow-md">
-                      {pkg.badge}
+                      {pkg.category === 'premium' ? 'Premium' : pkg.category.charAt(0).toUpperCase() + pkg.category.slice(1)}
                     </Badge>
                   </div>
                   
@@ -155,7 +175,7 @@ const PremiumPackages = () => {
                   {/* Booked badge */}
                   <div className="absolute bottom-4 right-4 z-20">
                     <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-gray-700 shadow-md">
-                      <span role="img" aria-label="traveler">👑</span> {pkg.booked}+ Booked
+                      <span role="img" aria-label="traveler">👑</span> {pkg.reviews?.length || 85}+ Booked
                     </div>
                   </div>
                 </div>
@@ -166,7 +186,7 @@ const PremiumPackages = () => {
                       {pkg.title}
                     </h3>
                     <p className="text-gray-700 text-base leading-relaxed mb-4 font-medium">
-                      {pkg.description}
+                      {pkg.shortDescription}
                     </p>
                     <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
                       <div className="flex items-center space-x-2">
@@ -175,33 +195,29 @@ const PremiumPackages = () => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <MapPin className="w-4 h-4 text-purple-500" />
-                        <span className="font-semibold">{pkg.location}</span>
+                        <span className="font-semibold">{pkg.destination}</span>
                       </div>
                     </div>
                     
-                    {/* Features */}
-                    <div className="grid grid-cols-2 gap-2 mb-6">
-                      {pkg.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center space-x-2 text-xs text-gray-600">
-                          <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                          <span className="font-medium">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
+
                   </div>
                   
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <div className="text-2xl font-extrabold text-purple-700">{pkg.price}</div>
-                      <div className="line-through text-gray-400 text-sm">{pkg.originalPrice}</div>
+                      <div className="text-2xl font-extrabold text-purple-700">₹{pkg.price.toLocaleString()}</div>
+                      {pkg.originalPrice && (
+                        <div className="line-through text-gray-400 text-sm">₹{pkg.originalPrice.toLocaleString()}</div>
+                      )}
                       <div className="text-xs text-gray-500 mt-1">Starting From Per Person</div>
                     </div>
-                    <div className="text-right">
-                      <div className="inline-flex items-center gap-1 bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full text-xs shadow-sm animate-pulse">
-                        <span role="img" aria-label="savings">💎</span>
-                        Save ₹{(parseInt(pkg.originalPrice.replace('₹', '').replace(',', '')) - parseInt(pkg.price.replace('₹', '').replace(',', ''))).toLocaleString()}
+                    {pkg.originalPrice && pkg.originalPrice > pkg.price && (
+                      <div className="text-right">
+                        <div className="inline-flex items-center gap-1 bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full text-xs shadow-sm animate-pulse">
+                          <span role="img" aria-label="savings">💎</span>
+                          Save ₹{(pkg.originalPrice - pkg.price).toLocaleString()}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                   
                   <div className="mt-auto">
@@ -216,6 +232,13 @@ const PremiumPackages = () => {
             </motion.div>
           ))}
         </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">
+              {error ? 'Failed to load premium packages.' : 'No premium packages available.'}
+            </p>
+          </div>
+        )}
         
         {/* View All Premium Packages Button */}
         <motion.div 

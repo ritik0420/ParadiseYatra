@@ -8,7 +8,8 @@ export async function PUT(
 ) {
   try {
     const body = await request.json();
-    const response = await fetch(`${BACKEND_URL}/api/packages/${params.id}`, {
+    
+    const response = await fetch(`${BACKEND_URL}/api/testimonials/${params.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -21,14 +22,14 @@ export async function PUT(
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: data.message || 'Failed to update package' },
+        { message: data.message || 'Failed to update testimonial' },
         { status: response.status }
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Packages API error:', error);
+    console.error('Testimonials API error:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
@@ -41,7 +42,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const response = await fetch(`${BACKEND_URL}/api/packages/${params.id}`, {
+    const response = await fetch(`${BACKEND_URL}/api/testimonials/${params.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': request.headers.get('Authorization') || '',
@@ -52,14 +53,14 @@ export async function DELETE(
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: data.message || 'Failed to delete package' },
+        { message: data.message || 'Failed to delete testimonial' },
         { status: response.status }
       );
     }
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Packages API error:', error);
+    console.error('Testimonials API error:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }

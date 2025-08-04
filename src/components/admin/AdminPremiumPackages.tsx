@@ -1,111 +1,130 @@
 "use client";
 
-import { useState } from "react";
-import { Crown, Star, MapPin, Clock, Users, Edit, Trash2, Plus, Eye } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Crown, Star, MapPin, Clock, Users, Edit, Trash2, Plus, Eye, Loader2 } from "lucide-react";
 
 interface PremiumPackage {
-  id: string;
+  _id: string;
   title: string;
   duration: string;
-  location: string;
-  price: string;
-  originalPrice: string;
-  rating: string;
-  image: string;
-  badge: string;
+  destination: string;
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  images: string[];
+  category: string;
   description: string;
-  booked: number;
-  features: string[];
-  status: "active" | "inactive";
+  shortDescription: string;
+  highlights: string[];
+  inclusions: string[];
+  isActive: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const AdminPremiumPackages = () => {
-  const [premiumPackages, setPremiumPackages] = useState<PremiumPackage[]>([
-    {
-      id: "1",
-      title: "Luxury Maldives Escape",
-      duration: "7N-8D",
-      location: "Maldives",
-      price: "₹2,50,000",
-      originalPrice: "₹3,00,000",
-      rating: "4.9",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Premium",
-      description: "Overwater villas, private beaches, and world-class spa experiences",
-      booked: 850,
-      features: ["All Inclusive", "Private Pool", "Spa Access", "Water Sports"],
-      status: "active"
-    },
-    {
-      id: "2",
-      title: "Swiss Alps Luxury",
-      duration: "8N-9D",
-      location: "Switzerland",
-      price: "₹3,20,000",
-      originalPrice: "₹3,80,000",
-      rating: "4.8",
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Exclusive",
-      description: "Luxury mountain resorts with panoramic views and gourmet dining",
-      booked: 650,
-      features: ["5-Star Hotels", "Gourmet Meals", "Ski Pass", "Concierge"],
-      status: "active"
-    },
-    {
-      id: "3",
-      title: "Dubai Royal Experience",
-      duration: "6N-7D",
-      location: "Dubai, UAE",
-      price: "₹1,80,000",
-      originalPrice: "₹2,20,000",
-      rating: "4.7",
-      image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Luxury",
-      description: "Burj Al Arab stay, desert safari, and exclusive city tours",
-      booked: 1200,
-      features: ["Burj Al Arab", "Desert Safari", "City Tours", "Luxury Transfer"],
-      status: "active"
-    }
-  ]);
-
+  const [premiumPackages, setPremiumPackages] = useState<PremiumPackage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingPackage, setEditingPackage] = useState<PremiumPackage | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<PremiumPackage | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
     duration: "",
-    location: "",
+    destination: "",
     price: "",
     originalPrice: "",
     rating: "",
-    image: "",
-    badge: "",
+    images: "",
+    category: "premium",
     description: "",
-    booked: "",
-    features: "",
-    status: "active"
+    shortDescription: "",
+    highlights: "",
+    inclusions: "",
+    isActive: true,
+    isFeatured: false
   });
 
-  const handleAddPackage = () => {
-    const newPackage: PremiumPackage = {
-      id: Date.now().toString(),
-      title: formData.title,
-      duration: formData.duration,
-      location: formData.location,
-      price: formData.price,
-      originalPrice: formData.originalPrice,
-      rating: formData.rating,
-      image: formData.image,
-      badge: formData.badge,
-      description: formData.description,
-      booked: parseInt(formData.booked),
-      features: formData.features.split(',').map(f => f.trim()),
-      status: formData.status as "active" | "inactive"
-    };
+  // Fetch premium packages
+  const fetchPremiumPackages = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const token = localStorage.getItem('adminToken');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch('/api/packages?category=premium', {
+        headers
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch premium packages');
+      }
+      
+      const data = await response.json();
+      setPremiumPackages(data.packages || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    setPremiumPackages([...premiumPackages, newPackage]);
-    resetForm();
+  useEffect(() => {
+    fetchPremiumPackages();
+  }, []);
+
+  const handleAddPackage = async () => {
+    try {
+      setSubmitting(true);
+      
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        setError('Authentication required. Please login again.');
+        return;
+      }
+      
+      const packageData = {
+        ...formData,
+        price: parseFloat(formData.price),
+        originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
+        rating: formData.rating ? parseFloat(formData.rating) : 0,
+        images: formData.images ? [formData.images] : [],
+        highlights: formData.highlights ? formData.highlights.split(',').map(h => h.trim()) : [],
+        inclusions: formData.inclusions ? formData.inclusions.split(',').map(i => i.trim()) : []
+      };
+
+      const response = await fetch('/api/packages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(packageData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create package');
+      }
+
+      await fetchPremiumPackages();
+      resetForm();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create package');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleEditPackage = (pkg: PremiumPackage) => {
@@ -113,80 +132,163 @@ const AdminPremiumPackages = () => {
     setFormData({
       title: pkg.title,
       duration: pkg.duration,
-      location: pkg.location,
-      price: pkg.price,
-      originalPrice: pkg.originalPrice,
-      rating: pkg.rating,
-      image: pkg.image,
-      badge: pkg.badge,
+      destination: pkg.destination,
+      price: pkg.price.toString(),
+      originalPrice: pkg.originalPrice?.toString() || "",
+      rating: pkg.rating.toString(),
+      images: pkg.images[0] || "",
+      category: pkg.category,
       description: pkg.description,
-      booked: pkg.booked.toString(),
-      features: pkg.features.join(', '),
-      status: pkg.status
+      shortDescription: pkg.shortDescription,
+      highlights: pkg.highlights.join(', '),
+      inclusions: pkg.inclusions.join(', '),
+      isActive: pkg.isActive,
+      isFeatured: pkg.isFeatured
     });
     setShowAddForm(true);
   };
 
-  const handleUpdatePackage = () => {
+  const handleUpdatePackage = async () => {
     if (!editingPackage) return;
 
-    const updatedPackages = premiumPackages.map((pkg) =>
-      pkg.id === editingPackage.id
-        ? {
-            ...pkg,
-            title: formData.title,
-            duration: formData.duration,
-            location: formData.location,
-            price: formData.price,
-            originalPrice: formData.originalPrice,
-            rating: formData.rating,
-            image: formData.image,
-            badge: formData.badge,
-            description: formData.description,
-            booked: parseInt(formData.booked),
-            features: formData.features.split(',').map(f => f.trim()),
-            status: formData.status as "active" | "inactive"
-          }
-        : pkg
-    );
+    try {
+      setSubmitting(true);
+      
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        setError('Authentication required. Please login again.');
+        return;
+      }
+      
+      const packageData = {
+        ...formData,
+        price: parseFloat(formData.price),
+        originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
+        rating: formData.rating ? parseFloat(formData.rating) : 0,
+        images: formData.images ? [formData.images] : [],
+        highlights: formData.highlights ? formData.highlights.split(',').map(h => h.trim()) : [],
+        inclusions: formData.inclusions ? formData.inclusions.split(',').map(i => i.trim()) : []
+      };
 
-    setPremiumPackages(updatedPackages);
-    setEditingPackage(null);
-    resetForm();
+      const response = await fetch(`/api/packages/${editingPackage._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(packageData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update package');
+      }
+
+      await fetchPremiumPackages();
+      setEditingPackage(null);
+      resetForm();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update package');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleDeletePackage = (id: string) => {
-    setPremiumPackages(premiumPackages.filter((pkg) => pkg.id !== id));
+  const handleDeletePackage = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this package?')) return;
+
+    try {
+      setSubmitting(true);
+      
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        setError('Authentication required. Please login again.');
+        return;
+      }
+      
+      const response = await fetch(`/api/packages/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete package');
+      }
+
+      await fetchPremiumPackages();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete package');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const togglePackageStatus = (id: string) => {
-    setPremiumPackages(
-      premiumPackages.map((pkg) =>
-        pkg.id === id
-          ? { ...pkg, status: pkg.status === "active" ? "inactive" : "active" }
-          : pkg
-      )
-    );
+  const togglePackageStatus = async (pkg: PremiumPackage) => {
+    try {
+      setSubmitting(true);
+      
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        setError('Authentication required. Please login again.');
+        return;
+      }
+      
+      const response = await fetch(`/api/packages/${pkg._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          isActive: !pkg.isActive
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update package status');
+      }
+
+      await fetchPremiumPackages();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update package status');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const resetForm = () => {
     setFormData({
       title: "",
       duration: "",
-      location: "",
+      destination: "",
       price: "",
       originalPrice: "",
       rating: "",
-      image: "",
-      badge: "",
+      images: "",
+      category: "premium",
       description: "",
-      booked: "",
-      features: "",
-      status: "active"
+      shortDescription: "",
+      highlights: "",
+      inclusions: "",
+      isActive: true,
+      isFeatured: false
     });
     setShowAddForm(false);
     setEditingPackage(null);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        <span className="ml-2 text-gray-600">Loading premium packages...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -208,6 +310,13 @@ const AdminPremiumPackages = () => {
         </button>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          {error}
+        </div>
+      )}
+
       {/* Add/Edit Form */}
       {showAddForm && (
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -217,59 +326,66 @@ const AdminPremiumPackages = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Package Title</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Package Title *</label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 placeholder="e.g., Luxury Maldives Escape"
+                required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Duration *</label>
               <input
                 type="text"
                 value={formData.duration}
                 onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 placeholder="e.g., 7N-8D"
+                required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Destination *</label>
               <input
                 type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                value={formData.destination}
+                onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 placeholder="e.g., Maldives"
+                required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Price (₹)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Price (₹) *</label>
               <input
-                type="text"
+                type="number"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="e.g., ₹2,50,000"
+                placeholder="e.g., 250000"
+                required
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Original Price (₹)</label>
               <input
-                type="text"
+                type="number"
                 value={formData.originalPrice}
                 onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="e.g., ₹3,00,000"
+                placeholder="e.g., 300000"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
               <input
-                type="text"
+                type="number"
+                step="0.1"
+                min="0"
+                max="5"
                 value={formData.rating}
                 onChange={(e) => setFormData({ ...formData, rating: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -277,81 +393,93 @@ const AdminPremiumPackages = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Badge</label>
-              <select
-                value={formData.badge}
-                onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
-                className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              >
-                <option value="">Select badge</option>
-                <option value="Premium">Premium</option>
-                <option value="Exclusive">Exclusive</option>
-                <option value="Luxury">Luxury</option>
-                <option value="VIP">VIP</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Booked Count</label>
-              <input
-                type="number"
-                value={formData.booked}
-                onChange={(e) => setFormData({ ...formData, booked: e.target.value })}
-                className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="e.g., 850"
-              />
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
               <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                value={formData.isActive ? "active" : "inactive"}
+                onChange={(e) => setFormData({ ...formData, isActive: e.target.value === "active" })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Featured</label>
+              <select
+                value={formData.isFeatured ? "true" : "false"}
+                onChange={(e) => setFormData({ ...formData, isFeatured: e.target.value === "true" })}
+                className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+              </select>
+            </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
               <input
                 type="url"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                value={formData.images}
+                onChange={(e) => setFormData({ ...formData, images: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 placeholder="https://images.unsplash.com/..."
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Short Description *</label>
+              <input
+                type="text"
+                value={formData.shortDescription}
+                onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
+                className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="Brief description of the package..."
+                required
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 rows={3}
-                placeholder="Enter package description..."
+                placeholder="Enter detailed package description..."
+                required
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Features (comma-separated)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Highlights (comma-separated)</label>
               <input
                 type="text"
-                value={formData.features}
-                onChange={(e) => setFormData({ ...formData, features: e.target.value })}
+                value={formData.highlights}
+                onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 placeholder="e.g., All Inclusive, Private Pool, Spa Access, Water Sports"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Inclusions (comma-separated)</label>
+              <input
+                type="text"
+                value={formData.inclusions}
+                onChange={(e) => setFormData({ ...formData, inclusions: e.target.value })}
+                className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="e.g., Accommodation, Meals, Transfers, Guide"
               />
             </div>
           </div>
           <div className="flex space-x-3 mt-6">
             <button
               onClick={editingPackage ? handleUpdatePackage : handleAddPackage}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              disabled={submitting}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
+              {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               {editingPackage ? "Update Package" : "Add Package"}
             </button>
             <button
               onClick={resetForm}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+              disabled={submitting}
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
@@ -374,7 +502,7 @@ const AdminPremiumPackages = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-100">Active Packages</p>
-              <p className="text-2xl font-bold">{premiumPackages.filter(p => p.status === 'active').length}</p>
+              <p className="text-2xl font-bold">{premiumPackages.filter(p => p.isActive).length}</p>
             </div>
             <Star className="w-8 h-8 text-green-200" />
           </div>
@@ -382,10 +510,10 @@ const AdminPremiumPackages = () => {
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-100">Total Bookings</p>
-              <p className="text-2xl font-bold">{premiumPackages.reduce((sum, p) => sum + p.booked, 0).toLocaleString()}</p>
+              <p className="text-blue-100">Featured Packages</p>
+              <p className="text-2xl font-bold">{premiumPackages.filter(p => p.isFeatured).length}</p>
             </div>
-            <Users className="w-8 h-8 text-blue-200" />
+            <Star className="w-8 h-8 text-blue-200" />
           </div>
         </div>
         <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white p-6 rounded-lg">
@@ -393,7 +521,10 @@ const AdminPremiumPackages = () => {
             <div>
               <p className="text-yellow-100">Avg Rating</p>
               <p className="text-2xl font-bold">
-                {(premiumPackages.reduce((sum, p) => sum + parseFloat(p.rating), 0) / premiumPackages.length).toFixed(1)}
+                {premiumPackages.length > 0 
+                  ? (premiumPackages.reduce((sum, p) => sum + p.rating, 0) / premiumPackages.length).toFixed(1)
+                  : "0.0"
+                }
               </p>
             </div>
             <Star className="w-8 h-8 text-yellow-200" />
@@ -406,124 +537,127 @@ const AdminPremiumPackages = () => {
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">Premium Packages</h2>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Package
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Location
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Duration
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Rating
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Booked
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {premiumPackages.map((pkg) => (
-                <tr key={pkg.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <img 
-                        src={pkg.image} 
-                        alt={pkg.title}
-                        className="w-12 h-12 rounded-lg object-cover mr-3"
-                      />
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{pkg.title}</div>
-                        <div className="text-xs text-gray-500">{pkg.badge}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center">
-                      <MapPin className="w-4 h-4 text-gray-400 mr-1" />
-                      {pkg.location}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center">
-                      <Clock className="w-4 h-4 text-gray-400 mr-1" />
-                      {pkg.duration}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div>
-                      <div className="font-semibold text-purple-600">{pkg.price}</div>
-                      <div className="text-xs text-gray-400 line-through">{pkg.originalPrice}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
-                      <span className="text-sm font-medium">{pkg.rating}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center">
-                      <Users className="w-4 h-4 text-gray-400 mr-1" />
-                      {pkg.booked.toLocaleString()}+
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => togglePackageStatus(pkg.id)}
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        pkg.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {pkg.status}
-                    </button>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => setSelectedPackage(pkg)}
-                        className="text-blue-600 hover:text-blue-900 hover:cursor-pointer hover:scale-105 transition-transform"
-                        title="View Details"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleEditPackage(pkg)}
-                        className="text-purple-600 hover:text-purple-900 hover:cursor-pointer hover:scale-105 transition-transform"
-                        title="Edit Package"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeletePackage(pkg.id)}
-                        className="text-red-600 hover:text-red-900 hover:cursor-pointer hover:scale-105 transition-transform"
-                        title="Delete Package"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+        {premiumPackages.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            <Crown className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <p>No premium packages found. Add your first premium package to get started.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Package
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Destination
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Duration
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Price
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Rating
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {premiumPackages.map((pkg) => (
+                  <tr key={pkg._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <img 
+                          src={pkg.images[0] || "https://via.placeholder.com/48x48?text=No+Image"} 
+                          alt={pkg.title}
+                          className="w-12 h-12 rounded-lg object-cover mr-3"
+                        />
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{pkg.title}</div>
+                          <div className="text-xs text-gray-500">{pkg.isFeatured ? "Featured" : "Premium"}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 text-gray-400 mr-1" />
+                        {pkg.destination}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex items-center">
+                        <Clock className="w-4 h-4 text-gray-400 mr-1" />
+                        {pkg.duration}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div>
+                        <div className="font-semibold text-purple-600">₹{pkg.price.toLocaleString()}</div>
+                        {pkg.originalPrice && (
+                          <div className="text-xs text-gray-400 line-through">₹{pkg.originalPrice.toLocaleString()}</div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+                        <span className="text-sm font-medium">{pkg.rating.toFixed(1)}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => togglePackageStatus(pkg)}
+                        disabled={submitting}
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          pkg.isActive
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        } disabled:opacity-50`}
+                      >
+                        {pkg.isActive ? "Active" : "Inactive"}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => setSelectedPackage(pkg)}
+                          className="text-blue-600 hover:text-blue-900 hover:cursor-pointer hover:scale-105 transition-transform"
+                          title="View Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleEditPackage(pkg)}
+                          disabled={submitting}
+                          className="text-purple-600 hover:text-purple-900 hover:cursor-pointer hover:scale-105 transition-transform disabled:opacity-50"
+                          title="Edit Package"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeletePackage(pkg._id)}
+                          disabled={submitting}
+                          className="text-red-600 hover:text-red-900 hover:cursor-pointer hover:scale-105 transition-transform disabled:opacity-50"
+                          title="Delete Package"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Package Details Modal */}
@@ -541,7 +675,7 @@ const AdminPremiumPackages = () => {
             </div>
             <div className="space-y-4">
               <img 
-                src={selectedPackage.image} 
+                src={selectedPackage.images[0] || "https://via.placeholder.com/400x200?text=No+Image"} 
                 alt={selectedPackage.title}
                 className="w-full h-48 object-cover rounded-lg"
               />
@@ -551,8 +685,8 @@ const AdminPremiumPackages = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <span className="text-sm font-medium text-gray-500">Location:</span>
-                  <p className="text-gray-900">{selectedPackage.location}</p>
+                  <span className="text-sm font-medium text-gray-500">Destination:</span>
+                  <p className="text-gray-900">{selectedPackage.destination}</p>
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">Duration:</span>
@@ -560,23 +694,37 @@ const AdminPremiumPackages = () => {
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">Price:</span>
-                  <p className="text-gray-900">{selectedPackage.price}</p>
+                  <p className="text-gray-900">₹{selectedPackage.price.toLocaleString()}</p>
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">Rating:</span>
-                  <p className="text-gray-900">{selectedPackage.rating}</p>
+                  <p className="text-gray-900">{selectedPackage.rating.toFixed(1)}</p>
                 </div>
               </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">Features:</span>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {selectedPackage.features.map((feature, index) => (
-                    <span key={index} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
-                      {feature}
-                    </span>
-                  ))}
+              {selectedPackage.highlights.length > 0 && (
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Highlights:</span>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {selectedPackage.highlights.map((highlight, index) => (
+                      <span key={index} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+                        {highlight}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+              {selectedPackage.inclusions.length > 0 && (
+                <div>
+                  <span className="text-sm font-medium text-gray-500">Inclusions:</span>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {selectedPackage.inclusions.map((inclusion, index) => (
+                      <span key={index} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                        {inclusion}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,55 +8,110 @@ import { Star, MapPin, Clock, Users, ArrowRight, ChevronLeft, ChevronRight, Moun
 import { motion } from "framer-motion";
 import React from "react";
 import Link from "next/link";
+import Loading from "@/components/ui/loading";
+
+interface AdventurePackage {
+  _id: string;
+  title: string;
+  duration: string;
+  destination: string;
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  images: string[];
+  category: string;
+  description: string;
+  shortDescription: string;
+  highlights: string[];
+  isActive: boolean;
+  isFeatured: boolean;
+}
 
 const AdventureEscapes = () => {
-  const adventurePackages = [
-    {
-      title: "Himalayan Trekking",
-      duration: "10N-11D",
-      location: "Nepal Himalayas",
-      price: "₹45,000",
-      originalPrice: "₹55,000",
-      rating: "4.8",
-      image: "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Adventure",
-      description: "Conquer the mighty Himalayas with expert guides and breathtaking mountain views",
-      booked: 1200,
-      difficulty: "Moderate",
-      altitude: "5,500m",
-      features: ["Expert Guides", "Camping", "Mountain Views", "Local Culture"]
-    },
-    {
-      title: "Amazon Jungle Safari",
-      duration: "8N-9D",
-      location: "Brazil",
-      price: "₹85,000",
-      originalPrice: "₹1,00,000",
-      rating: "4.7",
-      image: "https://images.unsplash.com/photo-1549366021-9f761d450615?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Wildlife",
-      description: "Explore the world's largest rainforest with wildlife encounters and river adventures",
-      booked: 850,
-      difficulty: "Easy",
-      altitude: "Sea Level",
-      features: ["Wildlife Safari", "River Cruise", "Jungle Lodge", "Bird Watching"]
-    },
-    {
-      title: "Patagonia Expedition",
-      duration: "12N-13D",
-      location: "Argentina & Chile",
-      price: "₹1,25,000",
-      originalPrice: "₹1,45,000",
-      rating: "4.9",
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Expedition",
-      description: "Trek through the stunning landscapes of Patagonia with glaciers and fjords",
-      booked: 650,
-      difficulty: "Challenging",
-      altitude: "3,000m",
-      features: ["Glacier Trek", "Fjord Cruise", "Mountain Hiking", "Wild Camping"]
-    }
-  ];
+  const [adventurePackages, setAdventurePackages] = useState<AdventurePackage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAdventurePackages = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/adventure-packages?limit=3');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch adventure packages');
+        }
+        
+        const data = await response.json();
+        // Extract packages array from the response
+        const packagesArray = data.packages || data;
+        setAdventurePackages(packagesArray);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching adventure packages:', err);
+        setError('Failed to load adventure packages');
+        // Set fallback data
+        setAdventurePackages([
+          {
+            _id: "1",
+            title: "Himalayan Trekking",
+            duration: "10N-11D",
+            destination: "Nepal Himalayas",
+            price: 45000,
+            originalPrice: 55000,
+            rating: 4.8,
+            images: ["https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
+            category: "adventure",
+            description: "Conquer the mighty Himalayas with expert guides and breathtaking mountain views",
+            shortDescription: "Mountain adventure with expert guides",
+            highlights: ["Expert Guides", "Camping", "Mountain Views", "Local Culture"],
+            isActive: true,
+            isFeatured: false
+          },
+          {
+            _id: "2",
+            title: "Amazon Jungle Safari",
+            duration: "8N-9D",
+            destination: "Brazil",
+            price: 85000,
+            originalPrice: 100000,
+            rating: 4.7,
+            images: ["https://images.unsplash.com/photo-1549366021-9f761d450615?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
+            category: "adventure",
+            description: "Explore the world's largest rainforest with wildlife encounters and river adventures",
+            shortDescription: "Wildlife adventure in the Amazon",
+            highlights: ["Wildlife Safari", "River Cruise", "Jungle Lodge", "Bird Watching"],
+            isActive: true,
+            isFeatured: false
+          },
+          {
+            _id: "3",
+            title: "Patagonia Expedition",
+            duration: "12N-13D",
+            destination: "Argentina & Chile",
+            price: 125000,
+            originalPrice: 145000,
+            rating: 4.9,
+            images: ["https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
+            category: "adventure",
+            description: "Trek through the stunning landscapes of Patagonia with glaciers and fjords",
+            shortDescription: "Glacier trekking adventure",
+            highlights: ["Glacier Trek", "Fjord Cruise", "Mountain Hiking", "Wild Camping"],
+            isActive: true,
+            isFeatured: false
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAdventurePackages();
+  }, []);
+
+  if (loading) {
+    return <Loading size="lg" className="min-h-[500px]" />;
+  }
 
   return (
     <section className="section-padding bg-gradient-to-br from-green-50 to-emerald-50">
@@ -119,7 +175,7 @@ const AdventureEscapes = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
           {adventurePackages.map((pkg, index) => (
             <motion.div
-              key={index}
+              key={pkg._id}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -130,7 +186,7 @@ const AdventureEscapes = () => {
               <Card className="group overflow-hidden modern-card hover-lift rounded-3xl shadow-xl border-0 relative bg-gradient-to-br from-white via-green-50 to-green-100 h-full flex flex-col min-h-[600px]">
                 <div className="relative h-60 overflow-hidden card-image rounded-t-3xl">
                   <img 
-                    src={pkg.image} 
+                    src={pkg.images?.[0] || "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
                     alt={pkg.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -139,15 +195,8 @@ const AdventureEscapes = () => {
                   {/* Adventure Badge */}
                   <div className="absolute top-4 left-4 z-20">
                     <Badge className="badge bg-gradient-to-r from-green-600 to-emerald-600 text-white px-3 py-1 text-xs font-bold shadow-md">
-                      {pkg.badge}
+                      Adventure
                     </Badge>
-                  </div>
-                  
-                  {/* Difficulty Level */}
-                  <div className="absolute top-4 right-4 z-20">
-                    <div className="bg-white/95 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-bold text-gray-900 shadow-lg">
-                      {pkg.difficulty}
-                    </div>
                   </div>
                   
                   {/* Rating */}
@@ -155,14 +204,6 @@ const AdventureEscapes = () => {
                     <div className="bg-white/95 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1 shadow-lg">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                       <span className="text-sm font-bold text-gray-900">{pkg.rating}</span>
-                    </div>
-                  </div>
-                  
-                  {/* Altitude/Info */}
-                  <div className="absolute bottom-4 right-4 z-20">
-                    <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-gray-700 shadow-md">
-                      <Mountain className="w-3 h-3 inline mr-1" />
-                      {pkg.altitude}
                     </div>
                   </div>
                 </div>
@@ -182,16 +223,16 @@ const AdventureEscapes = () => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <MapPin className="w-4 h-4 text-green-500" />
-                        <span className="font-semibold">{pkg.location}</span>
+                        <span className="font-semibold">{pkg.destination}</span>
                       </div>
                     </div>
                     
                     {/* Features */}
                     <div className="grid grid-cols-2 gap-2 mb-6">
-                      {pkg.features.map((feature, idx) => (
+                      {pkg.highlights?.slice(0, 4).map((highlight, idx) => (
                         <div key={idx} className="flex items-center space-x-2 text-xs text-gray-600">
                           <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                          <span className="font-medium">{feature}</span>
+                          <span className="font-medium">{highlight}</span>
                         </div>
                       ))}
                     </div>
@@ -199,20 +240,24 @@ const AdventureEscapes = () => {
                   
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <div className="text-2xl font-extrabold text-green-700">{pkg.price}</div>
-                      <div className="line-through text-gray-400 text-sm">{pkg.originalPrice}</div>
+                      <div className="text-2xl font-extrabold text-green-700">₹{pkg.price?.toLocaleString()}</div>
+                      {pkg.originalPrice && (
+                        <div className="line-through text-gray-400 text-sm">₹{pkg.originalPrice.toLocaleString()}</div>
+                      )}
                       <div className="text-xs text-gray-500 mt-1">Starting From Per Person</div>
                     </div>
-                    <div className="text-right">
-                      <div className="inline-flex items-center gap-1 bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full text-xs shadow-sm animate-pulse">
-                        <span role="img" aria-label="savings">⚡</span>
-                        Save ₹{(parseInt(pkg.originalPrice.replace('₹', '').replace(',', '')) - parseInt(pkg.price.replace('₹', '').replace(',', ''))).toLocaleString()}
+                    {pkg.originalPrice && (
+                      <div className="text-right">
+                        <div className="inline-flex items-center gap-1 bg-green-100 text-green-700 font-bold px-3 py-1 rounded-full text-xs shadow-sm animate-pulse">
+                          <span role="img" aria-label="savings">⚡</span>
+                          Save ₹{(pkg.originalPrice - pkg.price).toLocaleString()}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                   
                   <div className="mt-auto">
-                    <Link href={`/itinerary/royal-rajasthan`}>
+                    <Link href={`/itinerary/${pkg._id}`}>
                       <Button className="book-button w-full py-3 text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl shadow-lg hover:from-green-700 hover:to-emerald-700 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-green-300 animate-pulse">
                         Book Adventure
                       </Button>

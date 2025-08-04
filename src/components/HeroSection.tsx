@@ -4,12 +4,66 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, Calendar, Users, Sparkles, Star } from "lucide-react";
 import { motion } from "framer-motion";
-import React, { useState, forwardRef } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import DatePicker from "react-datepicker";
+import Loading from "@/components/ui/loading";
 import "react-datepicker/dist/react-datepicker.css";
+
+interface HeroContent {
+  title: string;
+  subtitle: string;
+  description: string;
+  backgroundImage: string;
+  trustBadgeText: string;
+  popularDestinations: string[];
+  ctaButtonText: string;
+  secondaryButtonText: string;
+}
 
 const HeroSection = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [heroContent, setHeroContent] = useState<HeroContent | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchHeroContent = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/hero');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch hero content');
+        }
+        
+        const data = await response.json();
+        setHeroContent(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching hero content:', err);
+        setError('Failed to load hero content');
+        // Set default content as fallback
+        setHeroContent({
+          title: "Your Next Adventure Awaits",
+          subtitle: "Unforgettable journeys, handpicked for you",
+          description: "Explore, dream, and discover with Paradise Yatra.",
+          backgroundImage: "https://wallpapercave.com/wp/wp10918600.jpg",
+          trustBadgeText: "Trusted by 5000+ travelers",
+          popularDestinations: ["Bali", "Thailand", "Europe", "Dubai", "Singapore"],
+          ctaButtonText: "Explore Packages",
+          secondaryButtonText: "Watch Video"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHeroContent();
+  }, []);
+
+  if (loading) {
+    return <Loading size="lg" className="min-h-[80vh]" />;
+  }
 
   // Custom Input for DatePicker to match other fields
   const CustomDateInput = forwardRef<HTMLInputElement, any>(({ value, onClick, placeholder }, ref) => (
@@ -30,7 +84,7 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden pt-8 sm:pt-12 md:pt-16">
       {/* Image background */}
-      <img src="https://wallpapercave.com/wp/wp10918600.jpg" alt="hero" className="absolute inset-0 w-full h-full object-cover z-0" />
+      <img src={heroContent?.backgroundImage || "https://wallpapercave.com/wp/wp10918600.jpg"} alt="hero" className="absolute inset-0 w-full h-full object-cover z-0" />
       {/* Animated gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/60 via-blue-700/40 to-blue-900/70 animate-gradient-x z-10" />
       {/* Content */}
@@ -39,7 +93,7 @@ const HeroSection = () => {
         <div className="flex justify-center mb-4">
           <span className="inline-flex items-center gap-2 bg-white/20 px-4 py-1 rounded-full text-sm font-semibold shadow-lg backdrop-blur">
             <Star className="w-4 h-4 text-yellow-300" />
-            Trusted by 5000+ travelers
+            {heroContent?.trustBadgeText || "Trusted by 5000+ travelers"}
           </span>
         </div>
         {/* Headline */}
@@ -51,7 +105,7 @@ const HeroSection = () => {
         >
           <span className="inline-flex items-center gap-2">
             <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-200 animate-bounce" />
-            Your Next Adventure Awaits
+            {heroContent?.title || "Your Next Adventure Awaits"}
           </span>
         </motion.h1>
         {/* Subheading */}
@@ -61,7 +115,7 @@ const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-lg sm:text-xl md:text-2xl mb-6 opacity-95 max-w-2xl mx-auto px-2"
         >
-          Unforgettable journeys, handpicked for you. Explore, dream, and discover with Paradise Yatra.
+          {heroContent?.description || "Unforgettable journeys, handpicked for you. Explore, dream, and discover with Paradise Yatra."}
         </motion.p>
         {/* CTA Buttons */}
         <motion.div
@@ -74,14 +128,14 @@ const HeroSection = () => {
             size="lg"
             className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 via-pink-500 to-red-500 hover:from-yellow-500 hover:to-pink-600 hover:cursor-pointer hover:scale-105 text-white font-bold px-8 py-4 rounded-xl shadow-xl text-lg transition-all duration-200"
           >
-            Plan My Trip
+            {heroContent?.ctaButtonText || "Plan My Trip"}
           </Button>
           <Button
             size="lg"
             variant="outline"
             className="w-full sm:w-auto border-white text-white hover:bg-white/10 hover:cursor-pointer hover:scale-105 font-semibold px-8 py-4 rounded-xl text-lg"
           >
-            See Popular Packages
+            {heroContent?.secondaryButtonText || "See Popular Packages"}
           </Button>
         </motion.div>
         {/* Enhanced Search Bar - Mobile Optimized */}
@@ -170,7 +224,7 @@ const HeroSection = () => {
           >
             Popular:
           </motion.span>
-          {["Bali", "Thailand", "Europe", "Dubai", "Singapore"].map((dest, index) => (
+          {(heroContent?.popularDestinations || ["Bali", "Thailand", "Europe", "Dubai", "Singapore"]).map((dest, index) => (
             <motion.button
               key={dest}
               initial={{ opacity: 0, scale: 0.8 }}

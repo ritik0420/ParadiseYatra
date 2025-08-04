@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Star, Edit, Trash2, Plus, Eye, EyeOff } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Edit, Save, X, Plus, Eye, Trash2, Star } from "lucide-react";
 
 interface Testimonial {
-  id: string;
+  _id?: string;
   name: string;
   location: string;
   rating: number;
@@ -16,51 +20,17 @@ interface Testimonial {
   date: string;
   verified: boolean;
   featured: boolean;
+  isActive: boolean;
 }
 
 const AdminTestimonials = () => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([
-    {
-      id: "1",
-      name: "Patel Family",
-      location: "Mumbai",
-      rating: 5,
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      text: "Our Kedarnath trip with Paradise Yatra was amazing! Everything—from train to darshan—was well-organized. The team was supportive, friendly, and made us feel like family. A truly smooth and memorable spiritual journey.",
-      package: "Kedarnath Spiritual Journey",
-      date: "March 2024",
-      verified: true,
-      featured: true
-    },
-    {
-      id: "2",
-      name: "Sarah & Mike",
-      location: "Delhi",
-      rating: 5,
-      image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      text: "The European tour exceeded our expectations! Every detail was perfect, from the hotels to the local guides. Paradise Yatra truly knows how to create unforgettable travel experiences.",
-      package: "European Discovery",
-      date: "February 2024",
-      verified: true,
-      featured: false
-    },
-    {
-      id: "3",
-      name: "Rajesh Kumar",
-      location: "Bangalore",
-      rating: 5,
-      image: "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      text: "Bali was a dream come true! The package was perfectly planned with the right mix of adventure and relaxation. Highly recommend Paradise Yatra for international tours.",
-      package: "Bali Paradise",
-      date: "January 2024",
-      verified: true,
-      featured: true
-    }
-  ]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
 
-  const [showForm, setShowForm] = useState(false);
-  const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
-  const [formData, setFormData] = useState<Omit<Testimonial, 'id'>>({
+  const [formData, setFormData] = useState<Testimonial>({
     name: "",
     location: "",
     rating: 5,
@@ -68,12 +38,120 @@ const AdminTestimonials = () => {
     text: "",
     package: "",
     date: "",
-    verified: false,
-    featured: false
+    verified: true,
+    featured: false,
+    isActive: true
   });
 
-  const handleAddNew = () => {
-    setEditingTestimonial(null);
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
+
+  const fetchTestimonials = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/testimonials');
+      if (response.ok) {
+        const data = await response.json();
+        setTestimonials(data);
+      }
+    } catch (error) {
+      console.error('Error fetching testimonials:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      const method = editing ? 'PUT' : 'POST';
+      const url = editing ? `/api/testimonials/${editing}` : '/api/testimonials';
+      
+      // Get the admin token from localStorage
+      const token = localStorage.getItem('adminToken');
+      
+      if (!token) {
+        alert('Please log in to save changes');
+        return;
+      }
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        await fetchTestimonials();
+        setEditing(null);
+        setShowAddForm(false);
+        resetForm();
+        alert(editing ? 'Testimonial updated successfully!' : 'Testimonial added successfully!');
+      } else {
+        console.error('Failed to save testimonial:', data.message);
+        alert(`Failed to save: ${data.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error saving testimonial:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleEdit = (testimonial: Testimonial) => {
+    setEditing(testimonial._id || '');
+    setFormData(testimonial);
+    setShowAddForm(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm('Are you sure you want to delete this testimonial?')) {
+      try {
+        // Get the admin token from localStorage
+        const token = localStorage.getItem('adminToken');
+        
+        if (!token) {
+          alert('Please log in to delete testimonials');
+          return;
+        }
+        
+        const response = await fetch(`/api/testimonials/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          await fetchTestimonials();
+          alert('Testimonial deleted successfully!');
+        } else {
+          console.error('Failed to delete testimonial:', data.message);
+          alert(`Failed to delete: ${data.message || 'Unknown error'}`);
+        }
+      } catch (error) {
+        console.error('Error deleting testimonial:', error);
+        alert('Network error. Please try again.');
+      }
+    }
+  };
+
+  const handleCancel = () => {
+    setEditing(null);
+    setShowAddForm(false);
+    resetForm();
+  };
+
+  const resetForm = () => {
     setFormData({
       name: "",
       location: "",
@@ -82,297 +160,259 @@ const AdminTestimonials = () => {
       text: "",
       package: "",
       date: "",
-      verified: false,
-      featured: false
+      verified: true,
+      featured: false,
+      isActive: true
     });
-    setShowForm(true);
   };
 
-  const handleEdit = (testimonial: Testimonial) => {
-    setEditingTestimonial(testimonial);
-    setFormData({
-      name: testimonial.name,
-      location: testimonial.location,
-      rating: testimonial.rating,
-      image: testimonial.image,
-      text: testimonial.text,
-      package: testimonial.package,
-      date: testimonial.date,
-      verified: testimonial.verified,
-      featured: testimonial.featured
-    });
-    setShowForm(true);
+  const handleAddNew = () => {
+    setEditing(null);
+    setShowAddForm(true);
+    resetForm();
   };
 
-  const handleSave = () => {
-    if (editingTestimonial) {
-      // Update existing testimonial
-      setTestimonials(testimonials.map(t => 
-        t.id === editingTestimonial.id 
-          ? { ...formData, id: editingTestimonial.id }
-          : t
-      ));
-    } else {
-      // Add new testimonial
-      const newTestimonial: Testimonial = {
-        ...formData,
-        id: Date.now().toString()
-      };
-      setTestimonials([...testimonials, newTestimonial]);
-    }
-    setShowForm(false);
-    setEditingTestimonial(null);
-  };
-
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this testimonial?")) {
-      setTestimonials(testimonials.filter(t => t.id !== id));
-    }
-  };
-
-  const toggleVerified = (id: string) => {
-    setTestimonials(testimonials.map(t => 
-      t.id === id ? { ...t, verified: !t.verified } : t
-    ));
-  };
-
-  const toggleFeatured = (id: string) => {
-    setTestimonials(testimonials.map(t => 
-      t.id === id ? { ...t, featured: !t.featured } : t
-    ));
-  };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Testimonials Management</h1>
-          <p className="text-gray-600">Manage customer testimonials and reviews displayed on your website.</p>
+          <h2 className="text-2xl font-bold text-gray-900">Testimonials Management</h2>
+          <p className="text-gray-600">Manage customer testimonials and reviews</p>
         </div>
-        <Button onClick={handleAddNew} className="bg-green-600 hover:bg-green-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Testimonial
+        <Button onClick={handleAddNew} className="flex items-center gap-2">
+          <Plus className="w-4 h-4" />
+          Add New Testimonial
         </Button>
       </div>
 
-      {/* Testimonials List */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Customer Testimonials</h2>
-        </div>
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.map((testimonial) => (
-              <div key={testimonial.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">
-                        {testimonial.name.split(' ').map(n => n[0]).join('')}
-                      </span>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{testimonial.name}</h3>
-                      <p className="text-sm text-gray-600">{testimonial.location}</p>
-                    </div>
-                  </div>
-                  <div className="flex space-x-1">
-                    <Button
-                      onClick={() => toggleVerified(testimonial.id)}
-                      size="sm"
-                      variant="ghost"
-                      className={testimonial.verified ? "text-green-600" : "text-gray-400"}
-                    >
-                      {testimonial.verified ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                    </Button>
-                    <Button
-                      onClick={() => toggleFeatured(testimonial.id)}
-                      size="sm"
-                      variant="ghost"
-                      className={testimonial.featured ? "text-yellow-600" : "text-gray-400"}
-                    >
-                      <Star className={`w-4 h-4 ${testimonial.featured ? "fill-current" : ""}`} />
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex items-center mb-3">
-                  <div className="flex text-yellow-400">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
-                    ))}
-                  </div>
-                  <span className="ml-2 text-sm text-gray-600">{testimonial.rating}.0</span>
-                </div>
-
-                <p className="text-gray-700 text-sm mb-3 line-clamp-3">
-                  "{testimonial.text}"
-                </p>
-
-                <div className="text-xs text-gray-500 mb-3">
-                  <p><strong>Package:</strong> {testimonial.package}</p>
-                  <p><strong>Date:</strong> {testimonial.date}</p>
-                </div>
-
-                <div className="flex space-x-2">
-                  <Button
-                    onClick={() => handleEdit(testimonial)}
-                    size="sm"
-                    variant="outline"
-                    className="flex-1 hover:cursor-pointer hover:scale-105 transition-transform"
-                  >
-                    <Edit className="w-4 h-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button
-                    onClick={() => handleDelete(testimonial.id)}
-                    size="sm"
-                    variant="outline"
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-
-                <div className="flex space-x-2 mt-2">
-                  {testimonial.verified && (
-                    <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">
-                      Verified
-                    </span>
-                  )}
-                  {testimonial.featured && (
-                    <span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded-full">
-                      Featured
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Add/Edit Form */}
-      {showForm && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            {editingTestimonial ? "Edit Testimonial" : "Add New Testimonial"}
-          </h2>
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {showAddForm && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{editing ? 'Edit Testimonial' : 'Add New Testimonial'}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Customer Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Customer Name
+                </label>
                 <Input
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Enter customer name"
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="John Doe"
+                  className="text-white"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Location
+                </label>
                 <Input
                   value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  placeholder="Enter location"
+                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="Mumbai, India"
+                  className="text-white"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Package Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Rating
+                </label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, rating: star }))}
+                      className={`p-1 ${formData.rating >= star ? 'text-yellow-400' : 'text-gray-300'}`}
+                    >
+                      <Star className="w-5 h-5 fill-current" />
+                    </button>
+                  ))}
+                  <span className="text-sm text-gray-600 ml-2">{formData.rating}/5</span>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Package Name
+                </label>
                 <Input
                   value={formData.package}
-                  onChange={(e) => setFormData({ ...formData, package: e.target.value })}
-                  placeholder="Enter package name"
+                  onChange={(e) => setFormData(prev => ({ ...prev, package: e.target.value }))}
+                  placeholder="Bali Paradise Package"
+                  className="text-white"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Testimonial Text
+              </label>
+              <Textarea
+                value={formData.text}
+                onChange={(e) => setFormData(prev => ({ ...prev, text: e.target.value }))}
+                placeholder="Share your experience..."
+                rows={4}
+                className="text-white"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Profile Image URL
+                </label>
+                <Input
+                  value={formData.image}
+                  onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
+                  placeholder="https://example.com/avatar.jpg"
+                  className="text-white"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Travel Date</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Date
+                </label>
                 <Input
                   value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  placeholder="e.g., March 2024"
-                />
+                  onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                  placeholder="2024-01-15"
+                  className="text-white"
+                  />
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
-              <div className="flex space-x-2">
-                {[1, 2, 3, 4, 5].map((rating) => (
-                  <button
-                    key={rating}
-                    onClick={() => setFormData({ ...formData, rating })}
-                    className={`p-2 rounded-lg border ${
-                      formData.rating >= rating
-                        ? "border-yellow-400 bg-yellow-50"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    <Star className={`w-5 h-5 ${
-                      formData.rating >= rating ? "text-yellow-400 fill-current" : "text-gray-300"
-                    }`} />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Testimonial Text</label>
-              <textarea
-                value={formData.text}
-                onChange={(e) => setFormData({ ...formData, text: e.target.value })}
-                rows={4}
-                className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter the customer's testimonial"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Profile Image URL</label>
-              <Input
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-
-            <div className="flex space-x-6">
-              <label className="flex items-center">
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={formData.verified}
-                  onChange={(e) => setFormData({ ...formData, verified: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  onChange={(e) => setFormData(prev => ({ ...prev, verified: e.target.checked }))}
+                  className="rounded"
                 />
-                <span className="ml-2 text-sm text-gray-700">Verified Customer</span>
+                <span className="text-sm font-medium text-gray-700">Verified Customer</span>
               </label>
-              <label className="flex items-center">
+              <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={formData.featured}
-                  onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
+                  className="rounded"
                 />
-                <span className="ml-2 text-sm text-gray-700">Featured Review</span>
+                <span className="text-sm font-medium text-gray-700">Featured</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.isActive}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
+                  className="rounded"
+                />
+                <span className="text-sm font-medium text-gray-700">Active</span>
               </label>
             </div>
-          </div>
 
-          <div className="flex space-x-3 mt-6">
-            <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
-              {editingTestimonial ? "Update Testimonial" : "Add Testimonial"}
-            </Button>
-            <Button 
-              onClick={() => setShowForm(false)} 
-              variant="outline"
-            >
-              Cancel
-            </Button>
-          </div>
-        </div>
+            <div className="flex gap-3">
+              <Button 
+                onClick={handleSave} 
+                disabled={saving}
+                className="flex items-center gap-2"
+              >
+                <Save className="w-4 h-4" />
+                {saving ? 'Saving...' : 'Save Testimonial'}
+              </Button>
+              <Button variant="outline" onClick={handleCancel}>
+                <X className="w-4 h-4 mr-2" />
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {testimonials.map((testimonial) => (
+          <Card key={testimonial._id} className="relative">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={testimonial.image}
+                    alt={testimonial.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{testimonial.name}</h3>
+                    <p className="text-sm text-gray-600">{testimonial.location}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${i < testimonial.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 mb-4 line-clamp-3">{testimonial.text}</p>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  <strong>Package:</strong> {testimonial.package}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Date:</strong> {testimonial.date}
+                </p>
+                <div className="flex gap-2">
+                  {testimonial.verified && (
+                    <Badge variant="secondary" className="text-xs">Verified</Badge>
+                  )}
+                  {testimonial.featured && (
+                    <Badge variant="default" className="text-xs">Featured</Badge>
+                  )}
+                  {!testimonial.isActive && (
+                    <Badge variant="outline" className="text-xs">Inactive</Badge>
+                  )}
+                </div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleEdit(testimonial)}
+                  className="flex items-center gap-1"
+                >
+                  <Edit className="w-3 h-3" />
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => testimonial._id && handleDelete(testimonial._id)}
+                  className="flex items-center gap-1"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  Delete
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };

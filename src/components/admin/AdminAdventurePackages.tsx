@@ -1,80 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mountain, Star, MapPin, Clock, Users, Edit, Trash2, Plus, Eye, Zap } from "lucide-react";
 
 interface AdventurePackage {
-  id: string;
+  _id: string;
   title: string;
   duration: string;
-  location: string;
-  price: string;
-  originalPrice: string;
-  rating: string;
-  image: string;
-  badge: string;
+  destination: string;
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  images: string[];
+  category: string;
   description: string;
-  booked: number;
-  difficulty: string;
-  altitude: string;
-  features: string[];
-  status: "active" | "inactive";
+  shortDescription: string;
+  highlights: string[];
+  isActive: boolean;
+  isFeatured: boolean;
 }
 
 const AdminAdventurePackages = () => {
-  const [adventurePackages, setAdventurePackages] = useState<AdventurePackage[]>([
-    {
-      id: "1",
-      title: "Himalayan Trekking",
-      duration: "10N-11D",
-      location: "Nepal Himalayas",
-      price: "₹45,000",
-      originalPrice: "₹55,000",
-      rating: "4.8",
-      image: "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Adventure",
-      description: "Conquer the mighty Himalayas with expert guides and breathtaking mountain views",
-      booked: 1200,
-      difficulty: "Moderate",
-      altitude: "5,500m",
-      features: ["Expert Guides", "Camping", "Mountain Views", "Local Culture"],
-      status: "active"
-    },
-    {
-      id: "2",
-      title: "Amazon Jungle Safari",
-      duration: "8N-9D",
-      location: "Brazil",
-      price: "₹85,000",
-      originalPrice: "₹1,00,000",
-      rating: "4.7",
-      image: "https://images.unsplash.com/photo-1549366021-9f761d450615?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Wildlife",
-      description: "Explore the world's largest rainforest with wildlife encounters and river adventures",
-      booked: 850,
-      difficulty: "Easy",
-      altitude: "Sea Level",
-      features: ["Wildlife Safari", "River Cruise", "Jungle Lodge", "Bird Watching"],
-      status: "active"
-    },
-    {
-      id: "3",
-      title: "Patagonia Expedition",
-      duration: "12N-13D",
-      location: "Argentina & Chile",
-      price: "₹1,25,000",
-      originalPrice: "₹1,45,000",
-      rating: "4.9",
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      badge: "Expedition",
-      description: "Trek through the stunning landscapes of Patagonia with glaciers and fjords",
-      booked: 650,
-      difficulty: "Challenging",
-      altitude: "3,000m",
-      features: ["Glacier Trek", "Fjord Cruise", "Mountain Hiking", "Wild Camping"],
-      status: "active"
-    }
-  ]);
+  const [adventurePackages, setAdventurePackages] = useState<AdventurePackage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingPackage, setEditingPackage] = useState<AdventurePackage | null>(null);
@@ -83,41 +32,91 @@ const AdminAdventurePackages = () => {
   const [formData, setFormData] = useState({
     title: "",
     duration: "",
-    location: "",
+    destination: "",
     price: "",
     originalPrice: "",
     rating: "",
-    image: "",
-    badge: "",
+    images: "",
     description: "",
-    booked: "",
-    difficulty: "",
-    altitude: "",
-    features: "",
-    status: "active"
+    shortDescription: "",
+    highlights: "",
+    isActive: true
   });
 
-  const handleAddPackage = () => {
-    const newPackage: AdventurePackage = {
-      id: Date.now().toString(),
-      title: formData.title,
-      duration: formData.duration,
-      location: formData.location,
-      price: formData.price,
-      originalPrice: formData.originalPrice,
-      rating: formData.rating,
-      image: formData.image,
-      badge: formData.badge,
-      description: formData.description,
-      booked: parseInt(formData.booked),
-      difficulty: formData.difficulty,
-      altitude: formData.altitude,
-      features: formData.features.split(',').map(f => f.trim()),
-      status: formData.status as "active" | "inactive"
+  useEffect(() => {
+    const fetchAdventurePackages = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/adventure-packages');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch adventure packages');
+        }
+        
+        const data = await response.json();
+        // Extract packages array from the response
+        const packagesArray = data.packages || data;
+        setAdventurePackages(packagesArray);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching adventure packages:', err);
+        setError('Failed to load adventure packages');
+        setAdventurePackages([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    setAdventurePackages([...adventurePackages, newPackage]);
-    resetForm();
+    fetchAdventurePackages();
+  }, []);
+
+  const handleAddPackage = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      
+      if (!token) {
+        alert('Please log in to add packages');
+        return;
+      }
+
+      const response = await fetch('/api/adventure-packages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          duration: formData.duration,
+          destination: formData.destination,
+          price: parseFloat(formData.price),
+          originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
+          rating: parseFloat(formData.rating),
+          images: formData.images.split(',').map(img => img.trim()),
+          description: formData.description,
+          shortDescription: formData.shortDescription,
+          highlights: formData.highlights.split(',').map(h => h.trim()),
+          isActive: formData.isActive
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Refresh the packages list
+        const refreshResponse = await fetch('/api/adventure-packages');
+        const refreshData = await refreshResponse.json();
+        const packagesArray = refreshData.packages || refreshData;
+        setAdventurePackages(packagesArray);
+        resetForm();
+        alert('Adventure package added successfully!');
+      } else {
+        alert(`Failed to add package: ${data.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error adding package:', error);
+      alert('Network error. Please try again.');
+    }
   };
 
   const handleEditPackage = (pkg: AdventurePackage) => {
@@ -125,82 +124,159 @@ const AdminAdventurePackages = () => {
     setFormData({
       title: pkg.title,
       duration: pkg.duration,
-      location: pkg.location,
-      price: pkg.price,
-      originalPrice: pkg.originalPrice,
-      rating: pkg.rating,
-      image: pkg.image,
-      badge: pkg.badge,
+      destination: pkg.destination,
+      price: pkg.price.toString(),
+      originalPrice: pkg.originalPrice?.toString() || "",
+      rating: pkg.rating.toString(),
+      images: pkg.images.join(', '),
       description: pkg.description,
-      booked: pkg.booked.toString(),
-      difficulty: pkg.difficulty,
-      altitude: pkg.altitude,
-      features: pkg.features.join(', '),
-      status: pkg.status
+      shortDescription: pkg.shortDescription,
+      highlights: pkg.highlights.join(', '),
+      isActive: pkg.isActive
     });
     setShowAddForm(true);
   };
 
-  const handleUpdatePackage = () => {
+  const handleUpdatePackage = async () => {
     if (!editingPackage) return;
 
-    const updatedPackages = adventurePackages.map((pkg) =>
-      pkg.id === editingPackage.id
-        ? {
-            ...pkg,
-            title: formData.title,
-            duration: formData.duration,
-            location: formData.location,
-            price: formData.price,
-            originalPrice: formData.originalPrice,
-            rating: formData.rating,
-            image: formData.image,
-            badge: formData.badge,
-            description: formData.description,
-            booked: parseInt(formData.booked),
-            difficulty: formData.difficulty,
-            altitude: formData.altitude,
-            features: formData.features.split(',').map(f => f.trim()),
-            status: formData.status as "active" | "inactive"
-          }
-        : pkg
-    );
+    try {
+      const token = localStorage.getItem('adminToken');
+      
+      if (!token) {
+        alert('Please log in to update packages');
+        return;
+      }
 
-    setAdventurePackages(updatedPackages);
-    setEditingPackage(null);
-    resetForm();
+      const response = await fetch(`/api/adventure-packages/${editingPackage._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          duration: formData.duration,
+          destination: formData.destination,
+          price: parseFloat(formData.price),
+          originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
+          rating: parseFloat(formData.rating),
+          images: formData.images.split(',').map((img: string) => img.trim()),
+          description: formData.description,
+          shortDescription: formData.shortDescription,
+          highlights: formData.highlights.split(',').map((h: string) => h.trim()),
+          isActive: formData.isActive
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Refresh the packages list
+        const refreshResponse = await fetch('/api/adventure-packages');
+        const refreshData = await refreshResponse.json();
+        const packagesArray = refreshData.packages || refreshData;
+        setAdventurePackages(packagesArray);
+        setEditingPackage(null);
+        resetForm();
+        alert('Adventure package updated successfully!');
+      } else {
+        alert(`Failed to update package: ${data.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error updating package:', error);
+      alert('Network error. Please try again.');
+    }
   };
 
-  const handleDeletePackage = (id: string) => {
-    setAdventurePackages(adventurePackages.filter((pkg) => pkg.id !== id));
+  const handleDeletePackage = async (id: string) => {
+    if (confirm('Are you sure you want to delete this adventure package?')) {
+      try {
+        const token = localStorage.getItem('adminToken');
+        
+        if (!token) {
+          alert('Please log in to delete packages');
+          return;
+        }
+        
+        const response = await fetch(`/api/adventure-packages/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Refresh the packages list
+          const refreshResponse = await fetch('/api/adventure-packages');
+          const refreshData = await refreshResponse.json();
+          const packagesArray = refreshData.packages || refreshData;
+          setAdventurePackages(packagesArray);
+          alert('Adventure package deleted successfully!');
+        } else {
+          alert(`Failed to delete package: ${data.message || 'Unknown error'}`);
+        }
+      } catch (error) {
+        console.error('Error deleting package:', error);
+        alert('Network error. Please try again.');
+      }
+    }
   };
 
-  const togglePackageStatus = (id: string) => {
-    setAdventurePackages(
-      adventurePackages.map((pkg) =>
-        pkg.id === id
-          ? { ...pkg, status: pkg.status === "active" ? "inactive" : "active" }
-          : pkg
-      )
-    );
+  const togglePackageStatus = async (id: string) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      
+      if (!token) {
+        alert('Please log in to update package status');
+        return;
+      }
+
+      const packageToUpdate = adventurePackages.find(pkg => pkg._id === id);
+      if (!packageToUpdate) return;
+
+      const response = await fetch(`/api/adventure-packages/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...packageToUpdate,
+          isActive: !packageToUpdate.isActive
+        }),
+      });
+
+      if (response.ok) {
+        // Refresh the packages list
+        const refreshResponse = await fetch('/api/adventure-packages');
+        const refreshData = await refreshResponse.json();
+        const packagesArray = refreshData.packages || refreshData;
+        setAdventurePackages(packagesArray);
+      } else {
+        alert('Failed to update package status');
+      }
+    } catch (error) {
+      console.error('Error updating package status:', error);
+      alert('Network error. Please try again.');
+    }
   };
 
   const resetForm = () => {
     setFormData({
       title: "",
       duration: "",
-      location: "",
+      destination: "",
       price: "",
       originalPrice: "",
       rating: "",
-      image: "",
-      badge: "",
+      images: "",
       description: "",
-      booked: "",
-      difficulty: "",
-      altitude: "",
-      features: "",
-      status: "active"
+      shortDescription: "",
+      highlights: "",
+      isActive: true
     });
     setShowAddForm(false);
     setEditingPackage(null);
@@ -255,11 +331,11 @@ const AdminAdventurePackages = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Destination</label>
               <input
                 type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                value={formData.destination}
+                onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="e.g., Nepal Himalayas"
               />
@@ -295,73 +371,44 @@ const AdminAdventurePackages = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Badge</label>
-              <select
-                value={formData.badge}
-                onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
-                className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
-                <option value="">Select badge</option>
-                <option value="Adventure">Adventure</option>
-                <option value="Wildlife">Wildlife</option>
-                <option value="Expedition">Expedition</option>
-                <option value="Trekking">Trekking</option>
-                <option value="Safari">Safari</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
-              <select
-                value={formData.difficulty}
-                onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
-                <option value="">Select difficulty</option>
-                <option value="Easy">Easy</option>
-                <option value="Moderate">Moderate</option>
-                <option value="Challenging">Challenging</option>
-                <option value="Expert">Expert</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Altitude</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Short Description</label>
               <input
                 type="text"
-                value={formData.altitude}
-                onChange={(e) => setFormData({ ...formData, altitude: e.target.value })}
+                value={formData.shortDescription}
+                onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="e.g., 5,500m"
+                placeholder="e.g., Mountain adventure with expert guides"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Booked Count</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Highlights (comma-separated)</label>
               <input
-                type="number"
-                value={formData.booked}
-                onChange={(e) => setFormData({ ...formData, booked: e.target.value })}
+                type="text"
+                value={formData.highlights}
+                onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="e.g., 1200"
+                placeholder="e.g., Expert Guides, Camping, Mountain Views, Local Culture"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Active Status</label>
               <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                value={formData.isActive ? "true" : "false"}
+                onChange={(e) => setFormData({ ...formData, isActive: e.target.value === "true" })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Image URLs (comma-separated)</label>
               <input
-                type="url"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                type="text"
+                value={formData.images}
+                onChange={(e) => setFormData({ ...formData, images: e.target.value })}
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="https://images.unsplash.com/..."
+                placeholder="https://images.unsplash.com/..., https://images.unsplash.com/..."
               />
             </div>
             <div className="md:col-span-2">
@@ -372,16 +419,6 @@ const AdminAdventurePackages = () => {
                 className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 rows={3}
                 placeholder="Enter package description..."
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Features (comma-separated)</label>
-              <input
-                type="text"
-                value={formData.features}
-                onChange={(e) => setFormData({ ...formData, features: e.target.value })}
-                className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="e.g., Expert Guides, Camping, Mountain Views, Local Culture"
               />
             </div>
           </div>
@@ -417,7 +454,7 @@ const AdminAdventurePackages = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-blue-100">Active Packages</p>
-              <p className="text-2xl font-bold">{adventurePackages.filter(p => p.status === 'active').length}</p>
+              <p className="text-2xl font-bold">{adventurePackages.filter(p => p.isActive).length}</p>
             </div>
             <Zap className="w-8 h-8 text-blue-200" />
           </div>
@@ -425,8 +462,8 @@ const AdminAdventurePackages = () => {
         <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-100">Total Bookings</p>
-              <p className="text-2xl font-bold">{adventurePackages.reduce((sum, p) => sum + p.booked, 0).toLocaleString()}</p>
+              <p className="text-purple-100">Total Highlights</p>
+              <p className="text-2xl font-bold">{adventurePackages.reduce((sum, p) => sum + (p.highlights?.length || 0), 0).toLocaleString()}</p>
             </div>
             <Users className="w-8 h-8 text-purple-200" />
           </div>
@@ -436,7 +473,7 @@ const AdminAdventurePackages = () => {
             <div>
               <p className="text-yellow-100">Avg Rating</p>
               <p className="text-2xl font-bold">
-                {(adventurePackages.reduce((sum, p) => sum + parseFloat(p.rating), 0) / adventurePackages.length).toFixed(1)}
+                {(adventurePackages.reduce((sum, p) => sum + p.rating, 0) / adventurePackages.length).toFixed(1)}
               </p>
             </div>
             <Star className="w-8 h-8 text-yellow-200" />
@@ -484,24 +521,24 @@ const AdminAdventurePackages = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {adventurePackages.map((pkg) => (
-                <tr key={pkg.id} className="hover:bg-gray-50">
+                <tr key={pkg._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <img 
-                        src={pkg.image} 
+                        src={pkg.images?.[0] || "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
                         alt={pkg.title}
                         className="w-12 h-12 rounded-lg object-cover mr-3"
                       />
                       <div>
                         <div className="text-sm font-medium text-gray-900">{pkg.title}</div>
-                        <div className="text-xs text-gray-500">{pkg.badge}</div>
+                        <div className="text-xs text-gray-500">Adventure</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <div className="flex items-center">
                       <MapPin className="w-4 h-4 text-gray-400 mr-1" />
-                      {pkg.location}
+                      {pkg.destination}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -512,18 +549,15 @@ const AdminAdventurePackages = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <div>
-                      <div className="font-semibold text-green-600">{pkg.price}</div>
-                      <div className="text-xs text-gray-400 line-through">{pkg.originalPrice}</div>
+                      <div className="font-semibold text-green-600">₹{pkg.price?.toLocaleString()}</div>
+                      {pkg.originalPrice && (
+                        <div className="text-xs text-gray-400 line-through">₹{pkg.originalPrice.toLocaleString()}</div>
+                      )}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      pkg.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
-                      pkg.difficulty === 'Moderate' ? 'bg-yellow-100 text-yellow-800' :
-                      pkg.difficulty === 'Challenging' ? 'bg-orange-100 text-orange-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {pkg.difficulty}
+                    <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                      Adventure
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -535,19 +569,19 @@ const AdminAdventurePackages = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     <div className="flex items-center">
                       <Users className="w-4 h-4 text-gray-400 mr-1" />
-                      {pkg.booked.toLocaleString()}+
+                      {pkg.highlights?.length || 0} highlights
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button
-                      onClick={() => togglePackageStatus(pkg.id)}
+                      onClick={() => togglePackageStatus(pkg._id)}
                       className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        pkg.status === "active"
+                        pkg.isActive
                           ? "bg-green-100 text-green-800"
                           : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {pkg.status}
+                      {pkg.isActive ? "active" : "inactive"}
                     </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -567,7 +601,7 @@ const AdminAdventurePackages = () => {
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleDeletePackage(pkg.id)}
+                        onClick={() => handleDeletePackage(pkg._id)}
                         className="text-red-600 hover:text-red-900 hover:cursor-pointer hover:scale-105 transition-transform"
                         title="Delete Package"
                       >
@@ -597,7 +631,7 @@ const AdminAdventurePackages = () => {
             </div>
             <div className="space-y-4">
               <img 
-                src={selectedPackage.image} 
+                src={selectedPackage.images?.[0] || "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
                 alt={selectedPackage.title}
                 className="w-full h-48 object-cover rounded-lg"
               />
@@ -607,8 +641,8 @@ const AdminAdventurePackages = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <span className="text-sm font-medium text-gray-500">Location:</span>
-                  <p className="text-gray-900">{selectedPackage.location}</p>
+                  <span className="text-sm font-medium text-gray-500">Destination:</span>
+                  <p className="text-gray-900">{selectedPackage.destination}</p>
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">Duration:</span>
@@ -616,27 +650,27 @@ const AdminAdventurePackages = () => {
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">Price:</span>
-                  <p className="text-gray-900">{selectedPackage.price}</p>
+                  <p className="text-gray-900">₹{selectedPackage.price?.toLocaleString()}</p>
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-500">Rating:</span>
                   <p className="text-gray-900">{selectedPackage.rating}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500">Difficulty:</span>
-                  <p className="text-gray-900">{selectedPackage.difficulty}</p>
+                  <span className="text-sm font-medium text-gray-500">Category:</span>
+                  <p className="text-gray-900">{selectedPackage.category}</p>
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-gray-500">Altitude:</span>
-                  <p className="text-gray-900">{selectedPackage.altitude}</p>
+                  <span className="text-sm font-medium text-gray-500">Status:</span>
+                  <p className="text-gray-900">{selectedPackage.isActive ? "Active" : "Inactive"}</p>
                 </div>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-500">Features:</span>
+                <span className="text-sm font-medium text-gray-500">Highlights:</span>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {selectedPackage.features.map((feature, index) => (
+                  {selectedPackage.highlights?.map((highlight: string, index: number) => (
                     <span key={index} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                      {feature}
+                      {highlight}
                     </span>
                   ))}
                 </div>

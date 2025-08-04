@@ -1,15 +1,64 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, MapPin, Calendar, Star, Shield, Clock, Users } from "lucide-react";
 import { motion } from "framer-motion";
+import Loading from "@/components/ui/loading";
+
+interface CTAContent {
+  title: string;
+  description: string;
+  backgroundImage: string;
+  buttonText: string;
+  buttonLink: string;
+}
 
 const CTASection = () => {
+  const [ctaContent, setCTAContent] = useState<CTAContent | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCTAContent = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/cta');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch CTA content');
+        }
+        
+        const data = await response.json();
+        setCTAContent(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching CTA content:', err);
+        setError('Failed to load CTA content');
+        // Set default content as fallback
+        setCTAContent({
+          title: "Ready for Your Next Adventure?",
+          description: "Join thousands of travelers who trust Paradise Yatra for their dream vacations. Start planning your perfect journey today and create memories that last a lifetime.",
+          backgroundImage: "/banner.jpeg",
+          buttonText: "Start Your Journey",
+          buttonLink: "/packages"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCTAContent();
+  }, []);
+
+  if (loading) {
+    return <Loading size="lg" className="min-h-[400px]" />;
+  }
   return (
     <section 
       className="section-padding text-white relative overflow-hidden" 
       style={{
-        backgroundImage: 'url(/banner.jpeg)',
+        backgroundImage: `url(${ctaContent?.backgroundImage || '/banner.jpeg'})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
@@ -52,16 +101,7 @@ const CTASection = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight"
             >
-              Ready for Your Next
-              <motion.span 
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="block text-blue-200 bg-clip-text text-transparent bg-gradient-to-r from-blue-100 to-blue-300"
-              >
-                Adventure?
-              </motion.span>
+              {ctaContent?.title || "Ready for Your Next Adventure?"}
             </motion.h2>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
@@ -70,7 +110,7 @@ const CTASection = () => {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed font-nunito font-light"
             >
-              Join thousands of travelers who trust Paradise Yatra for their dream vacations. Start planning your perfect journey today and create memories that last a lifetime.
+              {ctaContent?.description || "Join thousands of travelers who trust Paradise Yatra for their dream vacations. Start planning your perfect journey today and create memories that last a lifetime."}
             </motion.p>
           </motion.div>
 
@@ -126,7 +166,7 @@ const CTASection = () => {
                 size="lg" 
                 className="hover:scale-105 hover:cursor-pointer hover:bg-gray-100 text-blue-600 font-bold px-10 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
               >
-                Start Planning
+                {ctaContent?.buttonText || "Start Planning"}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </motion.div>

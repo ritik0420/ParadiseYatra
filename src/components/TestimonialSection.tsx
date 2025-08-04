@@ -1,46 +1,104 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Star, Quote, Play, ChevronLeft, ChevronRight, Award, Users, ThumbsUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Loading from "@/components/ui/loading";
+
+interface Testimonial {
+  _id: string;
+  name: string;
+  location: string;
+  rating: number;
+  image: string;
+  text: string;
+  package: string;
+  date: string;
+  verified: boolean;
+  featured: boolean;
+}
 
 const TestimonialSection = () => {
-  const testimonials = [
-    {
-      name: "Patel Family",
-      location: "Mumbai",
-      rating: 5,
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      text: "Our Kedarnath trip with Paradise Yatra was amazing! Everything—from train to darshan—was well-organized. The team was supportive, friendly, and made us feel like family. A truly smooth and memorable spiritual journey.",
-      package: "Kedarnath Spiritual Journey",
-      date: "March 2024",
-      verified: true,
-      featured: true
-    },
-    {
-      name: "Sarah & Mike",
-      location: "Delhi",
-      rating: 5,
-      image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      text: "The European tour exceeded our expectations! Every detail was perfect, from the hotels to the local guides. Paradise Yatra truly knows how to create unforgettable travel experiences.",
-      package: "European Discovery",
-      date: "February 2024",
-      verified: true,
-      featured: false
-    },
-    {
-      name: "Rajesh Kumar",
-      location: "Bangalore",
-      rating: 5,
-      image: "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      text: "Bali was a dream come true! The package was perfectly planned with the right mix of adventure and relaxation. Highly recommend Paradise Yatra for international tours.",
-      package: "Bali Paradise",
-      date: "January 2024",
-      verified: true,
-      featured: true
-    }
-  ];
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        setLoading(true);
+        
+        // First try to get featured testimonials
+        let response = await fetch('/api/testimonials?featured=true');
+        let data = await response.json();
+        
+        // If no featured testimonials, get all testimonials
+        if (!response.ok || data.length === 0) {
+          response = await fetch('/api/testimonials');
+          data = await response.json();
+        }
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch testimonials');
+        }
+        
+        setTestimonials(data.slice(0, 3)); // Show only first 3 testimonials
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching testimonials:', err);
+        setError('Failed to load testimonials');
+        // Set fallback data
+        setTestimonials([
+          {
+            _id: "1",
+            name: "Patel Family",
+            location: "Mumbai",
+            rating: 5,
+            image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            text: "Our Kedarnath trip with Paradise Yatra was amazing! Everything—from train to darshan—was well-organized. The team was supportive, friendly, and made us feel like family. A truly smooth and memorable spiritual journey.",
+            package: "Kedarnath Spiritual Journey",
+            date: "March 2024",
+            verified: true,
+            featured: true
+          },
+          {
+            _id: "2",
+            name: "Sarah & Mike",
+            location: "Delhi",
+            rating: 5,
+            image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            text: "The European tour exceeded our expectations! Every detail was perfect, from the hotels to the local guides. Paradise Yatra truly knows how to create unforgettable travel experiences.",
+            package: "European Discovery",
+            date: "February 2024",
+            verified: true,
+            featured: false
+          },
+          {
+            _id: "3",
+            name: "Rajesh Kumar",
+            location: "Bangalore",
+            rating: 5,
+            image: "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            text: "Bali was a dream come true! The package was perfectly planned with the right mix of adventure and relaxation. Highly recommend Paradise Yatra for international tours.",
+            package: "Bali Paradise",
+            date: "January 2024",
+            verified: true,
+            featured: true
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
+
+  if (loading) {
+    return <Loading size="lg" className="min-h-[400px]" />;
+  }
 
   return (
     <section className="section-padding bg-gradient-to-br from-gray-50 to-blue-50">

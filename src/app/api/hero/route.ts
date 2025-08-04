@@ -2,14 +2,40 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/hero`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { message: data.message || 'Failed to fetch hero content' },
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Hero API error:', error);
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const response = await fetch(`${BACKEND_URL}/api/packages/${params.id}`, {
-      method: 'PUT',
+    
+    const response = await fetch(`${BACKEND_URL}/api/hero`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': request.headers.get('Authorization') || '',
@@ -21,48 +47,17 @@ export async function PUT(
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: data.message || 'Failed to update package' },
+        { message: data.message || 'Failed to create hero content' },
         { status: response.status }
       );
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.error('Packages API error:', error);
+    console.error('Hero API error:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
     );
   }
 }
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const response = await fetch(`${BACKEND_URL}/api/packages/${params.id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': request.headers.get('Authorization') || '',
-      },
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return NextResponse.json(
-        { message: data.message || 'Failed to delete package' },
-        { status: response.status }
-      );
-    }
-
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Packages API error:', error);
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-} 

@@ -1,110 +1,121 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, MapPin, Clock, Users, ArrowRight, Heart } from "lucide-react";
+import Loading from "@/components/ui/loading";
 import Link from "next/link";
 
+interface Destination {
+  _id: string;
+  name: string;
+  description: string;
+  shortDescription: string;
+  image: string;
+  location: string;
+  rating: number;
+  price?: number;
+  duration?: string;
+  isActive: boolean;
+  isTrending: boolean;
+  visitCount: number;
+}
+
 const DestinationsGrid = () => {
-  const destinations = [
-    { 
-      name: "Europe", 
-      image: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      description: "Explore ancient cities and modern culture",
-      rating: "4.8",
-      duration: "8-12 Days",
-      travelers: "3,500+",
-      price: "₹1,25,000",
-      originalPrice: "₹1,40,000",
-      badge: "Popular",
-      featured: true
-    },
-    { 
-      name: "Singapore", 
-      image: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      description: "Where tradition meets innovation",
-      rating: "4.7",
-      duration: "5-7 Days",
-      travelers: "2,800+",
-      price: "₹65,000",
-      originalPrice: "₹75,000",
-      badge: "Trending",
-      featured: false
-    },
-    { 
-      name: "Thailand", 
-      image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      description: "Land of smiles and golden temples",
-      rating: "4.9",
-      duration: "6-8 Days",
-      travelers: "4,200+",
-      price: "₹55,000",
-      originalPrice: "₹65,000",
-      badge: "Best Seller",
-      featured: true
-    },
-    { 
-      name: "Dubai", 
-      image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      description: "Luxury and architectural marvels",
-      rating: "4.6",
-      duration: "5-7 Days",
-      travelers: "2,100+",
-      price: "₹85,000",
-      originalPrice: "₹95,000",
-      badge: "Luxury",
-      featured: false
-    },
-    { 
-      name: "Vietnam", 
-      image: "https://images.unsplash.com/photo-1528127269322-539801943592?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      description: "Rich history and stunning landscapes",
-      rating: "4.5",
-      duration: "7-9 Days",
-      travelers: "1,800+",
-      price: "₹45,000",
-      originalPrice: "₹55,000",
-      badge: "Adventure",
-      featured: false
-    },
-    { 
-      name: "Nepal", 
-      image: "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      description: "Himalayan adventures await",
-      rating: "4.8",
-      duration: "8-10 Days",
-      travelers: "1,500+",
-      price: "₹35,000",
-      originalPrice: "₹45,000",
-      badge: "Adventure",
-      featured: true
-    },
-    { 
-      name: "Bhutan", 
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      description: "The last Shangri-La",
-      rating: "4.7",
-      duration: "6-8 Days",
-      travelers: "900+",
-      price: "₹95,000",
-      originalPrice: "₹1,10,000",
-      badge: "Exclusive",
-      featured: false
-    },
-    { 
-      name: "Bali", 
-      image: "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      description: "Island of the gods",
-      rating: "4.9",
-      duration: "5-7 Days",
-      travelers: "3,800+",
-      price: "₹75,000",
-      originalPrice: "₹85,000",
-      badge: "Popular",
-      featured: true
-    }
-  ];
+  const [destinations, setDestinations] = useState<Destination[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDestinations = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/destinations');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch destinations');
+        }
+        
+        const data = await response.json();
+        // Extract destinations array from the response
+        const destinationsArray = data.destinations || [];
+        setDestinations(destinationsArray.slice(0, 6)); // Show only first 6 destinations
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching destinations:', err);
+        setError('Failed to load destinations');
+        // Set fallback data
+        setDestinations([
+          { 
+            _id: "1",
+            name: "Europe", 
+            image: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            description: "Explore ancient cities and modern culture",
+            shortDescription: "Ancient cities and modern culture",
+            location: "Europe",
+            rating: 4.8,
+            duration: "8-12 Days",
+            price: 125000,
+            isActive: true,
+            isTrending: false,
+            visitCount: 3500
+          },
+          { 
+            _id: "2",
+            name: "Thailand", 
+            image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            description: "Land of smiles and golden temples",
+            shortDescription: "Golden temples and beautiful beaches",
+            location: "Thailand",
+            rating: 4.9,
+            duration: "6-8 Days",
+            price: 55000,
+            isActive: true,
+            isTrending: true,
+            visitCount: 4200
+          },
+          { 
+            _id: "3",
+            name: "Dubai", 
+            image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            description: "Luxury and architectural marvels",
+            shortDescription: "Modern luxury and stunning architecture",
+            location: "Dubai, UAE",
+            rating: 4.6,
+            duration: "5-7 Days",
+            price: 85000,
+            isActive: true,
+            isTrending: false,
+            visitCount: 2100
+          },
+          { 
+            _id: "4",
+            name: "Bali", 
+            image: "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            description: "Island of the gods",
+            shortDescription: "Tropical paradise and cultural heritage",
+            location: "Bali, Indonesia",
+            rating: 4.9,
+            duration: "5-7 Days",
+            price: 75000,
+            isActive: true,
+            isTrending: true,
+            visitCount: 3800
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDestinations();
+  }, []);
+
+  if (loading) {
+    return <Loading size="lg" className="min-h-[500px]" />;
+  }
 
   return (
     <section className="section-padding bg-white">
@@ -167,9 +178,9 @@ const DestinationsGrid = () => {
                 {/* Badge */}
                 <div className="absolute top-4 left-4 z-20">
                   <Badge className={`badge ${
-                    destination.featured ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gradient-to-r from-blue-600 to-blue-400'
+                    destination.isTrending ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gradient-to-r from-blue-600 to-blue-400'
                   } text-white px-3 py-1 text-xs font-bold shadow-md`}>
-                    {destination.badge}
+                    {destination.isTrending ? 'Trending' : 'Popular'}
                   </Badge>
                 </div>
                 
@@ -211,7 +222,7 @@ const DestinationsGrid = () => {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Users className="w-4 h-4 text-green-500" />
-                      <span className="font-semibold">{destination.travelers}</span>
+                      <span className="font-semibold">{destination.visitCount}+ travelers</span>
                     </div>
                   </div>
                 </div>
@@ -219,14 +230,7 @@ const DestinationsGrid = () => {
                 <div className="mt-auto">
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <div className="text-lg font-bold text-blue-700">{destination.price}</div>
-                      <div className="line-through text-gray-400 text-sm">{destination.originalPrice}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="inline-flex items-center gap-1 bg-green-100 text-green-700 font-bold px-2 py-1 rounded-full text-xs shadow-sm">
-                        <span role="img" aria-label="savings">💸</span>
-                        Save ₹{(parseInt(destination.originalPrice.replace('₹', '').replace(',', '')) - parseInt(destination.price.replace('₹', '').replace(',', ''))).toLocaleString()}
-                      </div>
+                      <div className="text-lg font-bold text-blue-700">₹{destination.price?.toLocaleString() || 'Contact Us'}</div>
                     </div>
                   </div>
                   <Link href={`/itinerary/royal-rajasthan`}>

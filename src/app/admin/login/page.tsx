@@ -108,7 +108,7 @@ const AdminLoginPage = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@example.com"
                   required
-                  className="h-11 focus-visible:ring-indigo-500 border-gray-300"
+                  className="h-11 text-white focus-visible:ring-indigo-500 border-gray-300"
                 />
               </div>
 
@@ -127,7 +127,7 @@ const AdminLoginPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="h-11 focus-visible:ring-indigo-500 border-gray-300"
+                  className="h-11 text-white focus-visible:ring-indigo-500 border-gray-300"
                 />
               </div>
 
