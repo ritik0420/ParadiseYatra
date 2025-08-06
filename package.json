@@ -9,7 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tiptap/extension-image": "^3.0.9",
+    "@tiptap/extension-link": "^3.0.9",
+    "@tiptap/extension-underline": "^3.0.9",
+    "@tiptap/react": "^3.0.9",
+    "@tiptap/starter-kit": "^3.0.9",
     "@types/nodemailer": "^6.4.17",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.10",
     "lucide-react": "^0.526.0",
@@ -18,7 +24,8 @@
     "react": "19.1.0",
     "react-datepicker": "^8.4.0",
     "react-dom": "19.1.0",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

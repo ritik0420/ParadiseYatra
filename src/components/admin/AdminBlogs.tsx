@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Edit, Save, X, Plus, Eye, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 interface BlogPost {
   _id?: string;
@@ -103,7 +105,7 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
       const token = localStorage.getItem('adminToken');
       
       if (!token) {
-        alert('Please log in to save changes');
+        toast.error('Please log in to save changes');
         return;
       }
       
@@ -135,14 +137,14 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
         setEditing(null);
         setActiveTab("all");
         resetForm();
-        alert(editing ? 'Blog updated successfully!' : 'Blog added successfully!');
+        toast.success(editing ? 'Blog updated successfully!' : 'Blog added successfully!');
       } else {
         console.error('Failed to save blog:', data.message);
-        alert(`Failed to save: ${data.message || 'Unknown error'}`);
+        toast.error(`Failed to save: ${data.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error saving blog:', error);
-      alert('Network error. Please try again.');
+      toast.error('Network error. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -170,7 +172,7 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
         const token = localStorage.getItem('adminToken');
         
         if (!token) {
-          alert('Please log in to delete blogs');
+          toast.error('Please log in to delete blogs');
           return;
         }
         
@@ -185,14 +187,14 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
 
         if (response.ok) {
           await fetchBlogs();
-          alert('Blog deleted successfully!');
+          toast.success('Blog deleted successfully!');
         } else {
           console.error('Failed to delete blog:', data.message);
-          alert(`Failed to delete: ${data.message || 'Unknown error'}`);
+          toast.error(`Failed to delete: ${data.message || 'Unknown error'}`);
         }
       } catch (error) {
         console.error('Error deleting blog:', error);
-        alert('Network error. Please try again.');
+        toast.error('Network error. Please try again.');
       }
     }
   };
@@ -377,12 +379,11 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Content
               </label>
-              <Textarea
+              <RichTextEditor
                 value={formData.content}
-                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
                 placeholder="Blog post content..."
-                rows={8}
-                className="bg-white"
+                className="min-h-[300px]"
               />
             </div>
 
@@ -482,9 +483,9 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
                     <div className="flex gap-2 mt-4">
                       <Button
                         size="sm"
-                        variant="admin-outline"
+                        variant="admin-primary"
                         onClick={() => handleEdit(blog)}
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 border-none bg-red-600 hover:bg-red-700"
                       >
                         <Edit className="w-3 h-3" />
                         Edit

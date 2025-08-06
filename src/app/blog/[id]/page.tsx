@@ -212,13 +212,10 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
                 {/* Article Body */}
                 <div className="prose prose-lg max-w-none">
-                  <div className="text-slate-700 leading-relaxed space-y-6">
-                    {post.content.split('\n\n').map((paragraph, index) => (
-                      <p key={index} className="text-lg leading-relaxed">
-                        {paragraph}
-                      </p>
-                    ))}
-                  </div>
+                  <div 
+                    className="text-slate-700 leading-relaxed space-y-6"
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                  />
                 </div>
 
                 {/* Tags */}

@@ -12,6 +12,7 @@ import {
   LazyAdminRecentlyBooked,
   LazyAdminPremiumPackages,
   LazyAdminAdventurePackages,
+  LazyAdminHolidayTypes,
   LazyAdminHeroSection,
   LazyAdminHeader,
   LazyAdminFooter,
@@ -38,6 +39,7 @@ type AdminSection =
   | "recently-booked"
   | "premium-packages"
   | "adventure-packages"
+  | "holiday-types"
   | "itinerary";
 
 const AdminPage = () => {
@@ -156,6 +158,8 @@ const AdminPage = () => {
         return <LazyAdminPremiumPackages />;
       case "adventure-packages":
         return <LazyAdminAdventurePackages />;
+      case "holiday-types":
+        return <LazyAdminHolidayTypes />;
       case "itinerary":
         return <LazyAdminItinerary />;
       default:

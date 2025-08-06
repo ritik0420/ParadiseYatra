@@ -5,6 +5,8 @@ import { Menu, Shield, Users, Headphones, Star, Phone, ChevronDown, X, MapPin, C
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import LeadCaptureForm from "./LeadCaptureForm";
+import SearchSuggestions from "./SearchSuggestions";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -13,6 +15,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -78,6 +81,17 @@ const Header = () => {
     { icon: Users, text: "5000+", color: "text-green-600" },
     { icon: Headphones, text: "24/7", color: "text-purple-600" },
   ];
+
+  const handleSearchSelect = (suggestion: any) => {
+    setSearchQuery("");
+    setIsMobileMenuOpen(false);
+    // Navigate to the itinerary page
+    router.push(`/itinerary/${suggestion.slug}`);
+  };
+
+  const handleSearchClose = () => {
+    // setIsSearchOpen(false); // This line is removed as per the edit hint
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full">
@@ -237,16 +251,13 @@ const Header = () => {
                   transition={{ delay: 0.1 }}
                   className="mb-6"
                 >
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Search destinations, packages..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
-                    />
-                  </div>
+                  <SearchSuggestions
+                    query={searchQuery}
+                    onQueryChange={setSearchQuery}
+                    onSelect={handleSearchSelect}
+                    isOpen={false}
+                    onClose={() => {}}
+                  />
                 </motion.div>
 
                 {/* Mobile Navigation Items */}

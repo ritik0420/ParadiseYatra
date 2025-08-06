@@ -6,6 +6,8 @@ import { Search, MapPin, Sparkles, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import Loading from "@/components/ui/loading";
+import SearchSuggestions from "./SearchSuggestions";
+import { useRouter } from "next/navigation";
 
 interface HeroContent {
   title: string;
@@ -22,6 +24,9 @@ const HeroSection = () => {
   const [heroContent, setHeroContent] = useState<HeroContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchHeroContent = async () => {
@@ -108,8 +113,19 @@ const HeroSection = () => {
     }
   };
 
+  const handleSearchSelect = (suggestion: any) => {
+    setSearchQuery("");
+    setIsSearchOpen(false);
+    // Navigate to the itinerary page
+    router.push(`/itinerary/${suggestion.slug}`);
+  };
+
+  const handleSearchClose = () => {
+    setIsSearchOpen(false);
+  };
+
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden pt-20 sm:pt-24 md:pt-28 lg:pt-32 px-4 sm:px-6">
+    <section className="relative min-h-[80vh] flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden pt-20 sm:pt-24 md:pt-28 lg:pt-32 px-4 sm:px-6 z-10">
       {/* Image background */}
       <motion.img 
         initial={{ scale: 1.1 }}
@@ -210,8 +226,9 @@ const HeroSection = () => {
               size="lg"
               variant="outline"
               className="w-full border-white text-white hover:bg-white/10 hover:cursor-pointer font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg backdrop-blur-sm"
+              onClick={() => window.open('https://www.youtube.com/@ParadiseYatra', '_blank')}
             >
-              {heroContent?.secondaryButtonText || "See Popular Packages"}
+              {heroContent?.secondaryButtonText || "Watch Video"}
             </Button>
           </motion.div>
         </motion.div>
@@ -220,11 +237,11 @@ const HeroSection = () => {
         <motion.div
           variants={itemVariants}
           whileHover={{ scale: 1.02 }}
-          className="bg-white/15 backdrop-blur-md rounded-3xl p-3 sm:p-4 md:p-5 max-w-2xl lg:max-w-xl xl:max-w-2xl mx-auto shadow-2xl border border-white/30"
+          className="bg-white/15 backdrop-blur-md rounded-3xl p-3 sm:p-4 md:p-5 max-w-2xl lg:max-w-xl xl:max-w-2xl mx-auto shadow-2xl border border-white/30 relative z-[9998]"
         >
           {/* Mobile: Stacked layout, Desktop: Inline layout */}
           <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 w-full">
-            {/* Destination input */}
+            {/* Destination input with search suggestions */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -232,10 +249,13 @@ const HeroSection = () => {
               whileHover={{ scale: 1.02 }}
               className="relative flex-1"
             >
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" />
-              <input
-                placeholder="Where do you want to go?"
-                className="w-full h-10 pl-10 pr-3 bg-white/95 backdrop-blur-sm border border-gray-200/40 rounded-2xl text-gray-800 placeholder-gray-500 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-all duration-200"
+              <SearchSuggestions
+                query={searchQuery}
+                onQueryChange={setSearchQuery}
+                onSelect={handleSearchSelect}
+                isOpen={isSearchOpen}
+                onClose={handleSearchClose}
+                variant="hero"
               />
             </motion.div>
             
@@ -248,7 +268,10 @@ const HeroSection = () => {
               whileTap={{ scale: 0.98 }}
               className="flex items-center lg:w-auto"
             >
-              <button className="w-full lg:w-auto lg:px-8 h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-4 rounded-2xl transition-all duration-200 shadow-lg text-sm flex items-center justify-center gap-2 group">
+              <button 
+                onClick={() => setIsSearchOpen(true)}
+                className="w-full lg:w-auto lg:px-8 h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-4 rounded-2xl transition-all duration-200 shadow-lg text-sm flex items-center justify-center gap-2 group"
+              >
                 <motion.div
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.6 }}

@@ -3,54 +3,53 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, Users, ArrowRight, Globe } from "lucide-react";
+import {  Clock, Users, ArrowRight, Globe } from "lucide-react";
 import { motion } from "framer-motion";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
+interface HolidayType {
+  _id: string;
+  title: string;
+  slug: string;
+  description: string;
+  shortDescription: string;
+  image: string;
+  bgColor: string;
+  duration: string;
+  travelers: string;
+  badge: string;
+  price: string;
+  isActive: boolean;
+  isFeatured: boolean;
+  order: number;
+}
+
 const HolidaysSection = () => {
-  const categories = [
-    {
-      title: "Beach Holidays",
-      description: "Discover pristine beaches and crystal-clear waters with our curated beach vacation packages.",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      bgColor: "bg-gradient-to-br from-blue-400 to-blue-600",
-      duration: "5-7 Days",
-      travelers: "2,500+",
-      badge: "Popular",
-      price: "From ₹45,000"
-    },
-    {
-      title: "Mountain Treks",
-      description: "Adventure awaits in the mountains with guided treks and camping experiences.",
-      image: "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      bgColor: "bg-gradient-to-br from-green-400 to-green-600",
-      duration: "3-5 Days",
-      travelers: "1,800+",
-      badge: "Adventure",
-      price: "From ₹35,000"
-    },
-    {
-      title: "City Breaks",
-      description: "Explore vibrant cities and urban destinations with cultural experiences.",
-      image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      bgColor: "bg-gradient-to-br from-purple-400 to-purple-600",
-      duration: "4-6 Days",
-      travelers: "3,200+",
-      badge: "Trending",
-      price: "From ₹55,000"
-    },
-    {
-      title: "Wildlife Tours",
-      description: "Get close to nature with exciting wildlife safaris and nature reserves.",
-      image: "https://images.unsplash.com/photo-1549366021-9f761d450615?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      bgColor: "bg-gradient-to-br from-orange-400 to-orange-600",
-      duration: "6-8 Days",
-      travelers: "1,500+",
-      badge: "Exclusive",
-      price: "From ₹75,000"
-    }
-  ];
+  const [categories, setCategories] = useState<HolidayType[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHolidayTypes = async () => {
+      try {
+        const response = await fetch('/api/holiday-types');
+        if (response.ok) {
+          const data = await response.json();
+          // Filter only active holiday types and sort by order
+          const activeCategories = data
+            .filter((item: HolidayType) => item.isActive)
+            .sort((a: HolidayType, b: HolidayType) => a.order - b.order);
+          setCategories(activeCategories);
+        }
+      } catch (error) {
+        console.error('Error fetching holiday types:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHolidayTypes();
+  }, []);
 
   return (
     <section className="section-padding bg-gradient-to-br from-gray-50 to-blue-50">
@@ -119,7 +118,7 @@ const HolidaysSection = () => {
                   </div>
                   
                   {/* Floating Explore Button */}
-                  <Link href={`/itinerary/royal-rajasthan`}>
+                  <Link href={`/holiday-types/${category.slug}`}>
                     <Button 
                       className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-white/10 backdrop-blur-md text-gray-800 px-6 py-2 rounded-full shadow-xl hover:bg-blue-600 hover:shadow-2xl hover:cursor-pointer hover:scale-110 transition-all duration-300 border border-white/30 text-sm font-semibold group"
                       size="sm"
@@ -158,7 +157,7 @@ const HolidaysSection = () => {
                       <div className="text-lg font-bold text-blue-700">{category.price}</div>
                       <div className="text-xs text-gray-500">Per Person</div>
                     </div>
-                    <Link href={`/itinerary/royal-rajasthan`}>
+                    <Link href={`/holiday-types/${category.slug}`}>
                       <Button className="w-full py-2 text-sm font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-blue-300 group">
                         <span>Discover More</span>
                         <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

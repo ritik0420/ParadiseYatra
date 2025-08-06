@@ -8,7 +8,16 @@ const nextConfig: NextConfig = {
       'localhost',
       '127.0.0.1',
       'a.travel-assets.com',
-      'cdn-imgix.headout.com'
+      'cdn-imgix.headout.com',
+      'dynamic-media-cdn.tripadvisor.com',
+      'media-cdn.tripadvisor.com',
+      'www.tripadvisor.com',
+      'images.pexels.com',
+      'images.unsplash.com',
+      'picsum.photos',
+      'via.placeholder.com',
+      'placehold.co',
+      'dummyimage.com'
     ],
     remotePatterns: [
       {
@@ -26,6 +35,54 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'cdn-imgix.headout.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dynamic-media-cdn.tripadvisor.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media-cdn.tripadvisor.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.tripadvisor.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dummyimage.com',
         port: '',
         pathname: '/**',
       },

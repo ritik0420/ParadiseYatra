@@ -146,4 +146,12 @@ export const LazyAdminPopularDestinations = createLazyComponent(
     return Promise.reject(err);
   }),
   <Loading size="lg" className="min-h-[400px]" />
+);
+
+export const LazyAdminHolidayTypes = createLazyComponent(
+  () => import("./admin/AdminHolidayTypes").catch(err => {
+    console.error("Failed to load AdminHolidayTypes:", err);
+    return Promise.reject(err);
+  }),
+  <Loading size="lg" className="min-h-[400px]" />
 ); 

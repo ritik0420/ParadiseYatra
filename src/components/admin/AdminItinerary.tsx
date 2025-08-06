@@ -15,7 +15,9 @@ import {
   Hotel,
   Image as ImageIcon,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Package,
+  Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,9 +43,28 @@ interface Package {
   destination: string;
 }
 
+interface HolidayType {
+  _id: string;
+  title: string;
+  slug: string;
+  itinerary: DayItinerary[];
+  duration: string;
+  travelers: string;
+  badge: string;
+  price: string;
+}
+
+type ItemType = 'package' | 'holiday';
+
+interface SelectedItem {
+  type: ItemType;
+  data: Package | HolidayType;
+}
+
 const AdminItinerary = () => {
   const [packages, setPackages] = useState<Package[]>([]);
-  const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
+  const [holidayTypes, setHolidayTypes] = useState<HolidayType[]>([]);
+  const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editingDay, setEditingDay] = useState<DayItinerary | null>(null);
@@ -61,36 +82,62 @@ const AdminItinerary = () => {
   });
 
   useEffect(() => {
-    fetchPackages();
+    fetchData();
   }, []);
 
-  const fetchPackages = async () => {
+  const fetchData = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await fetch('/api/packages');
-      if (!response.ok) {
+      
+      // Fetch both packages and holiday types
+      const token = localStorage.getItem('adminToken');
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      };
+
+      const [packagesResponse, holidayTypesResponse] = await Promise.all([
+        fetch('/api/packages', { headers }),
+        fetch('/api/holiday-types')
+      ]);
+
+      if (!packagesResponse.ok) {
         throw new Error('Failed to fetch packages');
       }
-      const data = await response.json();
-      setPackages(data.packages || data);
+      if (!holidayTypesResponse.ok) {
+        throw new Error('Failed to fetch holiday types');
+      }
+
+      const packagesData = await packagesResponse.json();
+      const holidayTypesData = await holidayTypesResponse.json();
+
+      setPackages(packagesData.packages || packagesData);
+      setHolidayTypes(holidayTypesData);
     } catch (error) {
-      console.error('Error fetching packages:', error);
-      setError('Failed to load packages. Please try again.');
+      console.error('Error fetching data:', error);
+      setError('Failed to load data. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handlePackageSelect = (packageId: string) => {
-    const pkg = packages.find(p => p._id === packageId);
-    setSelectedPackage(pkg || null);
+  const handleItemSelect = (type: ItemType, itemId: string) => {
+    let item: Package | HolidayType | null = null;
+    
+    if (type === 'package') {
+      item = packages.find(p => p._id === itemId) || null;
+    } else {
+      item = holidayTypes.find(h => h._id === itemId) || null;
+    }
+
+    setSelectedItem(item ? { type, data: item } : null);
     setIsEditing(false);
     setEditingDay(null);
     setIsAddingDay(false);
     setError(null);
     setSuccess(null);
-    // Reset newDay state when selecting a new package
+    // Reset newDay state when selecting a new item
     setNewDay({
       day: 1,
       title: "",
@@ -111,17 +158,21 @@ const AdminItinerary = () => {
   };
 
   const handleSaveDay = async () => {
-    if (!selectedPackage || !editingDay) return;
+    if (!selectedItem || !editingDay) return;
 
     try {
       setIsSaving(true);
       setError(null);
       
-      const updatedItinerary = selectedPackage.itinerary.map(day => 
+      const updatedItinerary = selectedItem.data.itinerary.map(day => 
         day.day === editingDay.day ? editingDay : day
       );
 
-      const response = await fetch(`/api/packages/${selectedPackage._id}`, {
+      const endpoint = selectedItem.type === 'package' 
+        ? `/api/packages/${selectedItem.data._id}`
+        : `/api/holiday-types/${selectedItem.data._id}`;
+
+      const response = await fetch(endpoint, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -137,8 +188,12 @@ const AdminItinerary = () => {
         throw new Error(errorData.message || 'Failed to update day');
       }
 
-      const updatedPackage = await response.json();
-      setSelectedPackage(updatedPackage.package);
+      const updatedData = await response.json();
+      const updatedItem = selectedItem.type === 'package' 
+        ? updatedData.package 
+        : updatedData;
+
+      setSelectedItem({ type: selectedItem.type, data: updatedItem });
       setIsEditing(false);
       setEditingDay(null);
       setSuccess('Day updated successfully!');
@@ -152,7 +207,7 @@ const AdminItinerary = () => {
   };
 
   const handleDeleteDay = async (dayNumber: number) => {
-    if (!selectedPackage) return;
+    if (!selectedItem) return;
 
     if (!confirm(`Are you sure you want to delete Day ${dayNumber}?`)) {
       return;
@@ -162,11 +217,15 @@ const AdminItinerary = () => {
       setIsSaving(true);
       setError(null);
       
-      const updatedItinerary = selectedPackage.itinerary
+      const updatedItinerary = selectedItem.data.itinerary
         .filter(day => day.day !== dayNumber)
         .map((day, index) => ({ ...day, day: index + 1 }));
 
-      const response = await fetch(`/api/packages/${selectedPackage._id}`, {
+      const endpoint = selectedItem.type === 'package' 
+        ? `/api/packages/${selectedItem.data._id}`
+        : `/api/holiday-types/${selectedItem.data._id}`;
+
+      const response = await fetch(endpoint, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -182,8 +241,12 @@ const AdminItinerary = () => {
         throw new Error(errorData.message || 'Failed to delete day');
       }
 
-      const updatedPackage = await response.json();
-      setSelectedPackage(updatedPackage.package);
+      const updatedData = await response.json();
+      const updatedItem = selectedItem.type === 'package' 
+        ? updatedData.package 
+        : updatedData;
+
+      setSelectedItem({ type: selectedItem.type, data: updatedItem });
       setSuccess('Day deleted successfully!');
       setTimeout(() => setSuccess(null), 3000);
     } catch (error) {
@@ -195,7 +258,7 @@ const AdminItinerary = () => {
   };
 
   const handleAddDay = async () => {
-    if (!selectedPackage || !newDay.title || !newDay.accommodation || !newDay.meals) {
+    if (!selectedItem || !newDay.title || !newDay.accommodation || !newDay.meals) {
       setError('Please fill in all required fields');
       return;
     }
@@ -205,7 +268,7 @@ const AdminItinerary = () => {
       setError(null);
       
       const dayToAdd: DayItinerary = {
-        day: selectedPackage.itinerary.length + 1,
+        day: selectedItem.data.itinerary.length + 1,
         title: newDay.title!,
         activities: (newDay.activities || [""]).filter(activity => activity.trim() !== ""),
         accommodation: newDay.accommodation!,
@@ -213,9 +276,13 @@ const AdminItinerary = () => {
         image: newDay.image || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
       };
 
-      const updatedItinerary = [...selectedPackage.itinerary, dayToAdd];
+      const updatedItinerary = [...selectedItem.data.itinerary, dayToAdd];
 
-      const response = await fetch(`/api/packages/${selectedPackage._id}`, {
+      const endpoint = selectedItem.type === 'package' 
+        ? `/api/packages/${selectedItem.data._id}`
+        : `/api/holiday-types/${selectedItem.data._id}`;
+
+      const response = await fetch(endpoint, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -231,8 +298,12 @@ const AdminItinerary = () => {
         throw new Error(errorData.message || 'Failed to add day');
       }
 
-      const updatedPackage = await response.json();
-      setSelectedPackage(updatedPackage.package);
+      const updatedData = await response.json();
+      const updatedItem = selectedItem.type === 'package' 
+        ? updatedData.package 
+        : updatedData;
+
+      setSelectedItem({ type: selectedItem.type, data: updatedItem });
       setIsAddingDay(false);
       setNewDay({
         day: 1,
@@ -291,7 +362,7 @@ const AdminItinerary = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Itinerary Management</h1>
-          <p className="text-gray-600 mt-2">Manage day-wise itineraries for your travel packages</p>
+          <p className="text-gray-600 mt-2">Manage day-wise itineraries for your travel packages and holiday types</p>
         </div>
       </div>
 
@@ -310,51 +381,125 @@ const AdminItinerary = () => {
         </div>
       )}
 
-      {/* Package Selection */}
+      {/* Item Selection */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-gray-900">Select Package</CardTitle>
+          <CardTitle className="text-gray-900">Select Package or Holiday Type</CardTitle>
         </CardHeader>
-        <CardContent>
-          <select
-            onChange={(e) => handlePackageSelect(e.target.value)}
-            className="w-full text-gray-900 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Choose a package to manage itinerary</option>
-            {packages.map((pkg) => (
-              <option key={pkg._id} value={pkg._id}>
-                {pkg.title} - {pkg.category} ({pkg.duration})
-              </option>
-            ))}
-          </select>
+        <CardContent className="space-y-4">
+          {/* Type Selection */}
+          <div className="flex space-x-4 mb-4">
+            <Button
+              variant={selectedItem?.type === 'package' ? 'default' : 'outline'}
+              onClick={() => setSelectedItem(null)}
+              className="flex items-center space-x-2 bg-yellow-200"
+            >
+              <Package className="w-4 h-4" />
+              <span>Packages</span>
+            </Button>
+            <Button
+              variant={selectedItem?.type === 'holiday' ? 'default' : 'outline'}
+              onClick={() => setSelectedItem(null)}
+              className="flex items-center space-x-2 bg-yellow-200"
+            >
+              <Globe className="w-4 h-4" />
+              <span>Holiday Types</span>
+            </Button>
+          </div>
+
+          {/* Package Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">Packages</label>
+            <select
+              onChange={(e) => {
+                if (e.target.value) {
+                  handleItemSelect('package', e.target.value);
+                }
+              }}
+              className="w-full text-gray-900 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Choose a package to manage itinerary</option>
+              {packages.map((pkg) => (
+                <option key={pkg._id} value={pkg._id}>
+                  {pkg.title} - {pkg.category} ({pkg.duration})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Holiday Type Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">Holiday Types</label>
+            <select
+              onChange={(e) => {
+                if (e.target.value) {
+                  handleItemSelect('holiday', e.target.value);
+                }
+              }}
+              className="w-full text-gray-900 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Choose a holiday type to manage itinerary</option>
+              {holidayTypes.map((holiday) => (
+                <option key={holiday._id} value={holiday._id}>
+                  {holiday.title} - {holiday.badge} ({holiday.duration})
+                </option>
+              ))}
+            </select>
+          </div>
         </CardContent>
       </Card>
 
-      {selectedPackage && (
+      {selectedItem && (
         <div className="space-y-6">
-          {/* Package Info */}
+          {/* Item Info */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>{selectedPackage.title}</span>
+                <div className="flex items-center space-x-3">
+                  {selectedItem.type === 'package' ? (
+                    <Package className="w-5 h-5 text-blue-600" />
+                  ) : (
+                    <Globe className="w-5 h-5 text-green-600" />
+                  )}
+                  <span>{selectedItem.data.title}</span>
+                </div>
                 <Badge variant="secondary">
-                  {selectedPackage.itinerary.length} Days
+                  {selectedItem.data.itinerary.length} Days
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-4 text-sm text-gray-600">
-                <span className="flex items-center">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  {selectedPackage.destination}
-                </span>
-                <span className="flex items-center">
-                  <Clock className="w-4 h-4 mr-1" />
-                  {selectedPackage.duration}
-                </span>
+                {selectedItem.type === 'package' ? (
+                  <>
+                    <span className="flex items-center">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      {(selectedItem.data as Package).destination}
+                    </span>
+                    <span className="flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {selectedItem.data.duration}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="flex items-center">
+                      <Globe className="w-4 h-4 mr-1" />
+                      {(selectedItem.data as HolidayType).badge}
+                    </span>
+                    <span className="flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {selectedItem.data.duration}
+                    </span>
+                    <span className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {(selectedItem.data as HolidayType).travelers}
+                    </span>
+                  </>
+                )}
                 <span className="flex items-center">
                   <Calendar className="w-4 h-4 mr-1" />
-                  {selectedPackage.itinerary.length} Days
+                  {selectedItem.data.itinerary.length} Days
                 </span>
               </div>
             </CardContent>
@@ -526,12 +671,12 @@ const AdminItinerary = () => {
 
           {/* Itinerary Days */}
           <div className="space-y-4">
-            {selectedPackage.itinerary.length === 0 ? (
+            {selectedItem.data.itinerary.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
                   <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No Itinerary Days</h3>
-                  <p className="text-gray-600 mb-4">This package doesn't have any itinerary days yet.</p>
+                  <p className="text-gray-600 mb-4">This {selectedItem.type === 'package' ? 'package' : 'holiday type'} doesn't have any itinerary days yet.</p>
                   <Button
                     onClick={() => setIsAddingDay(true)}
                     className="bg-blue-600 hover:bg-blue-700"
@@ -542,7 +687,7 @@ const AdminItinerary = () => {
                 </CardContent>
               </Card>
             ) : (
-              selectedPackage.itinerary.map((day, index) => (
+              selectedItem.data.itinerary.map((day, index) => (
                 <Card key={day.day} className="relative">
                   <CardHeader>
                     <div className="flex items-center justify-between">

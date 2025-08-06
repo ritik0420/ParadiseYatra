@@ -121,6 +121,13 @@ const AdminSidebar = ({
       hasNotification: false,
     },
     {
+      id: "holiday-types",
+      label: "Holiday Types",
+      icon: Calendar,
+      hasSubmenu: false,
+      hasNotification: false,
+    },
+    {
       id: "itinerary",
       label: "Itinerary Management",
       icon: Map,
@@ -192,7 +199,7 @@ const AdminSidebar = ({
       <div className="p-4 border-b border-blue-700">
         <div className="flex items-center space-x-3">
           <div>
-            <img src="/logo.png" alt="logo" className="bg-white rounded-full w-25 h-25" />
+            <img src="/headerLogo.png" alt="logo" className="bg-white/50 backdrop-blur-sm rounded-full items-center justify-center object-contain w-25 h-25" />
           </div>
         </div>
       </div>
