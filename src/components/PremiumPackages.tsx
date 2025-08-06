@@ -22,6 +22,7 @@ interface Package {
   category: string;
   shortDescription: string;
   reviews?: any[];
+  slug: string;
 }
 
 const PremiumPackages = () => {
@@ -221,7 +222,7 @@ const PremiumPackages = () => {
                   </div>
                   
                   <div className="mt-auto">
-                    <Link href={`/itinerary/royal-rajasthan`}>
+                    <Link href={`/itinerary/${pkg.slug}`}>
                       <Button className="book-button w-full py-3 text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl shadow-lg hover:from-purple-700 hover:to-indigo-700 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-purple-300 animate-pulse">
                         Book Premium Package
                       </Button>

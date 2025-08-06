@@ -22,6 +22,7 @@ interface Package {
   category: string;
   shortDescription: string;
   reviews?: any[];
+  slug: string;
 }
 
 function getRatingLabel(rating: number) {
@@ -144,7 +145,7 @@ const TrendingDestinations = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />
                   {/* Floating View Details Button */}
-                  <Link href={`/itinerary/royal-rajasthan`}>
+                  <Link href={`/itinerary/${pkg.slug}`}>
                     <Button 
                       className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-white/20 backdrop-blur-lg text-black px-4 py-1 rounded-full shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-300 border-2 border-white/20 text-xs"
                       size="sm"
@@ -215,7 +216,7 @@ const TrendingDestinations = () => {
                     )}
                   </div>
                   <div className="mt-auto">
-                    <Link href={`/itinerary/royal-rajasthan`}>
+                    <Link href={`/itinerary/${pkg.slug}`}>
                       <Button className="book-button w-full py-3 text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-blue-300 animate-bounce">
                         Book Now
                       </Button>

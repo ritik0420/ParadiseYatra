@@ -361,12 +361,13 @@ const AdminTrendingDestinations = () => {
               <Button 
                 onClick={handleSave} 
                 disabled={saving}
+                variant="admin-primary"
                 className="flex items-center gap-2"
               >
                 <Save className="w-4 h-4" />
                 {saving ? 'Saving...' : 'Save Package'}
               </Button>
-              <Button variant="outline" onClick={handleCancel} className="bg-white">
+              <Button variant="admin-outline" onClick={handleCancel}>
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>
@@ -421,7 +422,7 @@ const AdminTrendingDestinations = () => {
                 <div className="flex gap-2 mt-4">
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="admin-outline"
                     onClick={() => handleEdit(pkg)}
                     className="flex items-center gap-1"
                   >
@@ -430,7 +431,7 @@ const AdminTrendingDestinations = () => {
                   </Button>
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="admin-secondary"
                     onClick={() => pkg._id && handleDelete(pkg._id)}
                     className="flex items-center gap-1"
                   >

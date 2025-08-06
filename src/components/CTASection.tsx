@@ -56,7 +56,7 @@ const CTASection = () => {
   }
   return (
     <section 
-      className="section-padding text-white relative overflow-hidden" 
+      className="section-padding text-white relative overflow-hidden px-4 sm:px-6" 
       style={{
         backgroundImage: `url(${ctaContent?.backgroundImage || '/banner.jpeg'})`,
         backgroundSize: 'cover',
@@ -69,37 +69,37 @@ const CTASection = () => {
       
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-10 left-10 w-32 h-32 border-2 border-white/20 rounded-full animate-float"></div>
-        <div className="absolute top-20 right-20 w-24 h-24 border-2 border-white/20 rounded-full animate-float animation-delay-2000"></div>
-        <div className="absolute bottom-20 left-20 w-40 h-40 border-2 border-white/20 rounded-full animate-float animation-delay-4000"></div>
-        <div className="absolute bottom-10 right-10 w-16 h-16 border-2 border-white/20 rounded-full animate-float animation-delay-6000"></div>
+        <div className="absolute top-10 left-10 w-20 h-20 sm:w-32 sm:h-32 border-2 border-white/20 rounded-full animate-float"></div>
+        <div className="absolute top-20 right-20 w-16 h-16 sm:w-24 sm:h-24 border-2 border-white/20 rounded-full animate-float animation-delay-2000"></div>
+        <div className="absolute bottom-20 left-20 w-24 h-24 sm:w-40 sm:h-40 border-2 border-white/20 rounded-full animate-float animation-delay-4000"></div>
+        <div className="absolute bottom-10 right-10 w-12 h-12 sm:w-16 sm:h-16 border-2 border-white/20 rounded-full animate-float animation-delay-6000"></div>
       </div>
       
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto relative z-10">
         <div className="max-w-5xl mx-auto text-center">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="mb-12"
+            className="mb-8 sm:mb-12"
           >
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="flex items-center justify-center gap-2 mb-4"
+              className="flex items-center justify-center gap-2 mb-3 sm:mb-4"
             >
-              <Star className="w-5 h-5 text-yellow-400" />
-              <span className="text-yellow-400 text-base font-semibold tracking-wide">Ready to Explore?</span>
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
+              <span className="text-yellow-400 text-sm sm:text-base font-semibold tracking-wide">Ready to Explore?</span>
             </motion.div>
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-extrabold mb-4 sm:mb-6 leading-tight px-2"
             >
               {ctaContent?.title || "Ready for Your Next Adventure?"}
             </motion.h2>
@@ -108,7 +108,7 @@ const CTASection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed font-nunito font-light"
+              className="text-base sm:text-lg md:text-xl text-blue-100 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed font-nunito font-light px-2"
             >
               {ctaContent?.description || "Join thousands of travelers who trust Paradise Yatra for their dream vacations. Start planning your perfect journey today and create memories that last a lifetime."}
             </motion.p>
@@ -120,7 +120,7 @@ const CTASection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16"
           >
             {[
               { icon: Globe, title: "Global Destinations", desc: "Explore 50+ countries worldwide", color: "text-blue-300" },
@@ -135,17 +135,17 @@ const CTASection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 1.0 + index * 0.2 }}
                 whileHover={{ y: -10, scale: 1.05 }}
-                className="flex flex-col items-center space-y-3 p-6 bg-white/10 backdrop-blur-sm rounded-2xl hover:bg-white/20 transition-all duration-300 border border-white/20"
+                className="flex flex-col items-center space-y-2 sm:space-y-3 p-4 sm:p-6 bg-white/10 backdrop-blur-sm rounded-2xl hover:bg-white/20 transition-all duration-300 border border-white/20"
               >
                 <motion.div 
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.6 }}
-                  className={`w-14 h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center ${feature.color}`}
+                  className={`w-10 h-10 sm:w-14 sm:h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center ${feature.color}`}
                 >
-                  <feature.icon className="w-6 h-6" />
+                  <feature.icon className="w-4 h-4 sm:w-6 sm:h-6" />
                 </motion.div>
-                <h3 className="font-semibold text-lg">{feature.title}</h3>
-                <p className="text-blue-100 text-sm text-center">{feature.desc}</p>
+                <h3 className="font-semibold text-sm sm:text-lg">{feature.title}</h3>
+                <p className="text-blue-100 text-xs sm:text-sm text-center">{feature.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -156,28 +156,30 @@ const CTASection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 1.8 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-12 sm:mb-16"
           >
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="w-full sm:w-auto"
             >
               <Button 
                 size="lg" 
-                className="hover:scale-105 hover:cursor-pointer hover:bg-gray-100 text-blue-600 font-bold px-10 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
+                className="w-full hover:scale-105 hover:cursor-pointer hover:bg-gray-100 text-blue-600 font-bold px-6 sm:px-10 py-3 sm:py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-lg"
               >
                 {ctaContent?.buttonText || "Start Planning"}
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
               </Button>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="w-full sm:w-auto"
             >
               <Button 
                 variant="outline"
                 size="lg" 
-                className="border-white/30 text-white hover:bg-white/10 font-bold px-10 py-4 rounded-full transition-all duration-300 hover:scale-[1.02] text-lg"
+                className="w-full border-white/30 text-white hover:bg-white/10 font-bold px-6 sm:px-10 py-3 sm:py-4 rounded-full transition-all duration-300 hover:scale-[1.02] text-sm sm:text-lg"
               >
                 View Packages
               </Button>
@@ -190,7 +192,7 @@ const CTASection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 2.0 }}
-            className="flex flex-wrap justify-center items-center gap-6 text-sm text-blue-200"
+            className="flex flex-wrap justify-center items-center gap-3 sm:gap-6 text-xs sm:text-sm text-blue-200"
           >
             {[
               { icon: Users, text: "500+ Happy Travelers" },
@@ -204,11 +206,11 @@ const CTASection = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 2.2 + index * 0.1 }}
-                className="flex items-center space-x-2 px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300"
+                className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300"
               >
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <indicator.icon className="w-4 h-4" />
-                <span className="font-medium">{indicator.text}</span>
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <indicator.icon className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="font-medium text-xs sm:text-sm">{indicator.text}</span>
               </motion.div>
             ))}
           </motion.div>

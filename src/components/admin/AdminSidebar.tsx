@@ -100,11 +100,11 @@ const AdminSidebar = ({
       isHeader: true,
     },
     {
-      id: "packages",
-      label: "Packages",
-      icon: Settings,
+      id: "popular-destinations",
+      label: "Popular Destinations",
+      icon: Mountain,
       hasSubmenu: false,
-      hasNotification: true,
+      hasNotification: false,
     },
     {
       id: "premium-packages",

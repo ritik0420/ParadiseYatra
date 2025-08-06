@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Save, X, Plus, Eye, Trash2, Star } from "lucide-react";
+import { Edit, Save, X, Plus, Trash2, Star } from "lucide-react";
+import { toast } from "react-toastify";
 
 interface Testimonial {
   _id?: string;
@@ -92,14 +93,14 @@ const AdminTestimonials = () => {
         setEditing(null);
         setShowAddForm(false);
         resetForm();
-        alert(editing ? 'Testimonial updated successfully!' : 'Testimonial added successfully!');
+        toast.success(editing ? 'Testimonial updated successfully!' : 'Testimonial added successfully!');
       } else {
         console.error('Failed to save testimonial:', data.message);
-        alert(`Failed to save: ${data.message || 'Unknown error'}`);
+        toast.error(`Failed to save: ${data.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error saving testimonial:', error);
-      alert('Network error. Please try again.');
+      toast.error('Network error. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -118,7 +119,7 @@ const AdminTestimonials = () => {
         const token = localStorage.getItem('adminToken');
         
         if (!token) {
-          alert('Please log in to delete testimonials');
+          toast.error('Please log in to delete testimonials');
           return;
         }
         
@@ -133,14 +134,14 @@ const AdminTestimonials = () => {
 
         if (response.ok) {
           await fetchTestimonials();
-          alert('Testimonial deleted successfully!');
+          toast.success('Testimonial deleted successfully!');
         } else {
           console.error('Failed to delete testimonial:', data.message);
-          alert(`Failed to delete: ${data.message || 'Unknown error'}`);
+          toast.error(`Failed to delete: ${data.message || 'Unknown error'}`);
         }
       } catch (error) {
         console.error('Error deleting testimonial:', error);
-        alert('Network error. Please try again.');
+        toast.error('Network error. Please try again.');
       }
     }
   };
@@ -187,7 +188,7 @@ const AdminTestimonials = () => {
           <h2 className="text-2xl font-bold text-gray-900">Testimonials Management</h2>
           <p className="text-gray-600">Manage customer testimonials and reviews</p>
         </div>
-        <Button onClick={handleAddNew} className="flex items-center gap-2">
+        <Button onClick={handleAddNew} variant="admin-primary" className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
           Add New Testimonial
         </Button>
@@ -328,12 +329,13 @@ const AdminTestimonials = () => {
               <Button 
                 onClick={handleSave} 
                 disabled={saving}
+                variant="admin-primary"
                 className="flex items-center gap-2"
               >
                 <Save className="w-4 h-4" />
                 {saving ? 'Saving...' : 'Save Testimonial'}
               </Button>
-              <Button variant="outline" onClick={handleCancel}>
+              <Button variant="admin-outline" onClick={handleCancel}>
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>
@@ -389,26 +391,26 @@ const AdminTestimonials = () => {
                   )}
                 </div>
               </div>
-              <div className="flex gap-2 mt-4">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleEdit(testimonial)}
-                  className="flex items-center gap-1"
-                >
-                  <Edit className="w-3 h-3" />
-                  Edit
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => testimonial._id && handleDelete(testimonial._id)}
-                  className="flex items-center gap-1"
-                >
-                  <Trash2 className="w-3 h-3" />
-                  Delete
-                </Button>
-              </div>
+                                  <div className="flex gap-2 mt-4">
+                      <Button
+                        size="sm"
+                        variant="admin-outline"
+                        onClick={() => handleEdit(testimonial)}
+                        className="flex items-center gap-1 text-gray-900"
+                      >
+                        <Edit className="w-3 h-3 text-gray-900" />
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="admin-secondary"
+                        onClick={() => testimonial._id && handleDelete(testimonial._id)}
+                        className="flex items-center gap-1 text-gray-900"
+                      >
+                        <Trash2 className="w-3 h-3 text-gray-900" />
+                        Delete
+                      </Button>
+                    </div>
             </CardContent>
           </Card>
         ))}

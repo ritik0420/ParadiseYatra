@@ -153,7 +153,7 @@ const AdminFooter = () => {
               <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700">
                 Save Changes
               </Button>
-              <Button onClick={handleCancel} variant="outline">
+              <Button onClick={handleCancel} variant="admin-outline">
                 Cancel
               </Button>
             </>

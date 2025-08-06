@@ -204,7 +204,7 @@ const AdminStats = () => {
                     <Button
                       onClick={() => handleEdit(stat)}
                       size="sm"
-                      variant="outline"
+                      variant="admin-outline"
                       className="hover:cursor-pointer hover:scale-105 transition-transform"
                     >
                       Edit
@@ -212,8 +212,8 @@ const AdminStats = () => {
                     <Button
                       onClick={() => handleDelete(stat.id)}
                       size="sm"
-                      variant="outline"
-                      className="text-red-600 hover:text-red-700"
+                      variant="admin-secondary"
+                      className="hover:cursor-pointer hover:scale-105 transition-transform"
                     >
                       Delete
                     </Button>
@@ -245,7 +245,7 @@ const AdminStats = () => {
                     <Button
                       onClick={() => handleEdit(stat)}
                       size="sm"
-                      variant="outline"
+                      variant="admin-outline"
                       className="hover:cursor-pointer hover:scale-105 transition-transform"
                     >
                       Edit
@@ -253,8 +253,8 @@ const AdminStats = () => {
                     <Button
                       onClick={() => handleDelete(stat.id)}
                       size="sm"
-                      variant="outline"
-                      className="text-red-600 hover:text-red-700"
+                      variant="admin-secondary"
+                      className="hover:cursor-pointer hover:scale-105 transition-transform"
                     >
                       Delete
                     </Button>
@@ -286,7 +286,7 @@ const AdminStats = () => {
                     <Button
                       onClick={() => handleEdit(stat)}
                       size="sm"
-                      variant="outline"
+                      variant="admin-outline"
                       className="hover:cursor-pointer hover:scale-105 transition-transform"
                     >
                       Edit
@@ -294,8 +294,8 @@ const AdminStats = () => {
                     <Button
                       onClick={() => handleDelete(stat.id)}
                       size="sm"
-                      variant="outline"
-                      className="text-red-600 hover:text-red-700"
+                      variant="admin-secondary"
+                      className="hover:cursor-pointer hover:scale-105 transition-transform"
                     >
                       Delete
                     </Button>

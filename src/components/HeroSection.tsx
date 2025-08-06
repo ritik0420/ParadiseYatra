@@ -2,12 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, Calendar, Users, Sparkles, Star } from "lucide-react";
+import { Search, MapPin, Sparkles, Star } from "lucide-react";
 import { motion } from "framer-motion";
-import React, { useState, useEffect, forwardRef } from "react";
-import DatePicker from "react-datepicker";
+import React, { useState, useEffect } from "react";
 import Loading from "@/components/ui/loading";
-import "react-datepicker/dist/react-datepicker.css";
 
 interface HeroContent {
   title: string;
@@ -21,7 +19,6 @@ interface HeroContent {
 }
 
 const HeroSection = () => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [heroContent, setHeroContent] = useState<HeroContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +46,7 @@ const HeroSection = () => {
           description: "Explore, dream, and discover with Paradise Yatra.",
           backgroundImage: "https://wallpapercave.com/wp/wp10918600.jpg",
           trustBadgeText: "Trusted by 5000+ travelers",
-          popularDestinations: ["Bali", "Thailand", "Europe", "Dubai", "Singapore"],
+          popularDestinations: ["Himachal Pradesh", "Uttarakhand", "Bali", "Europe", "Goa"],
           ctaButtonText: "Explore Packages",
           secondaryButtonText: "Watch Video"
         });
@@ -65,131 +62,180 @@ const HeroSection = () => {
     return <Loading size="lg" className="min-h-[80vh]" />;
   }
 
-  // Custom Input for DatePicker to match other fields
-  const CustomDateInput = forwardRef<HTMLInputElement, any>(({ value, onClick, placeholder }, ref) => (
-    <div className="relative w-full">
-      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" />
-      <input
-        ref={ref}
-        onClick={onClick}
-        value={value}
-        readOnly
-        placeholder={placeholder}
-        className="w-full h-12 pl-10 pr-3 bg-white/90 backdrop-blur-sm border border-gray-200/40 rounded-2xl text-gray-800 placeholder-gray-500 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-all duration-200"
-      />
-    </div>
-  ));
-  CustomDateInput.displayName = "CustomDateInput";
+  // Animation variants for staggered animations
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8
+      }
+    }
+  };
+
+  const titleVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1
+      }
+    }
+  };
+
+  const sparkleVariants = {
+    hidden: { opacity: 0, scale: 0, rotate: -180 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      rotate: 0,
+      transition: {
+        duration: 0.8
+      }
+    }
+  };
 
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden pt-8 sm:pt-12 md:pt-16">
+    <section className="relative min-h-[80vh] flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden pt-20 sm:pt-24 md:pt-28 lg:pt-32 px-4 sm:px-6">
       {/* Image background */}
-      <img src={heroContent?.backgroundImage || "https://wallpapercave.com/wp/wp10918600.jpg"} alt="hero" className="absolute inset-0 w-full h-full object-cover z-0" />
-      {/* Animated gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/60 via-blue-700/40 to-blue-900/70 animate-gradient-x z-10" />
+      <motion.img 
+        initial={{ scale: 1.1 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+        src={heroContent?.backgroundImage || "https://wallpapercave.com/wp/wp10918600.jpg"} 
+        alt="hero" 
+        className="absolute inset-0 w-full h-full object-cover z-0" 
+      />
+      
+      {/* Enhanced overlay for better contrast */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60 z-10" />
+      
       {/* Content */}
-      <div className="relative z-20 text-center text-white px-4 max-w-4xl mx-auto">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-20 text-center text-white max-w-4xl mx-auto w-full"
+      >
         {/* Trust badge */}
-        <div className="flex justify-center mb-4">
-          <span className="inline-flex items-center gap-2 bg-white/20 px-4 py-1 rounded-full text-sm font-semibold shadow-lg backdrop-blur">
-            <Star className="w-4 h-4 text-yellow-300" />
+        <motion.div 
+          variants={itemVariants}
+          className="flex justify-center mb-4 sm:mb-6 mt-8"
+        >
+          <motion.span 
+            whileHover={{ scale: 1.05 }}
+            className="inline-flex items-center gap-2 bg-white/25 backdrop-blur-md px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold shadow-xl border border-white/20"
+          >
+            <motion.div
+              variants={sparkleVariants}
+              animate="visible"
+              initial="hidden"
+            >
+              <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-300" />
+            </motion.div>
             {heroContent?.trustBadgeText || "Trusted by 5000+ travelers"}
-          </span>
-        </div>
+          </motion.span>
+        </motion.div>
+        
         {/* Headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-4 drop-shadow-lg leading-tight px-2"
+          variants={titleVariants}
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold mb-4 sm:mb-6 drop-shadow-2xl leading-tight px-2"
         >
-          <span className="inline-flex items-center gap-2">
-            <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-200 animate-bounce" />
+          <motion.span 
+            className="inline-flex items-center gap-2"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              variants={sparkleVariants}
+              animate="visible"
+              initial="hidden"
+              whileHover={{ rotate: 360, scale: 1.2 }}
+              transition={{ duration: 0.6 }}
+            >
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-yellow-200" />
+            </motion.div>
             {heroContent?.title || "Your Next Adventure Awaits"}
-          </span>
+          </motion.span>
         </motion.h1>
+        
         {/* Subheading */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-lg sm:text-xl md:text-2xl mb-6 opacity-95 max-w-2xl mx-auto px-2"
+          variants={itemVariants}
+          className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 opacity-95 max-w-2xl mx-auto px-2 font-medium"
         >
           {heroContent?.description || "Unforgettable journeys, handpicked for you. Explore, dream, and discover with Paradise Yatra."}
         </motion.p>
-        {/* CTA Buttons */}
+        
+        {/* CTA Buttons - Full width on mobile */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8 w-full max-w-2xl mx-auto px-2"
+          variants={itemVariants}
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 justify-center mb-6 sm:mb-8 w-full max-w-2xl mx-auto px-2"
         >
-          <Button
-            size="lg"
-            className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 via-pink-500 to-red-500 hover:from-yellow-500 hover:to-pink-600 hover:cursor-pointer hover:scale-105 text-white font-bold px-8 py-4 rounded-xl shadow-xl text-lg transition-all duration-200"
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="w-full sm:w-auto"
           >
-            {heroContent?.ctaButtonText || "Plan My Trip"}
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="w-full sm:w-auto border-white text-white hover:bg-white/10 hover:cursor-pointer hover:scale-105 font-semibold px-8 py-4 rounded-xl text-lg"
+            <Button
+              size="lg"
+              className="w-full bg-gradient-to-r from-yellow-400 via-pink-500 to-red-500 hover:from-yellow-500 hover:to-pink-600 hover:cursor-pointer text-white font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-xl text-base sm:text-lg transition-all duration-200"
+            >
+              {heroContent?.ctaButtonText || "Plan My Trip"}
+            </Button>
+          </motion.div>
+          
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="w-full sm:w-auto"
           >
-            {heroContent?.secondaryButtonText || "See Popular Packages"}
-          </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full border-white text-white hover:bg-white/10 hover:cursor-pointer font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg backdrop-blur-sm"
+            >
+              {heroContent?.secondaryButtonText || "See Popular Packages"}
+            </Button>
+          </motion.div>
         </motion.div>
+        
         {/* Enhanced Search Bar - Mobile Optimized */}
         <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          variants={itemVariants}
           whileHover={{ scale: 1.02 }}
-          className="bg-white/10 backdrop-blur-sm rounded-3xl p-4 sm:p-6 md:p-8 max-w-4xl mx-auto shadow-2xl border border-white/30"
+          className="bg-white/15 backdrop-blur-md rounded-3xl p-3 sm:p-4 md:p-5 max-w-2xl lg:max-w-xl xl:max-w-2xl mx-auto shadow-2xl border border-white/30"
         >
-          {/* Mobile: Stacked layout, Desktop: Grid layout */}
-          <div className="flex flex-col lg:grid lg:grid-cols-4 gap-3 sm:gap-4 w-full">
+          {/* Mobile: Stacked layout, Desktop: Inline layout */}
+          <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 w-full">
             {/* Destination input */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 1.0 }}
-              className="relative"
+              whileHover={{ scale: 1.02 }}
+              className="relative flex-1"
             >
               <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" />
               <input
                 placeholder="Where do you want to go?"
-                className="w-full h-12 pl-10 pr-3 bg-white/90 backdrop-blur-sm border border-gray-200/40 rounded-2xl text-gray-800 placeholder-gray-500 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-all duration-200"
-              />
-            </motion.div>
-            
-            {/* Date input with DatePicker */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 1.2 }}
-              className="relative"
-            >
-              <DatePicker
-                selected={selectedDate}
-                onChange={date => setSelectedDate(date)}
-                placeholderText="When?"
-                customInput={<CustomDateInput />}
-                calendarClassName="!z-50"
-                popperPlacement="bottom"
-              />
-            </motion.div>
-            
-            {/* Travelers input */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 1.4 }}
-              className="relative"
-            >
-              <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" />
-              <input
-                placeholder="Travelers"
-                className="w-full h-12 pl-10 pr-3 bg-white/90 backdrop-blur-sm border border-gray-200/40 rounded-2xl text-gray-800 placeholder-gray-500 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-all duration-200"
+                className="w-full h-10 pl-10 pr-3 bg-white/95 backdrop-blur-sm border border-gray-200/40 rounded-2xl text-gray-800 placeholder-gray-500 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-all duration-200"
               />
             </motion.div>
             
@@ -197,52 +243,56 @@ const HeroSection = () => {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 1.6 }}
+              transition={{ duration: 0.5, delay: 1.2 }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center"
+              className="flex items-center lg:w-auto"
             >
-              <button className="w-full h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-4 rounded-2xl transition-all duration-200 shadow-lg text-sm flex items-center justify-center gap-2 group">
-                <Search className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+              <button className="w-full lg:w-auto lg:px-8 h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-4 rounded-2xl transition-all duration-200 shadow-lg text-sm flex items-center justify-center gap-2 group">
+                <motion.div
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <Search className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                </motion.div>
                 Search
               </button>
             </motion.div>
           </div>
         </motion.div>
+        
         {/* Popular destinations */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-          className="mt-8 sm:mt-12 flex flex-wrap justify-center gap-3 sm:gap-4 text-sm px-2"
+          variants={itemVariants}
+          className="mt-6 sm:mt-8 md:mt-12 flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 text-sm px-2"
         >
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 1.4 }}
-            className="text-white/80"
+            className="text-white/90 font-medium text-xs sm:text-sm"
           >
             Popular:
           </motion.span>
-          {(heroContent?.popularDestinations || ["Bali", "Thailand", "Europe", "Dubai", "Singapore"]).map((dest, index) => (
+          {(heroContent?.popularDestinations || ["Himachal Pradesh", "Uttarakhand", "Bali", "Europe", "Goa"]).map((dest, index) => (
             <motion.button
               key={dest}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 1.6 + index * 0.1 }}
               whileHover={{
-                scale: 0.95,
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                scale: 1.05,
+                backgroundColor: "rgba(255, 255, 255, 0.25)",
                 transition: { duration: 0.3 }
               }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white/10 backdrop-blur-sm text-white px-3 sm:px-4 py-2 mb-4 rounded-full transition-all duration-200 text-sm font-medium cursor-pointer"
+              className="bg-white/15 backdrop-blur-md text-white px-2 sm:px-3 md:px-4 py-1 sm:py-2 mb-2 sm:mb-4 rounded-full transition-all duration-200 text-xs sm:text-sm font-medium cursor-pointer border border-white/20 shadow-lg"
             >
               {dest}
             </motion.button>
           ))}
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 };

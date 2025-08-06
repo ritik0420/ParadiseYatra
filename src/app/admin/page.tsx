@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   LazyAdminSidebar,
   LazyAdminDashboard,
-  LazyAdminPackages,
   LazyAdminBlogs,
   LazyAdminSEO,
   LazyAdminMenu,
@@ -20,6 +19,7 @@ import {
   LazyAdminCTASection,
   LazyAdminStats,
   LazyAdminItinerary,
+  LazyAdminPopularDestinations,
 } from "@/components/lazy-admin-components";
 
 type AdminSection = 
@@ -31,7 +31,7 @@ type AdminSection =
   | "cta-section"
   | "stats"
   | "menu"
-  | "packages"
+  | "popular-destinations"
   | "seo"
   | "blogs"
   | "trending-destinations"
@@ -142,8 +142,8 @@ const AdminPage = () => {
         return <LazyAdminStats />;
       case "menu":
         return <LazyAdminMenu />;
-      case "packages":
-        return <LazyAdminPackages />;
+      case "popular-destinations":
+        return <LazyAdminPopularDestinations />;
       case "seo":
         return <LazyAdminSEO />;
       case "blogs":

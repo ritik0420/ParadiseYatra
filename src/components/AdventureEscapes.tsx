@@ -25,6 +25,7 @@ interface AdventurePackage {
   highlights: string[];
   isActive: boolean;
   isFeatured: boolean;
+  slug: string;
 }
 
 const AdventureEscapes = () => {
@@ -66,7 +67,8 @@ const AdventureEscapes = () => {
             shortDescription: "Mountain adventure with expert guides",
             highlights: ["Expert Guides", "Camping", "Mountain Views", "Local Culture"],
             isActive: true,
-            isFeatured: false
+            isFeatured: false,
+            slug: "himalayan-trekking"
           },
           {
             _id: "2",
@@ -82,7 +84,8 @@ const AdventureEscapes = () => {
             shortDescription: "Wildlife adventure in the Amazon",
             highlights: ["Wildlife Safari", "River Cruise", "Jungle Lodge", "Bird Watching"],
             isActive: true,
-            isFeatured: false
+            isFeatured: false,
+            slug: "amazon-jungle-safari"
           },
           {
             _id: "3",
@@ -98,7 +101,8 @@ const AdventureEscapes = () => {
             shortDescription: "Glacier trekking adventure",
             highlights: ["Glacier Trek", "Fjord Cruise", "Mountain Hiking", "Wild Camping"],
             isActive: true,
-            isFeatured: false
+            isFeatured: false,
+            slug: "patagonia-expedition"
           }
         ]);
       } finally {
@@ -257,7 +261,7 @@ const AdventureEscapes = () => {
                   </div>
                   
                   <div className="mt-auto">
-                    <Link href={`/itinerary/${pkg._id}`}>
+                    <Link href={`/itinerary/${pkg.slug}`}>
                       <Button className="book-button w-full py-3 text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl shadow-lg hover:from-green-700 hover:to-emerald-700 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-green-300 animate-pulse">
                         Book Adventure
                       </Button>

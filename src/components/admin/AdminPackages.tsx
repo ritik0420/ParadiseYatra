@@ -59,10 +59,13 @@ const AdminPackages = () => {
       const response = await fetch('/api/packages');
       if (response.ok) {
         const data = await response.json();
-        setPackages(data);
+        // Handle both array and object with packages property
+        const packagesArray = Array.isArray(data) ? data : (data.packages || []);
+        setPackages(packagesArray);
       }
     } catch (error) {
       console.error('Error fetching packages:', error);
+      setPackages([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -197,7 +200,7 @@ const AdminPackages = () => {
           <h2 className="text-2xl font-bold text-gray-900">Packages Management</h2>
           <p className="text-gray-600">Manage travel packages and tours</p>
         </div>
-        <Button onClick={handleAddNew} className="flex items-center gap-2">
+        <Button onClick={handleAddNew} variant="admin-primary" className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
           Add New Package
         </Button>
@@ -339,12 +342,13 @@ const AdminPackages = () => {
               <Button 
                 onClick={handleSave} 
                 disabled={saving}
+                variant="admin-primary"
                 className="flex items-center gap-2"
               >
                 <Save className="w-4 h-4" />
                 {saving ? 'Saving...' : 'Save Package'}
               </Button>
-              <Button variant="outline" onClick={handleCancel} className="bg-white">
+              <Button variant="admin-outline" onClick={handleCancel}>
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>
@@ -354,67 +358,73 @@ const AdminPackages = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {packages.map((pkg) => (
-          <Card key={pkg._id} className="relative">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-gray-900">{pkg.title}</h3>
-                  <p className="text-sm text-gray-600">{pkg.destination}</p>
+        {Array.isArray(packages) && packages.length > 0 ? (
+          packages.map((pkg) => (
+            <Card key={pkg._id} className="relative">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{pkg.title}</h3>
+                    <p className="text-sm text-gray-600">{pkg.destination}</p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Badge variant={pkg.status === 'active' ? 'default' : 'secondary'}>
+                      {pkg.status}
+                    </Badge>
+                    {!pkg.isActive && (
+                      <Badge variant="outline" className="text-xs">Inactive</Badge>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Badge variant={pkg.status === 'active' ? 'default' : 'secondary'}>
-                    {pkg.status}
-                  </Badge>
-                  {!pkg.isActive && (
-                    <Badge variant="outline" className="text-xs">Inactive</Badge>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600">
+                    <strong>Duration:</strong> {pkg.duration}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Category:</strong> {pkg.category}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Price:</strong> ${pkg.price?.toLocaleString()}
+                  </p>
+                  {pkg.originalPrice && pkg.originalPrice > pkg.price && (
+                    <p className="text-sm text-gray-500 line-through">
+                      <strong>Original:</strong> ${pkg.originalPrice.toLocaleString()}
+                    </p>
+                  )}
+                  {pkg.shortDescription && (
+                    <p className="text-sm text-gray-700 line-clamp-2">{pkg.shortDescription}</p>
                   )}
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <p className="text-sm text-gray-600">
-                  <strong>Duration:</strong> {pkg.duration}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <strong>Category:</strong> {pkg.category}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <strong>Price:</strong> ${pkg.price?.toLocaleString()}
-                </p>
-                {pkg.originalPrice && pkg.originalPrice > pkg.price && (
-                  <p className="text-sm text-gray-500 line-through">
-                    <strong>Original:</strong> ${pkg.originalPrice.toLocaleString()}
-                  </p>
-                )}
-                {pkg.shortDescription && (
-                  <p className="text-sm text-gray-700 line-clamp-2">{pkg.shortDescription}</p>
-                )}
-              </div>
-              <div className="flex gap-2 mt-4">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleEdit(pkg)}
-                  className="flex items-center gap-1"
-                >
-                  <Edit className="w-3 h-3" />
-                  Edit
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => pkg._id && handleDelete(pkg._id)}
-                  className="flex items-center gap-1"
-                >
-                  <Trash2 className="w-3 h-3" />
-                  Delete
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    size="sm"
+                    variant="admin-outline"
+                    onClick={() => handleEdit(pkg)}
+                    className="flex items-center gap-1"
+                  >
+                    <Edit className="w-3 h-3" />
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="admin-secondary"
+                    onClick={() => pkg._id && handleDelete(pkg._id)}
+                    className="flex items-center gap-1"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Delete
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <div className="col-span-full text-center py-8">
+            <p className="text-gray-500">No packages found. Add your first package to get started!</p>
+          </div>
+        )}
       </div>
     </div>
   );

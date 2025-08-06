@@ -1,58 +1,126 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useState } from "react";
-import { motion } from "framer-motion";
 
 interface OptimizedImageProps {
   src: string;
   alt: string;
+  className?: string;
+  fallbackSrc?: string;
   width?: number;
   height?: number;
-  className?: string;
+  fill?: boolean;
   priority?: boolean;
-  sizes?: string;
 }
 
-const OptimizedImage = ({
-  src,
-  alt,
-  width = 400,
-  height = 300,
-  className = "",
-  priority = false,
-  sizes = "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
+const OptimizedImage = ({ 
+  src, 
+  alt, 
+  className = "", 
+  fallbackSrc = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+  width,
+  height,
+  fill = false,
+  priority = false
 }: OptimizedImageProps) => {
+  const [currentSrc, setCurrentSrc] = useState(src);
+  const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  return (
-    <div className={`relative overflow-hidden ${className}`}>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isLoading ? 0 : 1 }}
-        transition={{ duration: 0.3 }}
-        className="relative"
-      >
-        <Image
-          src={src}
+  // List of domains that might have CORS issues
+  const corsProneDomains = [
+    'a.travel-assets.com',
+    'cdn-imgix.headout.com',
+    'travel-assets.com',
+    'imgix.headout.com'
+  ];
+
+  // Check if the URL is from a CORS-prone domain
+  const isCorsProne = (url: string) => {
+    try {
+      const urlObj = new URL(url);
+      return corsProneDomains.some(domain => urlObj.hostname.includes(domain));
+    } catch {
+      return false;
+    }
+  };
+
+  // Convert external URL to proxy URL if needed
+  const getProxiedUrl = (url: string) => {
+    if (isCorsProne(url)) {
+      return `/api/proxy-image?url=${encodeURIComponent(url)}`;
+    }
+    return url;
+  };
+
+  useEffect(() => {
+    console.log('OptimizedImage - src changed:', src);
+    const processedSrc = getProxiedUrl(src);
+    setCurrentSrc(processedSrc);
+    setHasError(false);
+    setIsLoading(true);
+  }, [src]);
+
+  const handleError = () => {
+    console.log('OptimizedImage - Image failed to load:', currentSrc);
+    if (!hasError && currentSrc !== fallbackSrc) {
+      console.log('OptimizedImage - Falling back to:', fallbackSrc);
+      setCurrentSrc(fallbackSrc);
+      setHasError(true);
+    } else {
+      console.log('OptimizedImage - Fallback also failed, showing loading state');
+      setIsLoading(false);
+    }
+  };
+
+  const handleLoad = () => {
+    console.log('OptimizedImage - Image loaded successfully:', currentSrc);
+    setIsLoading(false);
+    setHasError(false);
+  };
+
+  // If the image is from an external domain, use a regular img tag
+  if (src && (src.startsWith('http://') || src.startsWith('https://'))) {
+    return (
+      <div className={`relative ${className}`}>
+        {isLoading && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse rounded flex items-center justify-center">
+            <span className="text-gray-500 text-sm">Loading...</span>
+          </div>
+        )}
+        <img
+          src={currentSrc}
           alt={alt}
-          width={width}
-          height={height}
-          className={`transition-opacity duration-300 ${
-            isLoading ? "opacity-0" : "opacity-100"
-          }`}
-          onLoad={() => setIsLoading(false)}
-          priority={priority}
-          sizes={sizes}
-          placeholder="blur"
-          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+          className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+          onError={handleError}
+          onLoad={handleLoad}
+          crossOrigin="anonymous"
+          loading="lazy"
         />
-      </motion.div>
+      </div>
+    );
+  }
+
+  // For local images, use Next.js Image component
+  return (
+    <div className={`relative ${className}`}>
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded flex items-center justify-center">
+          <span className="text-gray-500 text-sm">Loading...</span>
         </div>
       )}
+      <Image
+        src={currentSrc}
+        alt={alt}
+        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+        width={width}
+        height={height}
+        fill={fill}
+        priority={priority}
+        onError={handleError}
+        onLoad={handleLoad}
+      />
     </div>
   );
 };

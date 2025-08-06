@@ -134,7 +134,7 @@ const AdminCTASection = () => {
           <p className="text-gray-600">Manage the call-to-action section content</p>
         </div>
         {!editing && (
-          <Button onClick={handleEdit} className="flex items-center gap-2">
+          <Button onClick={handleEdit} variant="admin-primary" className="flex items-center gap-2">
             <Edit className="w-4 h-4" />
             Edit CTA Content
           </Button>
@@ -213,12 +213,13 @@ const AdminCTASection = () => {
               <Button 
                 onClick={handleSave} 
                 disabled={saving}
+                variant="admin-primary"
                 className="flex items-center gap-2"
               >
                 <Save className="w-4 h-4" />
                 {saving ? 'Saving...' : 'Save Changes'}
               </Button>
-              <Button variant="outline" onClick={handleCancel} className="bg-white">
+              <Button variant="admin-outline" onClick={handleCancel}>
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>

@@ -138,4 +138,12 @@ export const LazyAdminItinerary = createLazyComponent(
     return Promise.reject(err);
   }),
   <Loading size="lg" className="min-h-[400px]" />
+);
+
+export const LazyAdminPopularDestinations = createLazyComponent(
+  () => import("./admin/AdminPopularDestinations").catch(err => {
+    console.error("Failed to load AdminPopularDestinations:", err);
+    return Promise.reject(err);
+  }),
+  <Loading size="lg" className="min-h-[400px]" />
 ); 

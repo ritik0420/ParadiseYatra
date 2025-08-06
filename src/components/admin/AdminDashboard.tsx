@@ -3,11 +3,11 @@
 const AdminDashboard = () => {
   const stats = [
     {
-      title: "Total Packages",
+      title: "Total Destinations",
       value: "24",
       change: "+12%",
       changeType: "positive",
-      icon: "📦",
+      icon: "🗺️",
     },
     {
       title: "Active Blogs",
@@ -34,10 +34,10 @@ const AdminDashboard = () => {
 
   const recentActivities = [
     {
-      action: "New package added",
-      description: "Adventure Package - Mountain Trek",
+      action: "New destination added",
+      description: "Manali - Mountain Destination",
       time: "2 hours ago",
-      type: "package",
+      type: "destination",
     },
     {
       action: "Blog published",
@@ -68,10 +68,10 @@ const AdminDashboard = () => {
           <p className="text-gray-600">Welcome back! Here&apos;s what&apos;s happening with your travel business.</p>
         </div>
         <div className="flex space-x-3">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            Add Package
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors border border-blue-600">
+            Add Destination
           </button>
-          <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+          <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors border border-green-600">
             Create Blog
           </button>
         </div>
@@ -110,7 +110,7 @@ const AdminDashboard = () => {
             {recentActivities.map((activity, index) => (
               <div key={index} className="flex items-center space-x-4">
                 <div className={`w-3 h-3 rounded-full ${
-                  activity.type === "package" ? "bg-blue-500" :
+                  activity.type === "destination" ? "bg-blue-500" :
                   activity.type === "blog" ? "bg-green-500" :
                   activity.type === "booking" ? "bg-purple-500" :
                   "bg-orange-500"
@@ -133,10 +133,10 @@ const AdminDashboard = () => {
           <div className="space-y-3">
             <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
               <div className="flex items-center space-x-3">
-                <span className="text-xl">📦</span>
+                <span className="text-xl">🗺️</span>
                 <div>
-                  <p className="font-medium text-gray-900">Add New Package</p>
-                  <p className="text-sm text-gray-600">Create a new travel package</p>
+                  <p className="font-medium text-gray-900">Add New Destination</p>
+                  <p className="text-sm text-gray-600">Create a new travel destination</p>
                 </div>
               </div>
             </button>

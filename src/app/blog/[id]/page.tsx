@@ -104,10 +104,10 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50"
+      className="min-h-screen bg-white/80"
     >
       {/* Breadcrumb */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-slate-200/60">
+      <div className="bg-white border-b border-slate-200/60">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center space-x-2 text-sm text-slate-600">
             <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
@@ -128,7 +128,7 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden mb-8 border border-white/20"
+              className="!bg-white rounded-3xl shadow-xl overflow-hidden mb-8 border border-white/20 mt-10"
             >
               {/* Hero Image */}
               <div className="relative h-64 md:h-96 overflow-hidden">
@@ -312,7 +312,7 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
               className="space-y-6"
             >
               {/* Author Info */}
-              <div className="bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-xl border border-white/20">
+              <div className="bg-white rounded-3xl p-6 shadow-xl border border-white/20 mt-10">
                 <h3 className="text-lg font-bold text-slate-900 mb-4">About the Author</h3>
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold">
@@ -329,7 +329,7 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
 
               {/* Popular Posts */}
-              <div className="bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-xl border border-white/20">
+              <div className="bg-white rounded-3xl p-6 shadow-xl border border-white/20">
                 <h3 className="text-lg font-bold text-slate-900 mb-4">Popular Posts</h3>
                 <div className="space-y-4">
                   {relatedPosts.slice(0, 3).map((popularPost, index) => (
@@ -360,7 +360,7 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="w-full px-3 py-2 rounded-lg text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="bg-white w-full px-3 py-2 rounded-lg text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
                   />
                   <Button className="w-full text-blue-600 font-semibold rounded-lg hover:bg-gray-100 hover:cursor-pointer hover:scale-105 transition-all duration-300 text-sm">
                     Subscribe

@@ -259,6 +259,7 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
             setEditing(null);
             resetForm();
           }} 
+          variant="admin-primary"
           className="flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
@@ -426,12 +427,13 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
               <Button 
                 onClick={handleSave} 
                 disabled={saving}
+                variant="admin-primary"
                 className="flex items-center gap-2"
               >
                 <Save className="w-4 h-4" />
                 {saving ? 'Saving...' : 'Save Blog'}
               </Button>
-              <Button variant="outline" onClick={handleCancel} className="bg-white">
+              <Button variant="admin-outline" onClick={handleCancel}>
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>
@@ -480,20 +482,20 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
                     <div className="flex gap-2 mt-4">
                       <Button
                         size="sm"
-                        variant="outline"
+                        variant="admin-outline"
                         onClick={() => handleEdit(blog)}
-                        className="flex items-center gap-1 text-white"
+                        className="flex items-center gap-1"
                       >
-                        <Edit className="w-3 h-3 text-white" />
+                        <Edit className="w-3 h-3" />
                         Edit
                       </Button>
                       <Button
                         size="sm"
-                        variant="outline"
+                        variant="admin-secondary"
                         onClick={() => blog._id && handleDelete(blog._id)}
-                        className="flex items-center gap-1 text-white"
+                        className="flex items-center gap-1"
                       >
-                        <Trash2 className="w-3 h-3 text-white" />
+                        <Trash2 className="w-3 h-3" />
                         Delete
                       </Button>
                     </div>
@@ -507,7 +509,7 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
                 <p className="text-gray-500 text-center mb-4">
                   {Array.isArray(blogs) ? 'No blog posts found.' : 'Loading blogs...'}
                 </p>
-                <Button onClick={handleAddNew} className="flex items-center gap-2">
+                <Button onClick={handleAddNew} variant="admin-primary" className="flex items-center gap-2">
                   <Plus className="w-4 h-4" />
                   Add Your First Blog
                 </Button>
