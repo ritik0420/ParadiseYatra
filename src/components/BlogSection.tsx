@@ -104,6 +104,9 @@ const BlogSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
+          <div className="flex items-center justify-center mb-2">
+            <BookOpen className="w-6 h-6 text-blue-600" />
+          </div>
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}

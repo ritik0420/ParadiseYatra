@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, MapPin, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { Star, MapPin, ChevronLeft, ChevronRight, Clock, CableCar, Compass } from "lucide-react";
 import { motion } from "framer-motion";
 import Loading from "@/components/ui/loading";
 import React from "react";
@@ -91,6 +91,25 @@ const TrendingDestinations = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-6"
         >
+          {/* add lucide icon */}
+          <motion.div 
+            animate={{ rotate: 360, }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="flex items-center justify-center mb-2"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <Compass className="w-5 h-5 text-blue-600" />
+          </motion.div>
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-3xl md:text-4xl font-extrabold text-blue-600 mb-3"
+          >
+            Trending Packages
+          </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -98,17 +117,8 @@ const TrendingDestinations = () => {
             transition={{ duration: 0.7, delay: 0.1 }}
             className="text-blue-600 text-base font-semibold tracking-wide mb-2"
           >
-            Handpicked for Your Next Adventure
+            Handpicked packages for your next trip
           </motion.p>
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3"
-          >
-            Trending Packages
-          </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

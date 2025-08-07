@@ -114,6 +114,18 @@ const DestinationsGrid = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-8 sm:mb-12"
         >
+          <div className="animate-bounce flex items-center justify-center mb-2">
+            <MapPin className="w-6 h-6 text-blue-600" />
+          </div>
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-blue-600 mb-3"
+          >
+            Popular Destinations
+          </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -123,15 +135,6 @@ const DestinationsGrid = () => {
           >
             Explore Our Top Destinations
           </motion.p>
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 mb-3"
-          >
-            Popular Destinations
-          </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

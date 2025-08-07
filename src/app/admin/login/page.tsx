@@ -63,8 +63,8 @@ const AdminLoginPage = () => {
         <Card className="border-0 shadow-lg rounded-xl overflow-hidden bg-white/90 backdrop-blur-sm">
           <div className="space-y-1 pb-2 pt-8 px-6">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center shadow-md">
-                <img src="/logo.png" alt="logo" className="w-14 h-14 object-contain" />
+              <div className="w-20 h-20 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center shadow-md">
+                <img src="/footerLogo.png" alt="logo" className="w-20 h-20 object-contain" />
               </div>
             </div>
             <h2 className="text-2xl font-bold text-center text-gray-900">

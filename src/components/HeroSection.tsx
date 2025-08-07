@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, Sparkles, Star } from "lucide-react";
+import { Search, MapPin, Sparkles, Star, Youtube } from "lucide-react";
 import { motion } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import Loading from "@/components/ui/loading";
@@ -33,11 +33,11 @@ const HeroSection = () => {
       try {
         setLoading(true);
         const response = await fetch('/api/hero');
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch hero content');
         }
-        
+
         const data = await response.json();
         setHeroContent(data);
         setError(null);
@@ -127,31 +127,31 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center bg-cover bg-center bg-no-repeat overflow-hidden pt-20 sm:pt-24 md:pt-28 lg:pt-32 px-4 sm:px-6 z-10">
       {/* Image background */}
-      <motion.img 
+      <motion.img
         initial={{ scale: 1.1 }}
         animate={{ scale: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
-        src={heroContent?.backgroundImage || "https://wallpapercave.com/wp/wp10918600.jpg"} 
-        alt="hero" 
-        className="absolute inset-0 w-full h-full object-cover z-0" 
+        src={heroContent?.backgroundImage || "https://wallpapercave.com/wp/wp10918600.jpg"}
+        alt="hero"
+        className="absolute inset-0 w-full h-full object-cover z-0"
       />
-      
+
       {/* Enhanced overlay for better contrast */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60 z-10" />
-      
+
       {/* Content */}
-      <motion.div 
+      <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="relative z-20 text-center text-white max-w-4xl mx-auto w-full"
       >
         {/* Trust badge */}
-        <motion.div 
+        <motion.div
           variants={itemVariants}
           className="flex justify-center mb-4 sm:mb-6 mt-8"
         >
-          <motion.span 
+          <motion.span
             whileHover={{ scale: 1.05 }}
             className="inline-flex items-center gap-2 bg-white/25 backdrop-blur-md px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold shadow-xl border border-white/20"
           >
@@ -165,13 +165,13 @@ const HeroSection = () => {
             {heroContent?.trustBadgeText || "Trusted by 5000+ travelers"}
           </motion.span>
         </motion.div>
-        
+
         {/* Headline */}
         <motion.h1
           variants={titleVariants}
           className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold mb-4 sm:mb-6 drop-shadow-2xl leading-tight px-2"
         >
-          <motion.span 
+          <motion.span
             className="inline-flex items-center gap-2"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.3 }}
@@ -188,7 +188,7 @@ const HeroSection = () => {
             {heroContent?.title || "Your Next Adventure Awaits"}
           </motion.span>
         </motion.h1>
-        
+
         {/* Subheading */}
         <motion.p
           variants={itemVariants}
@@ -196,7 +196,7 @@ const HeroSection = () => {
         >
           {heroContent?.description || "Unforgettable journeys, handpicked for you. Explore, dream, and discover with Paradise Yatra."}
         </motion.p>
-        
+
         {/* CTA Buttons - Full width on mobile */}
         <motion.div
           variants={itemVariants}
@@ -210,12 +210,12 @@ const HeroSection = () => {
           >
             <Button
               size="lg"
-              className="w-full bg-gradient-to-r from-yellow-400 via-pink-500 to-red-500 hover:from-yellow-500 hover:to-pink-600 hover:cursor-pointer text-white font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-xl text-base sm:text-lg transition-all duration-200"
+              className="bg-gradient-to-r from-yellow-400 via-pink-500 to-red-500 text-white hover:brightness-110 font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-lg transition-all"
             >
               {heroContent?.ctaButtonText || "Plan My Trip"}
             </Button>
           </motion.div>
-          
+
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -224,15 +224,18 @@ const HeroSection = () => {
           >
             <Button
               size="lg"
-              variant="outline"
-              className="w-full border-white text-white hover:bg-white/10 hover:cursor-pointer font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg backdrop-blur-sm"
+              className="bg-white/10 border border-white/30 text-white hover:bg-white/20 hover:cursor-pointer font-medium px-6 py-3 sm:py-4 rounded-xl backdrop-blur-md transition-all"
               onClick={() => window.open('https://www.youtube.com/@ParadiseYatra', '_blank')}
             >
+              <span className="border-b-2 border-white group-hover:w-full w-0 transition-all duration-300 inline-block"></span>
+              <Youtube className="w-4 h-4 mr-2 text-red-500" />
               {heroContent?.secondaryButtonText || "Watch Video"}
             </Button>
+
+
           </motion.div>
         </motion.div>
-        
+
         {/* Enhanced Search Bar - Mobile Optimized */}
         <motion.div
           variants={itemVariants}
@@ -258,7 +261,7 @@ const HeroSection = () => {
                 variant="hero"
               />
             </motion.div>
-            
+
             {/* Search button */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -268,7 +271,7 @@ const HeroSection = () => {
               whileTap={{ scale: 0.98 }}
               className="flex items-center lg:w-auto"
             >
-              <button 
+              <button
                 onClick={() => setIsSearchOpen(true)}
                 className="w-full lg:w-auto lg:px-8 h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-4 rounded-2xl transition-all duration-200 shadow-lg text-sm flex items-center justify-center gap-2 group"
               >
@@ -283,7 +286,7 @@ const HeroSection = () => {
             </motion.div>
           </div>
         </motion.div>
-        
+
         {/* Popular destinations */}
         <motion.div
           variants={itemVariants}

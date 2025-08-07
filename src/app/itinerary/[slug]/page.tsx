@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useState, use, useEffect } from "react";
 import { DayItineraryCard, InclusionList, PackageHeader } from "@/components/itinerary";
 import { useRouter } from "next/navigation";
-import OptimizedImage from "@/components/ui/optimized-image";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import LeadCaptureForm from "@/components/LeadCaptureForm";
 
 interface DayItinerary {

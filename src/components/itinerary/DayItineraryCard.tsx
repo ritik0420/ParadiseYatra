@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { MapPin, Calendar, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import OptimizedImage from "@/components/ui/optimized-image";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface DayItineraryCardProps {
   day: {
@@ -45,8 +45,9 @@ const DayItineraryCard = ({ day, isExpanded, onToggle }: DayItineraryCardProps) 
           <OptimizedImage 
             src={displayImage} 
             alt={`Day ${day.day} - ${day.title}`}
+            width={800}
+            height={448}
             className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
-            fallbackSrc={fallbackImages[1]}
           />
           <div className="absolute top-6 left-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-4 py-2 rounded-full font-bold text-lg shadow-lg">
             Day {day.day}

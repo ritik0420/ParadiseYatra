@@ -88,7 +88,7 @@ const PremiumPackages = () => {
             transition={{ duration: 0.7, delay: 0.1 }}
             className="flex items-center justify-center gap-2 mb-2"
           >
-            <Crown className="w-5 h-5 text-purple-600" />
+            <Crown className="animate-pulse w-5 h-5 text-purple-600" />
             <span className="text-purple-600 text-base font-semibold tracking-wide">Premium Collection</span>
           </motion.div>
           <motion.h2 

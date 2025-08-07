@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {  Clock, Users, ArrowRight, Globe } from "lucide-react";
+import {  Clock, Users, ArrowRight, Globe, Tent } from "lucide-react";
 import { motion } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -61,6 +61,18 @@ const HolidaysSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
+          <div className="animate-pulse flex items-center justify-center mb-2">
+            <Tent className="w-5 h-5 text-purple-600" />
+          </div>
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-3xl md:text-4xl font-extrabold text-purple-600 mb-3"
+          >
+            Holidays for Every Traveler
+          </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -70,15 +82,6 @@ const HolidaysSection = () => {
           >
             Choose Your Perfect Holiday Type
           </motion.p>
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3"
-          >
-            Holidays for Every Traveler
-          </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -179,7 +182,7 @@ const HolidaysSection = () => {
           className="flex justify-center mt-12"
         >
           <Link href="/packages/holidays">
-            <Button className="px-8 py-3 text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-full shadow hover:from-blue-700 hover:to-blue-600 hover:cursor-pointer hover:scale-105 transition-all duration-200 inline-flex items-center group">
+            <Button className="px-8 py-3 text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-200 text-white rounded-full shadow hover:from-purple-700 hover:to-purple-600 hover:cursor-pointer hover:scale-105 transition-all duration-200 inline-flex items-center group">
               <Globe className="w-5 h-5 mr-2 group-hover:text-blue-200 transition-colors" />
               View All Holiday Types
             </Button>

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Star, Quote, Play, ChevronLeft, ChevronRight, Award, Users, ThumbsUp } from "lucide-react";
+import { Star, Quote, Play, ChevronLeft, ChevronRight, Award, Users, ThumbsUp, Youtube } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Loading from "@/components/ui/loading";
+import YouTube from "react-youtube";
 
 interface Testimonial {
   _id: string;
@@ -20,12 +21,151 @@ interface Testimonial {
   featured: boolean;
 }
 
+// YouTube Player Component with react-youtube
+const YouTubePlayer = ({ videoId }: { videoId: string }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [player, setPlayer] = useState<any>(null);
+
+  const opts = {
+    height: '100%',
+    width: '100%',
+    playerVars: {
+      // https://developers.google.com/youtube/player_parameters
+      autoplay: 0,
+      modestbranding: 1,
+      rel: 0,
+      showinfo: 0,
+      controls: 1,
+      mute: 0,
+      origin: typeof window !== 'undefined' ? window.location.origin : '',
+    },
+  };
+
+  const onReady = (event: any) => {
+    setPlayer(event.target);
+  };
+
+  const onPlay = () => {
+    setIsPlaying(true);
+  };
+
+  const onPause = () => {
+    setIsPlaying(false);
+  };
+
+  const onEnd = () => {
+    setIsPlaying(false);
+  };
+
+  const onError = (error: any) => {
+    console.error('YouTube Player Error:', error);
+  };
+
+  return (
+    <div className="relative w-full h-full">
+      <YouTube
+        videoId={videoId}
+        opts={opts}
+        onReady={onReady}
+        onPlay={onPlay}
+        onPause={onPause}
+        onEnd={onEnd}
+        onError={onError}
+        className="w-full h-full rounded-l-3xl"
+      />
+      
+      {/* Custom play button overlay */}
+      {!isPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-l-3xl">
+          <div className="bg-red-600 rounded-full p-4 shadow-lg transform hover:scale-110 transition-transform duration-200 cursor-pointer">
+            <Play className="w-8 h-8 text-white fill-current" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// YouTube Video Selector Component
+const YouTubeVideoSelector = ({ 
+  onVideoSelect, 
+  selectedVideoId 
+}: { 
+  onVideoSelect: (videoId: string) => void;
+  selectedVideoId: string;
+}) => {
+  // Sample video IDs from Paradise Yatra channel with proper thumbnails
+  const paradiseYatraVideos = [
+    { 
+      id: "ekd51s2WShk", 
+      title: "Shimla Manali Tour", 
+      thumbnail: "https://img.youtube.com/vi/ekd51s2WShk/mqdefault.jpg"
+    },
+    { 
+      id: "qXuTuC6WLz4", 
+      title: "Char Dham Yatra Experience", 
+      thumbnail: "https://img.youtube.com/vi/qXuTuC6WLz4/mqdefault.jpg"
+    },
+    { 
+      id: "yeGB8wLU5KU", 
+      title: "Bali Paradise Tour", 
+      thumbnail: "https://img.youtube.com/vi/yeGB8wLU5KU/mqdefault.jpg"
+    },
+    { 
+      id: "nuKUUiJHEiA", 
+      title: "Kerala - God's Own Country", 
+      thumbnail: "https://img.youtube.com/vi/nuKUUiJHEiA/mqdefault.jpg"
+    },
+  ];
+
+  const handleVideoSelect = (videoId: string) => {
+    onVideoSelect(videoId);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-3 mt-4">
+      {paradiseYatraVideos.map((video) => (
+        <button
+          key={video.id}
+          onClick={() => handleVideoSelect(video.id)}
+          className={`relative rounded-lg overflow-hidden transition-all duration-200 hover:scale-105 group hover:cursor-pointer ${
+            selectedVideoId === video.id ? 'ring-2 ring-blue-500 ring-offset-2' : 'hover:ring-2 hover:ring-blue-300'
+          }`}
+        >
+          <img
+            src={video.thumbnail}
+            alt={video.title}
+            className="w-20 h-14 object-cover"
+            onError={(e) => {
+              // Fallback to a placeholder if thumbnail fails to load
+              e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='56' viewBox='0 0 80 56'%3E%3Crect width='80' height='56' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%236b7280' font-size='8'%3E%3C/tspan%3E%3C/svg%3E";
+            }}
+          />
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="bg-red-600 rounded-full p-1">
+              <Play className="w-3 h-3 text-white fill-current" />
+            </div>
+          </div>
+          {selectedVideoId === video.id && (
+            <div className="absolute top-1 right-1">
+              <div className="bg-blue-500 rounded-full w-3 h-3 flex items-center justify-center">
+                <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+              </div>
+            </div>
+          )}
+        </button>
+      ))}
+    </div>
+  );
+};
+
 const TestimonialSection = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [selectedVideoId, setSelectedVideoId] = useState("ekd51s2WShk"); // Default to Shimla video
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -171,6 +311,9 @@ const TestimonialSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
+          <div className="flex items-center justify-center mb-2">
+            <Award className="w-6 h-6 text-blue-600" />
+          </div>
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -465,7 +608,7 @@ const TestimonialSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-16 max-w-4xl mx-auto"
+          className="grid grid-cols-3 gap-2 sm:gap-4 mt-8 max-w-2xl mx-auto"
         >
           {[
             { icon: Users, label: "Happy Travelers", value: "5000+", color: "text-blue-600" },
@@ -478,14 +621,14 @@ const TestimonialSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.8 + index * 0.1 }}
-              whileHover={{ y: -5, scale: 1.05 }}
-              className="text-center p-4 sm:p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+              whileHover={{ y: -3, scale: 1.02 }}
+              className="text-center p-3 sm:p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
             >
-              <div className={`w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center ${stat.color}`}>
-                <stat.icon className="w-6 h-6 sm:w-8 sm:h-8" />
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-2 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center ${stat.color}`}>
+                <stat.icon className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
-              <div className="text-xs sm:text-sm text-gray-600 font-medium">{stat.label}</div>
+              <div className="text-lg sm:text-xl font-bold text-gray-900 mb-1">{stat.value}</div>
+              <div className="text-xs text-gray-600 font-medium leading-tight">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -496,47 +639,58 @@ const TestimonialSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 1.0 }}
-          className="mt-16 max-w-4xl mx-auto"
+          className="mt-16 max-w-6xl mx-auto"
         >
           <div className="bg-white rounded-3xl overflow-hidden shadow-xl border-0 bg-gradient-to-br from-white via-gray-50 to-gray-100">
             <div className="grid md:grid-cols-2 gap-0">
-              {/* Video section */}
+              {/* YouTube Video section */}
               <div className="relative h-64 md:h-full card-image">
-                <img 
-                  src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                  alt="Travel experience"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/30"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Button className="bg-white/90 backdrop-blur-sm hover:bg-white text-gray-800 p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-110">
-                    <Play className="w-8 h-8 ml-1" />
-                  </Button>
-                </div>
-                <div className="absolute top-4 left-4">
-                  <Badge className="badge bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-sm font-medium shadow-md">
-                    Watch Video
-                  </Badge>
+                <YouTubePlayer videoId={selectedVideoId} />
+
+                {/* Play button overlay */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                  <div className="bg-red-600 rounded-full p-4 shadow-lg transform hover:scale-110 transition-transform duration-200">
+                    <Play className="w-8 h-8 text-white fill-current" />
+                  </div>
                 </div>
               </div>
 
               {/* Content section */}
-              <div className="p-6 sm:p-8 flex flex-col justify-center card-content">
+              <div className="p-6 sm:p-8 flex flex-col justify-center card-content bg-gradient-to-br from-gray-50 to-white">
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                   See Our Travelers in Action
                 </h3>
                 <p className="text-gray-600 leading-relaxed mb-6 text-sm sm:text-base">
                   Watch real testimonials from our satisfied travelers and see how Paradise Yatra creates unforgettable experiences around the world.
                 </p>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-500">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-500 mb-6">
                   <div className="flex items-center space-x-1">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span>4.9 Average Rating</span>
+                    <span className="font-medium">4.9 Average Rating</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <span className="hidden sm:inline">•</span>
-                    <span>500+ Happy Travelers</span>
+                    <span className="hidden sm:inline text-gray-400">•</span>
+                    <span className="font-medium">5000+ Happy Travelers</span>
                   </div>
+                </div>
+                
+                {/* Video Selector */}
+                <div className="mt-4">
+                  <p className="text-sm text-gray-600 mb-3 font-medium">Choose a video:</p>
+                  <YouTubeVideoSelector onVideoSelect={setSelectedVideoId} selectedVideoId={selectedVideoId} />
+                </div>
+                
+                {/* Channel Link */}
+                <div className="mt-6">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="text-red-600 hover:bg-red-500 text-gray-600 transition-colors duration-200 font-medium hover:cursor-pointer"
+                    onClick={() => window.open('https://www.youtube.com/@ParadiseYatra', '_blank')}
+                  >
+                    <Youtube className="w-4 h-4 mr-2" />
+                    Visit Our Channel
+                  </Button>
                 </div>
               </div>
             </div>

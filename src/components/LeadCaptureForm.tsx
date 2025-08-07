@@ -153,7 +153,7 @@ export default function LeadCaptureForm({ isOpen, onClose, packageTitle, package
             onClick={(e) => e.stopPropagation()}
           >
             <Card className="shadow-2xl border-0 bg-white">
-              <CardHeader className="relative pb-4">
+              <CardHeader className="relative pb-2">
                 <button
                   onClick={onClose}
                   className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -161,9 +161,9 @@ export default function LeadCaptureForm({ isOpen, onClose, packageTitle, package
                   <X className="w-5 h-5 text-gray-500" />
                 </button>
                 <div className="flex justify-center">
-                  <Image src="/headerLogo.png" alt="Logo" width={100} height={100} />
+                  <Image src="/headerLogo.png" alt="Logo" width={80} height={80} />
                 </div>
-                <CardTitle className="text-2xl font-bold text-gray-900 text-center">
+                <CardTitle className="text-xl font-bold text-gray-900 text-center">
                   Book Your Trip
                 </CardTitle>
                 {packageTitle && (
@@ -174,15 +174,15 @@ export default function LeadCaptureForm({ isOpen, onClose, packageTitle, package
                 )}
               </CardHeader>
 
-              <CardContent className="p-6">
+              <CardContent className="p-4">
                 {submitStatus === "success" ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-8"
+                    className="text-center py-6"
                   >
-                    <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       Thank You!
                     </h3>
                     <p className="text-gray-600">
@@ -193,13 +193,13 @@ export default function LeadCaptureForm({ isOpen, onClose, packageTitle, package
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-8"
+                    className="text-center py-6"
                   >
-                    <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       Something went wrong
                     </h3>
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-gray-600 mb-3">
                       Please try again or contact us directly.
                     </p>
                     <Button
@@ -210,9 +210,9 @@ export default function LeadCaptureForm({ isOpen, onClose, packageTitle, package
                     </Button>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                  <form onSubmit={handleSubmit} className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Full Name *
                       </label>
                       <div className="relative">
@@ -232,7 +232,7 @@ export default function LeadCaptureForm({ isOpen, onClose, packageTitle, package
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Email Address *
                       </label>
                       <div className="relative">
@@ -252,7 +252,7 @@ export default function LeadCaptureForm({ isOpen, onClose, packageTitle, package
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Phone Number *
                       </label>
                       <div className="relative">
@@ -272,7 +272,7 @@ export default function LeadCaptureForm({ isOpen, onClose, packageTitle, package
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Message or Requirements *
                       </label>
                       <div className="relative">
@@ -280,7 +280,7 @@ export default function LeadCaptureForm({ isOpen, onClose, packageTitle, package
                         <Textarea
                           value={formData.message}
                           onChange={(e) => handleInputChange("message", e.target.value)}
-                          className={`pl-10 min-h-[100px] ${errors.message ? "border-red-500" : ""} bg-white`}
+                          className={`pl-10 min-h-[80px] ${errors.message ? "border-red-500" : ""} bg-white`}
                           placeholder="Tell us about your travel requirements, preferred dates, number of travelers, etc."
                           disabled={isSubmitting}
                         />
@@ -293,11 +293,11 @@ export default function LeadCaptureForm({ isOpen, onClose, packageTitle, package
                     <Button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 disabled:transform-none disabled:opacity-70"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 text-base font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:cursor-pointer disabled:transform-none disabled:opacity-70"
                     >
                       {isSubmitting ? (
                         <>
-                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                           Sending...
                         </>
                       ) : (

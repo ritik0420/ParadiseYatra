@@ -3,22 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    domains: [
-      'images.unsplash.com',
-      'localhost',
-      '127.0.0.1',
-      'a.travel-assets.com',
-      'cdn-imgix.headout.com',
-      'dynamic-media-cdn.tripadvisor.com',
-      'media-cdn.tripadvisor.com',
-      'www.tripadvisor.com',
-      'images.pexels.com',
-      'images.unsplash.com',
-      'picsum.photos',
-      'via.placeholder.com',
-      'placehold.co',
-      'dummyimage.com'
-    ],
     remotePatterns: [
       {
         protocol: 'https',
@@ -97,6 +81,19 @@ const nextConfig: NextConfig = {
         hostname: '127.0.0.1',
         port: '5000',
         pathname: '/**',
+      },
+      // Allow images from our proxy API route
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/proxy-image/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/proxy-image/**',
       },
     ],
   },

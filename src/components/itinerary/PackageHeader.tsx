@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Clock, MapPin, Star, Users } from "lucide-react";
 import { useState, useEffect } from "react";
-import OptimizedImage from "@/components/ui/optimized-image";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface PackageHeaderProps {
   title: string;
@@ -68,13 +68,14 @@ const PackageHeader = ({
       <OptimizedImage 
         src={finalImage} 
         alt={title}
+        width={1920}
+        height={1080}
         className="w-full h-full object-cover"
-        fallbackSrc={fallbackImages[1]}
-        fill={true}
+        onError={handleImageError}
       />
       
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black bg-opacity-40"></div>
       
       {/* Content */}
       <div className="absolute inset-0 container mx-auto px-4 h-full flex items-center">

@@ -4,7 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, MapPin, Calendar, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/ui/optimized-image';
+import { formatPrice, getCategoryColor } from '@/lib/utils';
 
 interface PackageSuggestion {
   id: string;
@@ -161,24 +162,7 @@ const SearchSuggestions = ({
     }, 150);
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
 
-  const getCategoryColor = (category: string) => {
-    const colors = {
-      premium: 'bg-gradient-to-r from-yellow-400 to-orange-500',
-      adventure: 'bg-gradient-to-r from-green-400 to-emerald-500',
-      holiday: 'bg-gradient-to-r from-blue-400 to-purple-500',
-      trending: 'bg-gradient-to-r from-pink-400 to-rose-500'
-    };
-    return colors[category as keyof typeof colors] || 'bg-gray-400';
-  };
 
   const getInputClasses = () => {
     if (variant === 'hero') {
@@ -265,22 +249,20 @@ const SearchSuggestions = ({
                     <div className="flex items-start space-x-3">
                       {/* Image */}
                       <div className="flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden bg-gray-100">
-                        {suggestion.image ? (
-                          <Image
-                            src={suggestion.image}
-                            alt={suggestion.title}
-                            width={64}
-                            height={48}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              // Fallback to placeholder on error
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              target.nextElementSibling?.classList.remove('hidden');
-                            }}
-                          />
-                        ) : null}
-                        <div className={`w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center ${suggestion.image ? 'hidden' : ''}`}>
+                        <OptimizedImage
+                          src={suggestion.image}
+                          alt={suggestion.title}
+                          width={64}
+                          height={48}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Fallback to placeholder on error
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                        <div className="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center hidden">
                           <MapPin className="w-4 h-4 text-gray-400" />
                         </div>
                       </div>
