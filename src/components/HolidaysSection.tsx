@@ -7,6 +7,8 @@ import {  Clock, Users, ArrowRight, Globe, Tent } from "lucide-react";
 import { motion } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 interface HolidayType {
   _id: string;
@@ -27,7 +29,7 @@ interface HolidayType {
 
 const HolidaysSection = () => {
   const [categories, setCategories] = useState<HolidayType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchHolidayTypes = async () => {
@@ -106,10 +108,11 @@ const HolidaysSection = () => {
             >
               <Card className="group overflow-hidden modern-card hover-lift rounded-3xl shadow-xl border-0 relative bg-gradient-to-br from-white via-gray-50 to-gray-100 h-full flex flex-col min-h-[480px]">
                 <div className="relative h-48 overflow-hidden card-image rounded-t-3xl">
-                  <img 
-                    src={category.image} 
+                  <Image 
+                    src={getImageUrl(category.image)} 
                     alt={category.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />
                   

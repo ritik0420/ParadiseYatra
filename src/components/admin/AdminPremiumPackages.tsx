@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Crown, Star, MapPin, Clock, Users, Edit, Trash2, Plus, Eye, Loader2 } from "lucide-react";
+import { Crown, Star, MapPin, Clock, Edit, Trash2, Plus, Eye, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { toast } from "react-toastify";
+import ImageUpload from "@/components/ui/image-upload";
+import { getImageUrl } from "@/lib/utils";
 
 interface PremiumPackage {
   _id: string;
@@ -90,9 +94,12 @@ const AdminPremiumPackages = () => {
       
       const token = localStorage.getItem('adminToken');
       if (!token) {
-        setError('Authentication required. Please login again.');
+        toast.error('Authentication required. Please login again.');
         return;
       }
+      
+      // Check if we need to upload a file
+      const hasFileUpload = formData.images && (formData.images.startsWith('blob:') || formData.images.startsWith('data:'));
       
       const packageData = {
         ...formData,
@@ -104,14 +111,55 @@ const AdminPremiumPackages = () => {
         inclusions: formData.inclusions ? formData.inclusions.split(',').map(i => i.trim()) : []
       };
 
-      const response = await fetch('/api/packages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(packageData),
-      });
+      let response;
+      if (hasFileUpload) {
+        // Handle file upload
+        const uploadFormData = new FormData();
+        
+        // Add all form fields
+        Object.keys(packageData).forEach(key => {
+          const value = (packageData as unknown as Record<string, unknown>)[key];
+          if (key === 'images' && Array.isArray(value) && value.length > 0 && typeof value[0] === 'string' && value[0].startsWith('blob:')) {
+            // Convert blob URL to file and upload
+            fetch(value[0])
+              .then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (key === 'images' && Array.isArray(value) && value.length > 0 && typeof value[0] === 'string' && value[0].startsWith('data:')) {
+            // Convert data URL to file and upload
+            const response = fetch(value[0]);
+            response.then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (Array.isArray(value)) {
+            uploadFormData.append(key, JSON.stringify(value));
+          } else {
+            uploadFormData.append(key, String(value));
+          }
+        });
+
+        response = await fetch('/api/packages', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+      } else {
+        // Handle regular JSON data
+        response = await fetch('/api/packages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(packageData),
+        });
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -120,8 +168,10 @@ const AdminPremiumPackages = () => {
 
       await fetchPremiumPackages();
       resetForm();
+      toast.success('Premium package added successfully!');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create package');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create package';
+      toast.error(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -156,9 +206,12 @@ const AdminPremiumPackages = () => {
       
       const token = localStorage.getItem('adminToken');
       if (!token) {
-        setError('Authentication required. Please login again.');
+        toast.error('Authentication required. Please login again.');
         return;
       }
+      
+      // Check if we need to upload a file
+      const hasFileUpload = formData.images && (formData.images.startsWith('blob:') || formData.images.startsWith('data:'));
       
       const packageData = {
         ...formData,
@@ -170,14 +223,55 @@ const AdminPremiumPackages = () => {
         inclusions: formData.inclusions ? formData.inclusions.split(',').map(i => i.trim()) : []
       };
 
-      const response = await fetch(`/api/packages/${editingPackage._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(packageData),
-      });
+      let response;
+      if (hasFileUpload) {
+        // Handle file upload
+        const uploadFormData = new FormData();
+        
+        // Add all form fields
+        Object.keys(packageData).forEach(key => {
+          const value = (packageData as unknown as Record<string, unknown>)[key];
+          if (key === 'images' && Array.isArray(value) && value.length > 0 && typeof value[0] === 'string' && value[0].startsWith('blob:')) {
+            // Convert blob URL to file and upload
+            fetch(value[0])
+              .then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (key === 'images' && Array.isArray(value) && value.length > 0 && typeof value[0] === 'string' && value[0].startsWith('data:')) {
+            // Convert data URL to file and upload
+            const response = fetch(value[0]);
+            response.then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (Array.isArray(value)) {
+            uploadFormData.append(key, JSON.stringify(value));
+          } else {
+            uploadFormData.append(key, String(value));
+          }
+        });
+
+        response = await fetch(`/api/packages/${editingPackage._id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+      } else {
+        // Handle regular JSON data
+        response = await fetch(`/api/packages/${editingPackage._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(packageData),
+        });
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -187,8 +281,10 @@ const AdminPremiumPackages = () => {
       await fetchPremiumPackages();
       setEditingPackage(null);
       resetForm();
+      toast.success('Premium package updated successfully!');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update package');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update package';
+      toast.error(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -415,13 +511,10 @@ const AdminPremiumPackages = () => {
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-              <input
-                type="url"
+              <ImageUpload
                 value={formData.images}
-                onChange={(e) => setFormData({ ...formData, images: e.target.value })}
-                className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="https://images.unsplash.com/..."
+                onChange={(value) => setFormData({ ...formData, images: value })}
+                label="Package Image"
               />
             </div>
             <div className="md:col-span-2">
@@ -575,11 +668,14 @@ const AdminPremiumPackages = () => {
                   <tr key={pkg._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <img 
-                          src={pkg.images[0] || "https://via.placeholder.com/48x48?text=No+Image"} 
-                          alt={pkg.title}
-                          className="w-12 h-12 rounded-lg object-cover mr-3"
-                        />
+                        <div className="w-12 h-12 rounded overflow-hidden relative">
+                          <Image 
+                            src={getImageUrl(pkg.images[0]) || "https://via.placeholder.com/48x48?text=No+Image"} 
+                            alt={pkg.title}
+                            fill
+                            className="object-cover rounded"
+                          />
+                        </div>
                         <div>
                           <div className="text-sm font-medium text-gray-900">{pkg.title}</div>
                           <div className="text-xs text-gray-500">{pkg.isFeatured ? "Featured" : "Premium"}</div>
@@ -674,11 +770,14 @@ const AdminPremiumPackages = () => {
               </button>
             </div>
             <div className="space-y-4">
-              <img 
-                src={selectedPackage.images[0] || "https://via.placeholder.com/400x200?text=No+Image"} 
-                alt={selectedPackage.title}
-                className="w-full h-48 object-cover rounded-lg"
-              />
+              <div className="w-full h-48 rounded-lg overflow-hidden relative">
+                <Image 
+                  src={getImageUrl(selectedPackage.images[0]) || "https://via.placeholder.com/400x200?text=No+Image"} 
+                  alt={selectedPackage.title}
+                  fill
+                  className="object-cover rounded-lg"
+                />
+              </div>
               <div>
                 <h4 className="text-lg font-semibold text-gray-900">{selectedPackage.title}</h4>
                 <p className="text-gray-600 mt-2">{selectedPackage.description}</p>

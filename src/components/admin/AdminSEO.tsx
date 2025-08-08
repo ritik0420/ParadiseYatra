@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ImageUpload from "@/components/ui/image-upload";
 
 interface SEOSettings {
   id: string;
@@ -194,15 +195,10 @@ const AdminSEO = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                OG Image URL
-              </label>
-              <input
-                type="text"
+              <ImageUpload
                 value={formData.ogImage}
-                onChange={(e) => setFormData({ ...formData, ogImage: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter OG image URL"
+                onChange={(value) => setFormData({ ...formData, ogImage: value })}
+                label="OG Image"
               />
             </div>
           </div>

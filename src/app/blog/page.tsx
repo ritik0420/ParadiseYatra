@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Clock, User, ArrowRight, BookOpen, Heart, Share2, ChevronRight, Sparkles, TrendingUp, Zap, Mail } from "lucide-react";
+import { Clock, User, ChevronRight, Sparkles, Mail, BookOpen, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
 import Link from "next/link";
+import Image from "next/image";
 import Loading from "@/components/ui/loading";
 
 interface BlogPost {
@@ -90,17 +91,6 @@ const BlogPage = () => {
     }
   };
 
-  const heroVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8
-      }
-    }
-  };
-
   // Don't render if blogPosts is not an array
   if (!Array.isArray(blogPosts)) {
     return (
@@ -125,7 +115,7 @@ const BlogPage = () => {
       <div className="bg-white border-b border-slate-100 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center space-x-2 text-sm text-slate-500">
-            <a href="/" className="hover:text-blue-600 transition-colors duration-200">Home</a>
+                            <Link href="/" className="hover:text-blue-600 transition-colors duration-200">Home</Link>
             <ChevronRight className="w-3 h-3 text-slate-400" />
             <span className="text-slate-800">Blog</span>
           </nav>
@@ -203,10 +193,12 @@ const BlogPage = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2">
                 <div className="relative h-64 lg:h-full overflow-hidden">
                   {blogPosts[0].image && blogPosts[0].image.startsWith('http') ? (
-                    <img 
+                    <Image 
                       src={blogPosts[0].image} 
                       alt={blogPosts[0].title}
                       className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      width={400}
+                      height={300}
                     />
                   ) : (
                     <div className="h-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-6xl">
@@ -266,7 +258,7 @@ const BlogPage = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogPosts.slice(1).map((post, index) => (
+            {blogPosts.slice(1).map((post) => (
               <motion.article
                 key={post._id}
                 variants={itemVariants}
@@ -276,10 +268,12 @@ const BlogPage = () => {
                 {/* Blog Image */}
                 <div className="relative h-48 overflow-hidden">
                   {post.image && post.image.startsWith('http') ? (
-                    <img 
+                    <Image 
                       src={post.image} 
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      width={400}
+                      height={300}
                     />
                   ) : (
                     <div className="h-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-5xl">

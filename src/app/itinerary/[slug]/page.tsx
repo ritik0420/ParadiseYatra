@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useState, use, useEffect } from "react";
 import { DayItineraryCard, InclusionList, PackageHeader } from "@/components/itinerary";
 import { useRouter } from "next/navigation";
-import { OptimizedImage } from "@/components/ui/optimized-image";
+import Link from "next/link";
 import LeadCaptureForm from "@/components/LeadCaptureForm";
 
 interface DayItinerary {
@@ -38,7 +38,7 @@ interface Package {
   inclusions: string[];
   exclusions: string[];
   rating: number;
-  reviews: any[];
+  reviews: unknown[];
   isActive: boolean;
   isFeatured: boolean;
 }
@@ -76,7 +76,7 @@ const ItineraryPage = ({ params }: { params: Promise<{ slug: string }> }) => {
         if (!data.images || data.images.length === 0) {
           // Try to get image from itinerary
           if (data.itinerary && data.itinerary.length > 0) {
-            const firstItineraryWithImage = data.itinerary.find((day: any) => day.image);
+            const firstItineraryWithImage = data.itinerary.find((day: DayItinerary) => day.image);
             if (firstItineraryWithImage) {
               data.images = [firstItineraryWithImage.image];
               console.log('Using itinerary image as cover:', firstItineraryWithImage.image);
@@ -190,9 +190,9 @@ const ItineraryPage = ({ params }: { params: Promise<{ slug: string }> }) => {
       <div className="bg-white border-b shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center space-x-2 text-sm text-gray-600">
-            <a href="/" className="hover:text-blue-600 transition-colors font-medium">Home</a>
+            <Link href="/" className="hover:text-blue-600 transition-colors font-medium">Home</Link>
             <ChevronRight className="w-4 h-4" />
-            <a href="/packages" className="hover:text-blue-600 transition-colors font-medium">Packages</a>
+            <Link href="/packages" className="hover:text-blue-600 transition-colors font-medium">Packages</Link>
             <ChevronRight className="w-4 h-4" />
             <span className="text-gray-900 font-semibold">{packageData.title}</span>
           </nav>

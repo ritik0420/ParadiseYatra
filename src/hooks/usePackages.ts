@@ -9,7 +9,7 @@ export const usePackages = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPackages = async (params: Record<string, any> = {}) => {
+  const fetchPackages = async (params: Record<string, unknown> = {}) => {
     try {
       setLoading(true);
       setError(null);
@@ -39,7 +39,7 @@ export const usePackages = () => {
     }
   };
 
-  const fetchPackagesByCategory = async (category: string, params: Record<string, any> = {}) => {
+  const fetchPackagesByCategory = async (category: string, params: Record<string, unknown> = {}) => {
     try {
       setLoading(true);
       setError(null);
@@ -54,7 +54,7 @@ export const usePackages = () => {
     }
   };
 
-  const searchPackages = async (query: string, params: Record<string, any> = {}) => {
+  const searchPackages = async (query: string, params: Record<string, unknown> = {}) => {
     try {
       setLoading(true);
       setError(null);

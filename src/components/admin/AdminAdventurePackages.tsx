@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Mountain, Star, MapPin, Clock, Users, Edit, Trash2, Plus, Eye, Zap } from "lucide-react";
+import Image from "next/image";
+import { toast } from "react-toastify";
+import ImageUpload from "@/components/ui/image-upload";
+import { getImageUrl } from "@/lib/utils";
 
 interface AdventurePackage {
   _id: string;
@@ -20,10 +24,24 @@ interface AdventurePackage {
   isFeatured: boolean;
 }
 
+interface PackageData {
+  title: string;
+  duration: string;
+  destination: string;
+  price: number;
+  originalPrice?: number; 
+  rating: number;
+  images: string[];
+  description: string;
+  shortDescription: string;
+  highlights: string[]; 
+  isActive: boolean;
+}
+
 const AdminAdventurePackages = () => {
   const [adventurePackages, setAdventurePackages] = useState<AdventurePackage[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState<string | null>(null);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingPackage, setEditingPackage] = useState<AdventurePackage | null>(null);
@@ -75,30 +93,118 @@ const AdminAdventurePackages = () => {
       const token = localStorage.getItem('adminToken');
       
       if (!token) {
-        alert('Please log in to add packages');
+        toast.error('Please log in to add packages');
         return;
       }
 
-      const response = await fetch('/api/adventure-packages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: formData.title,
-          duration: formData.duration,
-          destination: formData.destination,
-          price: parseFloat(formData.price),
-          originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
-          rating: parseFloat(formData.rating),
-          images: formData.images.split(',').map(img => img.trim()),
-          description: formData.description,
-          shortDescription: formData.shortDescription,
-          highlights: formData.highlights.split(',').map(h => h.trim()),
-          isActive: formData.isActive
-        }),
-      });
+      // Validate required fields
+      if (!formData.title.trim()) {
+        toast.error('Package title is required');
+        return;
+      }
+      if (!formData.price.trim()) {
+        toast.error('Price is required');
+        return;
+      }
+      if (!formData.duration.trim()) {
+        toast.error('Duration is required');
+        return;
+      }
+      if (!formData.destination.trim()) {
+        toast.error('Destination is required');
+        return;
+      }
+
+      // Parse and validate price
+      const price = parseFloat(formData.price);
+      if (isNaN(price) || price <= 0) {
+        toast.error('Please enter a valid price');
+        return;
+      }
+
+      // Parse and validate original price if provided
+      let originalPrice;
+      if (formData.originalPrice.trim()) {
+        originalPrice = parseFloat(formData.originalPrice);
+        if (isNaN(originalPrice) || originalPrice <= 0) {
+          toast.error('Please enter a valid original price');
+          return;
+        }
+      }
+
+      // Parse and validate rating
+      const rating = parseFloat(formData.rating);
+      if (isNaN(rating) || rating < 0 || rating > 5) {
+        toast.error('Please enter a valid rating between 0 and 5');
+        return;
+      }
+
+      // Check if we need to upload a file
+      const hasFileUpload = formData.images && (formData.images.startsWith('blob:') || formData.images.startsWith('data:'));
+      
+      const packageData: PackageData = {
+        title: formData.title.trim(),
+        duration: formData.duration.trim(),
+        destination: formData.destination.trim(),
+        price: price,
+        originalPrice: originalPrice,
+        rating: rating,
+        images: formData.images.split(',').map(img => img.trim()).filter(img => img),
+        description: formData.description.trim(),
+        shortDescription: formData.shortDescription.trim(),
+        highlights: formData.highlights.split(',').map(h => h.trim()).filter(h => h),
+        isActive: formData.isActive
+      };
+
+      let response;
+      if (hasFileUpload) {
+        // Handle file upload
+        const uploadFormData = new FormData();
+        
+        // Add all form fields
+        Object.keys(packageData).forEach(key => {
+          const value = packageData[key as keyof PackageData];
+          if (key === 'images' && Array.isArray(value) && value.length > 0 && typeof value[0] === 'string' && value[0].startsWith('blob:')) {
+            // Convert blob URL to file and upload
+            fetch(value[0])
+              .then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (key === 'images' && Array.isArray(value) && value.length > 0 && typeof value[0] === 'string' && value[0].startsWith('data:')) {
+            // Convert data URL to file and upload
+            const response = fetch(value[0]);
+            response.then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (Array.isArray(value)) {
+            uploadFormData.append(key, JSON.stringify(value));
+          } else {
+            uploadFormData.append(key, String(value));
+          }
+        });
+
+        response = await fetch('/api/adventure-packages', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+      } else {
+        // Handle regular JSON data
+        response = await fetch('/api/adventure-packages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(packageData),
+        });
+      }
 
       const data = await response.json();
 
@@ -109,13 +215,13 @@ const AdminAdventurePackages = () => {
         const packagesArray = refreshData.packages || refreshData;
         setAdventurePackages(packagesArray);
         resetForm();
-        alert('Adventure package added successfully!');
+        toast.success('Adventure package added successfully!');
       } else {
-        alert(`Failed to add package: ${data.message || 'Unknown error'}`);
+        toast.error(`Failed to add package: ${data.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error adding package:', error);
-      alert('Network error. Please try again.');
+      toast.error('Network error. Please try again.');
     }
   };
 
@@ -144,30 +250,118 @@ const AdminAdventurePackages = () => {
       const token = localStorage.getItem('adminToken');
       
       if (!token) {
-        alert('Please log in to update packages');
+        toast.error('Please log in to update packages');
         return;
       }
 
-      const response = await fetch(`/api/adventure-packages/${editingPackage._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: formData.title,
-          duration: formData.duration,
-          destination: formData.destination,
-          price: parseFloat(formData.price),
-          originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
-          rating: parseFloat(formData.rating),
-          images: formData.images.split(',').map((img: string) => img.trim()),
-          description: formData.description,
-          shortDescription: formData.shortDescription,
-          highlights: formData.highlights.split(',').map((h: string) => h.trim()),
-          isActive: formData.isActive
-        }),
-      });
+      // Validate required fields
+      if (!formData.title.trim()) {
+        toast.error('Package title is required');
+        return;
+      }
+      if (!formData.price.trim()) {
+        toast.error('Price is required');
+        return;
+      }
+      if (!formData.duration.trim()) {
+        toast.error('Duration is required');
+        return;
+      }
+      if (!formData.destination.trim()) {
+        toast.error('Destination is required');
+        return;
+      }
+
+      // Parse and validate price
+      const price = parseFloat(formData.price);
+      if (isNaN(price) || price <= 0) {
+        toast.error('Please enter a valid price');
+        return;
+      }
+
+      // Parse and validate original price if provided
+      let originalPrice;
+      if (formData.originalPrice.trim()) {
+        originalPrice = parseFloat(formData.originalPrice);
+        if (isNaN(originalPrice) || originalPrice <= 0) {
+          toast.error('Please enter a valid original price');
+          return;
+        }
+      }
+
+      // Parse and validate rating
+      const rating = parseFloat(formData.rating);
+      if (isNaN(rating) || rating < 0 || rating > 5) {
+        toast.error('Please enter a valid rating between 0 and 5');
+        return;
+      }
+
+      // Check if we need to upload a file
+      const hasFileUpload = formData.images && (formData.images.startsWith('blob:') || formData.images.startsWith('data:'));
+      
+      const packageData: PackageData = {
+        title: formData.title.trim(),
+        duration: formData.duration.trim(),
+        destination: formData.destination.trim(),
+        price: price,
+        originalPrice: originalPrice,
+        rating: rating,
+        images: formData.images.split(',').map((img: string) => img.trim()).filter(img => img),
+        description: formData.description.trim(),
+        shortDescription: formData.shortDescription.trim(),
+        highlights: formData.highlights.split(',').map((h: string) => h.trim()).filter(h => h),
+        isActive: formData.isActive
+      };
+
+      let response;
+      if (hasFileUpload) {
+        // Handle file upload
+        const uploadFormData = new FormData();
+        
+        // Add all form fields
+        Object.keys(packageData).forEach(key => {
+          const value = packageData[key as keyof PackageData];
+          if (key === 'images' && Array.isArray(value) && value.length > 0 && typeof value[0] === 'string' && value[0].startsWith('blob:')) {
+            // Convert blob URL to file and upload
+            fetch(value[0])
+              .then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (key === 'images' && Array.isArray(value) && value.length > 0 && typeof value[0] === 'string' && value[0].startsWith('data:')) {
+            // Convert data URL to file and upload
+            const response = fetch(value[0]);
+            response.then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (Array.isArray(value)) {
+            uploadFormData.append(key, JSON.stringify(value));
+          } else {
+            uploadFormData.append(key, String(value));
+          }
+        });
+
+        response = await fetch(`/api/adventure-packages/${editingPackage._id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+      } else {
+        // Handle regular JSON data
+        response = await fetch(`/api/adventure-packages/${editingPackage._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(packageData),
+        });
+      }
 
       const data = await response.json();
 
@@ -179,13 +373,13 @@ const AdminAdventurePackages = () => {
         setAdventurePackages(packagesArray);
         setEditingPackage(null);
         resetForm();
-        alert('Adventure package updated successfully!');
+        toast.success('Adventure package updated successfully!');
       } else {
-        alert(`Failed to update package: ${data.message || 'Unknown error'}`);
+        toast.error(`Failed to update package: ${data.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error updating package:', error);
-      alert('Network error. Please try again.');
+      toast.error('Network error. Please try again.');
     }
   };
 
@@ -195,7 +389,7 @@ const AdminAdventurePackages = () => {
         const token = localStorage.getItem('adminToken');
         
         if (!token) {
-          alert('Please log in to delete packages');
+          toast.error('Please log in to delete packages');
           return;
         }
         
@@ -214,13 +408,13 @@ const AdminAdventurePackages = () => {
           const refreshData = await refreshResponse.json();
           const packagesArray = refreshData.packages || refreshData;
           setAdventurePackages(packagesArray);
-          alert('Adventure package deleted successfully!');
+          toast.success('Adventure package deleted successfully!');
         } else {
-          alert(`Failed to delete package: ${data.message || 'Unknown error'}`);
+          toast.error(`Failed to delete package: ${data.message || 'Unknown error'}`);
         }
       } catch (error) {
         console.error('Error deleting package:', error);
-        alert('Network error. Please try again.');
+        toast.error('Network error. Please try again.');
       }
     }
   };
@@ -230,7 +424,7 @@ const AdminAdventurePackages = () => {
       const token = localStorage.getItem('adminToken');
       
       if (!token) {
-        alert('Please log in to update package status');
+        toast.error('Please log in to update package status');
         return;
       }
 
@@ -256,11 +450,11 @@ const AdminAdventurePackages = () => {
         const packagesArray = refreshData.packages || refreshData;
         setAdventurePackages(packagesArray);
       } else {
-        alert('Failed to update package status');
+        toast.error('Failed to update package status');
       }
     } catch (error) {
       console.error('Error updating package status:', error);
-      alert('Network error. Please try again.');
+      toast.error('Network error. Please try again.');
     }
   };
 
@@ -402,13 +596,10 @@ const AdminAdventurePackages = () => {
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Image URLs (comma-separated)</label>
-              <input
-                type="text"
+              <ImageUpload
                 value={formData.images}
-                onChange={(e) => setFormData({ ...formData, images: e.target.value })}
-                className="w-full text-gray-900 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="https://images.unsplash.com/..., https://images.unsplash.com/..."
+                onChange={(value) => setFormData({ ...formData, images: value })}
+                label="Package Image"
               />
             </div>
             <div className="md:col-span-2">
@@ -524,11 +715,14 @@ const AdminAdventurePackages = () => {
                 <tr key={pkg._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <img 
-                        src={pkg.images?.[0] || "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
-                        alt={pkg.title}
-                        className="w-12 h-12 rounded-lg object-cover mr-3"
-                      />
+                      <div className="w-12 h-12 rounded overflow-hidden relative">
+                        <Image 
+                          src={getImageUrl(pkg.images?.[0]) || "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
+                          alt={pkg.title}
+                          fill
+                          className="object-cover rounded"
+                        />
+                      </div>
                       <div>
                         <div className="text-sm font-medium text-gray-900">{pkg.title}</div>
                         <div className="text-xs text-gray-500">Adventure</div>
@@ -630,11 +824,14 @@ const AdminAdventurePackages = () => {
               </button>
             </div>
             <div className="space-y-4">
-              <img 
-                src={selectedPackage.images?.[0] || "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
-                alt={selectedPackage.title}
-                className="w-full h-48 object-cover rounded-lg"
-              />
+              <div className="w-full h-48 rounded-lg overflow-hidden relative">
+                <Image 
+                  src={getImageUrl(selectedPackage.images?.[0]) || "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
+                  alt={selectedPackage.title}
+                  fill
+                  className="object-cover rounded-lg"
+                />
+              </div>
               <div>
                 <h4 className="text-lg font-semibold text-gray-900">{selectedPackage.title}</h4>
                 <p className="text-gray-600 mt-2">{selectedPackage.description}</p>

@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
-import { Edit, Save, X, Plus, Eye, Trash2 } from "lucide-react";
+import { Edit, Save, X, Plus, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
+import ImageUpload from "@/components/ui/image-upload";
 
 interface BlogPost {
   _id?: string;
@@ -120,15 +121,57 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
         publishDate: undefined,
         isActive: undefined
       };
+
+      // Check if we need to upload a file
+      const hasFileUpload = formData.image && (formData.image.startsWith('blob:') || formData.image.startsWith('data:'));
       
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(backendData),
-      });
+      let response;
+      if (hasFileUpload) {
+        // Handle file upload
+        const uploadFormData = new FormData();
+        
+        // Add all form fields
+        Object.keys(backendData).forEach(key => {
+          const value = (backendData as Record<string, unknown>)[key];
+          if (key === 'image' && typeof value === 'string' && value.startsWith('blob:')) {
+            // Convert blob URL to file and upload
+            fetch(value)
+              .then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (key === 'image' && typeof value === 'string' && value.startsWith('data:')) {
+            // Convert data URL to file and upload
+            const response = fetch(value);
+            response.then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (value !== undefined) {
+            uploadFormData.append(key, String(value));
+          }
+        });
+
+        response = await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+      } else {
+        // Handle regular JSON data
+        response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(backendData),
+        });
+      }
 
       const data = await response.json();
 
@@ -400,14 +443,10 @@ const AdminBlogs = ({ initialAction, onActionComplete }: AdminBlogsProps) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image URL
-                </label>
-                <Input
+                <ImageUpload
                   value={formData.image}
-                  onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                  placeholder="https://example.com/image.jpg"
-                  className="bg-white"
+                  onChange={(value) => setFormData(prev => ({ ...prev, image: value }))}
+                  label="Blog Image"
                 />
               </div>
             </div>

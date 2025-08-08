@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card"; 
+import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image"; 
 import { Loader2 } from "lucide-react";
 
 const AdminLoginPage = () => {
@@ -43,8 +44,8 @@ const AdminLoginPage = () => {
       localStorage.setItem("adminToken", data.token);
       localStorage.setItem("adminUser", JSON.stringify(data.user));
       router.push("/admin");
-    } catch (err: any) {
-      setError(err.message || "An error occurred during login");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An error occurred during login");
     } finally {
       setLoading(false);
     }
@@ -64,7 +65,7 @@ const AdminLoginPage = () => {
           <div className="space-y-1 pb-2 pt-8 px-6">
             <div className="flex justify-center mb-4">
               <div className="w-20 h-20 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center shadow-md">
-                <img src="/footerLogo.png" alt="logo" className="w-20 h-20 object-contain" />
+                <Image src="/footerLogo.png" alt="logo" className="w-20 h-20 object-contain" width={80} height={80} />
               </div>
             </div>
             <h2 className="text-2xl font-bold text-center text-gray-900">

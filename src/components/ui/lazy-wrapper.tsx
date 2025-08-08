@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, lazy, ComponentType, ReactNode, useState, useEffect } from "react";
+import React, { Suspense, lazy, ComponentType, ReactNode, useState, useEffect, useRef } from "react";
 import Loading from "./loading";
 
 interface LazyWrapperProps {
@@ -24,7 +24,7 @@ const LazyWrapper = ({
 };
 
 // Error boundary component for lazy loading
-const ErrorFallback = ({ error, retry }: { error: Error; retry: () => void }) => (
+const ErrorFallback = ({ retry }: { error: Error; retry: () => void }) => (
   <div className="flex flex-col items-center justify-center min-h-[200px] p-4">
     <div className="text-red-600 mb-4">Failed to load component</div>
     <button
@@ -34,8 +34,8 @@ const ErrorFallback = ({ error, retry }: { error: Error; retry: () => void }) =>
       Retry
     </button>
   </div>
-);
-
+  );
+  
 // Helper function to create lazy components with consistent loading and error handling
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createLazyComponent = <T extends ComponentType<any>>(
@@ -46,30 +46,37 @@ export const createLazyComponent = <T extends ComponentType<any>>(
   
   const LazyWrappedComponent = (props: React.ComponentProps<T>) => {
     const [hasError, setHasError] = useState(false);
-    const [error, setError] = useState<Error | null>(null);
+    const [, setError] = useState<Error | null>(null);
+    const mountedRef = useRef(false);
 
     useEffect(() => {
+      mountedRef.current = true;
       // Reset error state when component mounts
       setHasError(false);
       setError(null);
+
+      return () => {
+        mountedRef.current = false;
+      };
     }, []);
 
     const retry = () => {
+      if (!mountedRef.current) return;
       setHasError(false);
       setError(null);
-      // Force a re-render by updating a state
-      window.location.reload();
     };
 
     if (hasError) {
-      return <ErrorFallback error={error!} retry={retry} />;
+      return <ErrorFallback error={new Error('Component failed to load')} retry={retry} />;
     }
 
     return (
       <LazyWrapper fallback={fallback}>
         <ErrorBoundary onError={(error) => {
-          setHasError(true);
-          setError(error);
+          if (mountedRef.current) {
+            setHasError(true);
+            setError(error);
+          }
         }}>
           <LazyComponent {...props} />
         </ErrorBoundary>

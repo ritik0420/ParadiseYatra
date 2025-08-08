@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Edit, Save, X } from "lucide-react";
+import ImageUpload from "@/components/ui/image-upload";
 
 interface CTAContent {
   _id?: string;
@@ -173,19 +174,16 @@ const AdminCTASection = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Background Image URL
-              </label>
-              <Input
+              <ImageUpload
                 value={formData.backgroundImage}
-                onChange={(e) => setFormData(prev => ({ ...prev, backgroundImage: e.target.value }))}
-                placeholder="https://example.com/image.jpg"
-                className="bg-white"
+                onChange={(value) => setFormData(prev => ({ ...prev, backgroundImage: value }))}
+                label="Background Image"
+                
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div> 
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Button Text
                 </label>

@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 import { toast } from "react-toastify";
+import ImageUpload from "@/components/ui/image-upload";
+import { getImageUrl } from "@/lib/utils";
 import { 
   Plus, 
   Edit, 
@@ -21,6 +23,7 @@ import {
   Save,
   X
 } from "lucide-react";
+import Image from "next/image";
 
 interface HolidayType {
   _id: string;
@@ -92,61 +95,149 @@ const AdminHolidayTypes = () => {
       const token = localStorage.getItem("adminToken");
       
       if (!token) {
-        setError("No admin token found. Please log in again.");
+        toast.error("No admin token found. Please log in again.");
         return;
       }
       
       console.log("Token present:", !!token);
-      console.log("Form data:", formData);
-      
-      const response = await fetch("/api/holiday-types", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
 
-      console.log("Response status:", response.status);
+      // Check if we need to upload a file
+      const hasFileUpload = formData.image && (formData.image.startsWith('blob:') || formData.image.startsWith('data:'));
       
+      let response;
+      if (hasFileUpload) {
+        // Handle file upload
+        const uploadFormData = new FormData();
+        
+        // Add all form fields
+        Object.keys(formData).forEach(key => {
+          const value = (formData as Record<string, unknown>)[key];
+          if (key === 'image' && typeof value === 'string' && value.startsWith('blob:')) {
+            // Convert blob URL to file and upload
+            fetch(value)
+              .then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (key === 'image' && typeof value === 'string' && value.startsWith('data:')) {
+            // Convert data URL to file and upload
+            const response = fetch(value);
+            response.then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else {
+            uploadFormData.append(key, String(value));
+          }
+        });
+
+        response = await fetch("/api/holiday-types", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+      } else {
+        // Handle regular JSON data
+        response = await fetch("/api/holiday-types", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+      }
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create holiday type");
+        throw new Error(errorData.message || "Failed to create holiday type");
       }
 
       await fetchHolidayTypes();
-      setShowCreateForm(false);
       resetForm();
-      toast.success("Holiday type created successfully");
+      toast.success("Holiday type created successfully!");
     } catch (err) {
-      console.error("Create error:", err);
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const errorMessage = err instanceof Error ? err.message : "An error occurred";
+      toast.error(errorMessage);
     }
   };
 
   const handleUpdate = async (id: string) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await fetch(`/api/holiday-types/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      
+      if (!token) {
+        toast.error("No admin token found. Please log in again.");
+        return;
+      }
+
+      // Check if we need to upload a file
+      const hasFileUpload = formData.image && (formData.image.startsWith('blob:') || formData.image.startsWith('data:'));
+      
+      let response;
+      if (hasFileUpload) {
+        // Handle file upload
+        const uploadFormData = new FormData();
+        
+        // Add all form fields
+        Object.keys(formData).forEach(key => {
+          const value = (formData as Record<string, unknown>)[key];
+          if (key === 'image' && typeof value === 'string' && value.startsWith('blob:')) {
+            // Convert blob URL to file and upload
+            fetch(value)
+              .then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (key === 'image' && typeof value === 'string' && value.startsWith('data:')) {
+            // Convert data URL to file and upload
+            const response = fetch(value);
+            response.then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else {
+            uploadFormData.append(key, String(value));
+          }
+        });
+
+        response = await fetch(`/api/holiday-types/${id}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+      } else {
+        // Handle regular JSON data
+        response = await fetch(`/api/holiday-types/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+      }
 
       if (!response.ok) {
-        throw new Error("Failed to update holiday type");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update holiday type");
       }
 
       await fetchHolidayTypes();
       setEditingId(null);
       resetForm();
-      toast.success("Holiday type updated successfully");
+      toast.success("Holiday type updated successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const errorMessage = err instanceof Error ? err.message : "An error occurred";
+      toast.error(errorMessage);
     }
   };
 
@@ -325,14 +416,10 @@ const AdminHolidayTypes = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image URL
-                </label>
-                <Input
+                <ImageUpload
                   value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                  className="bg-white"
+                  onChange={(value) => setFormData({ ...formData, image: value })}
+                  label="Holiday Type Image"
                 />
               </div>
               <div>
@@ -455,11 +542,12 @@ const AdminHolidayTypes = () => {
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 rounded-lg overflow-hidden">
-                    <img
-                      src={holidayType.image}
+                  <div className="w-16 h-16 rounded-lg overflow-hidden relative">
+                    <Image 
+                      src={getImageUrl(holidayType.image)} 
                       alt={holidayType.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover rounded-lg"
                     />
                   </div>
                   <div>

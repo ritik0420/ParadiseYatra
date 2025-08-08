@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { ChevronDown } from 'lucide-react';
 
 interface SelectProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -11,7 +11,7 @@ interface SelectProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Select = React.forwardRef<HTMLDivElement, SelectProps>(
-  ({ className = '', children, value, onValueChange, disabled = false, ...props }, ref) => {
+  ({ className = '', children, ...props }, ref) => {
     return (
       <div
         className={`relative ${className}`}

@@ -4,10 +4,11 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/a
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const response = await fetch(`${API_BASE_URL}/holiday-types/slug/${params.slug}`, {
+    const { slug } = await params;
+    const response = await fetch(`${API_BASE_URL}/holiday-types/slug/${slug}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

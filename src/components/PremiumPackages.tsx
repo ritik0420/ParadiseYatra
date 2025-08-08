@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Clock, Users, ArrowRight, ChevronLeft, ChevronRight, Crown } from "lucide-react";
+import { Star, MapPin, Clock, ChevronLeft, ChevronRight, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 import Loading from "@/components/ui/loading";
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 interface Package {
   _id: string;
@@ -21,7 +23,7 @@ interface Package {
   images: string[];
   category: string;
   shortDescription: string;
-  reviews?: any[];
+  reviews?: unknown[];
   slug: string;
 }
 
@@ -144,10 +146,22 @@ const PremiumPackages = () => {
             >
               <Card className="group overflow-hidden modern-card hover-lift rounded-3xl shadow-xl border-0 relative bg-gradient-to-br from-white via-purple-50 to-purple-100 h-full flex flex-col min-h-[580px]">
                 <div className="relative h-60 overflow-hidden card-image rounded-t-3xl">
-                  <img 
-                    src={pkg.images?.[0] || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
+                  <div className="absolute inset-0 bg-gray-100 animate-pulse" />
+                  <Image 
+                    src={getImageUrl(pkg.images?.[0]) || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
                     alt={pkg.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110 transition-opacity duration-300"
+                    onError={(e) => {
+                      console.error('Image failed to load:', pkg.images?.[0]);
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                    onLoad={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.opacity = '1';
+                    }}
+                    style={{ opacity: 0 }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />
                   

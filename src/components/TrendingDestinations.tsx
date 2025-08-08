@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, MapPin, ChevronLeft, ChevronRight, Clock, CableCar, Compass } from "lucide-react";
+import { Star, MapPin, ChevronLeft, ChevronRight, Clock, Compass } from "lucide-react";
 import { motion } from "framer-motion";
 import Loading from "@/components/ui/loading";
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 interface Package {
   _id: string;
@@ -21,7 +23,7 @@ interface Package {
   images: string[];
   category: string;
   shortDescription: string;
-  reviews?: any[];
+  reviews?: unknown[];
   slug: string;
 }
 
@@ -144,13 +146,15 @@ const TrendingDestinations = () => {
             >
               <Card className="group overflow-hidden modern-card hover-lift rounded-3xl shadow-xl border-0 relative bg-gradient-to-br from-white via-blue-50 to-blue-100 h-full flex flex-col min-h-[540px]">
                 <div className="relative h-60 overflow-hidden card-image rounded-t-3xl">
-                  <img 
-                    src={pkg.images?.[0] || "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
+                  <Image 
+                    src={getImageUrl(pkg.images?.[0]) || "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
                     alt={pkg.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
                     onError={(e) => {
                       console.error('Image failed to load:', pkg.images?.[0]);
-                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />

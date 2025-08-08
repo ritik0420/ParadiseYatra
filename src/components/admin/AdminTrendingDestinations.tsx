@@ -6,21 +6,23 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Save, X, Plus, Eye, Trash2 } from "lucide-react";
+import { Edit, Save, X, Plus, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
+import ImageUpload from "@/components/ui/image-upload";
 
 interface Package {
   _id?: string;
   title: string;
   duration: string;
   destination: string;
-  price: number;
+  price: number;  
   originalPrice?: number;
   rating: number;
   images: string[];
   category: string;
   shortDescription: string;
   description?: string;
-  reviews?: any[];
+  reviews?: unknown[];
   isActive?: boolean;
 }
 
@@ -76,22 +78,71 @@ const AdminTrendingDestinations = () => {
       const method = editing ? 'PUT' : 'POST';
       const url = editing ? `/api/packages/${editing}` : '/api/packages';
       
-      // Get the admin token from localStorage
       const token = localStorage.getItem('adminToken');
       
       if (!token) {
-        alert('Please log in to save changes');
+        toast.error('Please log in to save changes');
         return;
       }
+
+      // Check if we need to upload a file
+      const hasFileUpload = formData.images && formData.images.length > 0 && 
+        (formData.images[0].startsWith('blob:') || formData.images[0].startsWith('data:'));
       
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      let response;
+      if (hasFileUpload) {
+        // Handle file upload
+        const uploadFormData = new FormData();
+        
+        // Add all form fields
+        Object.keys(formData).forEach(key => {
+          const value = (formData as unknown as Record<string, unknown>)[key];
+          if (key === 'images' && Array.isArray(value) && value.length > 0) {
+            // Handle multiple images
+            value.forEach((img: string, index: number) => {
+              if (typeof img === 'string' && img.startsWith('blob:')) {
+                fetch(img)
+                  .then(res => res.blob())
+                  .then(blob => {
+                    const file = new File([blob], `image${index}.jpg`, { type: 'image/jpeg' });
+                    uploadFormData.append('images', file);
+                  });
+              } else if (typeof img === 'string' && img.startsWith('data:')) {
+                fetch(img)
+                  .then(res => res.blob())
+                  .then(blob => {
+                    const file = new File([blob], `image${index}.jpg`, { type: 'image/jpeg' });
+                    uploadFormData.append('images', file);
+                  });
+              } else if (typeof img === 'string') {
+                uploadFormData.append('images', img);
+              }
+            });
+          } else if (Array.isArray(value)) {
+            uploadFormData.append(key, JSON.stringify(value));
+          } else {
+            uploadFormData.append(key, String(value));
+          }
+        });
+
+        response = await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+      } else {
+        // Handle regular JSON data
+        response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+      }
 
       const data = await response.json();
 
@@ -100,14 +151,15 @@ const AdminTrendingDestinations = () => {
         setEditing(null);
         setShowForm(false);
         resetForm();
-        alert(editing ? 'Package updated successfully!' : 'Package added successfully!');
+        const action = editing ? 'updated' : 'added';
+        toast.success(`Trending destination ${action} successfully!`);
       } else {
-        console.error('Failed to save package:', data.message);
-        alert(`Failed to save: ${data.message || 'Unknown error'}`);
+        console.error('Failed to save:', data.message);
+        toast.error(`Failed to save: ${data.message || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Error saving package:', error);
-      alert('Network error. Please try again.');
+      console.error('Error saving:', error);
+      toast.error('Network error. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -331,17 +383,13 @@ const AdminTrendingDestinations = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image URLs (comma-separated)
-              </label>
-              <Input
-                value={formData.images?.join(', ') || ''}
-                onChange={(e) => setFormData(prev => ({ 
+              <ImageUpload
+                value={formData.images?.[0] || ''}
+                onChange={(value) => setFormData(prev => ({ 
                   ...prev, 
-                  images: e.target.value.split(',').map(img => img.trim()).filter(img => img)
+                  images: value ? [value] : []
                 }))}
-                placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
-                className="bg-white"
+                label="Destination Images"
               />
             </div>
 

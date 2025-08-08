@@ -5,9 +5,11 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Clock, Users, ArrowRight, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, MapPin, Clock, Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import Loading from "@/components/ui/loading";
 import Link from "next/link";
+import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 interface Destination {
   _id: string;
@@ -27,7 +29,7 @@ interface Destination {
 const DestinationsGrid = () => {
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDestinations = async () => {
@@ -178,10 +180,11 @@ const DestinationsGrid = () => {
             >
               <Card className="group overflow-hidden modern-card hover-lift rounded-3xl shadow-xl border-0 relative bg-gradient-to-br from-white via-blue-50 to-blue-100 h-full flex flex-col min-h-[500px] sm:min-h-[600px]">
                 <div className="relative h-48 sm:h-60 overflow-hidden card-image rounded-t-3xl">
-                  <img 
-                    src={destination.image} 
+                  <Image 
+                    src={getImageUrl(destination.image)} 
                     alt={destination.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />
                   

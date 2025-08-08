@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, Users, MapPin, Star, ArrowRight, Calendar, Hotel, Utensils } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 
 interface DayItinerary {
   day: number;
@@ -71,7 +72,7 @@ const HolidayTypePage = () => {
         } else {
           setError("Holiday type not found");
         }
-      } catch (error) {
+      } catch {
         setError("Failed to load holiday type");
       } finally {
         setLoading(false);
@@ -129,10 +130,11 @@ const HolidayTypePage = () => {
       {/* Hero Section */}
       <section className="relative h-96 overflow-hidden">
         <div className="absolute inset-0">
-          <img
+          <Image
             src={holidayType.image}
             alt={holidayType.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-black/50" />
         </div>
@@ -217,10 +219,11 @@ const HolidayTypePage = () => {
                 >
                   <Card className="overflow-hidden">
                     <div className="relative h-48">
-                      <img
+                      <Image
                         src={day.image}
                         alt={`Day ${day.day} - ${day.title}`}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                       <div className="absolute inset-0 bg-black/30" />
                       <div className="absolute top-4 left-4">
@@ -296,10 +299,11 @@ const HolidayTypePage = () => {
                 >
                   <Card className="overflow-hidden h-full">
                     <div className="relative h-48">
-                      <img
+                      <Image
                         src={pkg.images[0] || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
                         alt={pkg.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                       {pkg.discount > 0 && (
                         <Badge className="absolute top-4 left-4 bg-red-500 text-white">
@@ -368,7 +372,7 @@ const HolidayTypePage = () => {
                 No Packages Available
               </h3>
               <p className="text-gray-600 mb-6">
-                We're currently preparing amazing packages for {holidayType.title.toLowerCase()}. Check back soon!
+                We&apos;re currently preparing amazing packages for {holidayType.title.toLowerCase()}. Check back soon!
               </p>
               <Link href="/packages">
                 <Button className="bg-blue-600 hover:bg-blue-700">

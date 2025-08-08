@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Loading from "@/components/ui/loading";
 import YouTube from "react-youtube";
+import Image from "next/image";
 
 interface Testimonial {
   _id: string;
@@ -24,7 +25,7 @@ interface Testimonial {
 // YouTube Player Component with react-youtube
 const YouTubePlayer = ({ videoId }: { videoId: string }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [player, setPlayer] = useState<any>(null);
+  const [, setPlayer] = useState<unknown>(null);
 
   const opts = {
     height: '100%',
@@ -41,7 +42,7 @@ const YouTubePlayer = ({ videoId }: { videoId: string }) => {
     },
   };
 
-  const onReady = (event: any) => {
+  const onReady = (event: { target: unknown }) => {
     setPlayer(event.target);
   };
 
@@ -57,7 +58,7 @@ const YouTubePlayer = ({ videoId }: { videoId: string }) => {
     setIsPlaying(false);
   };
 
-  const onError = (error: any) => {
+  const onError = (error: unknown) => {
     console.error('YouTube Player Error:', error);
   };
 
@@ -132,15 +133,30 @@ const YouTubeVideoSelector = ({
             selectedVideoId === video.id ? 'ring-2 ring-blue-500 ring-offset-2' : 'hover:ring-2 hover:ring-blue-300'
           }`}
         >
-          <img
-            src={video.thumbnail}
-            alt={video.title}
-            className="w-20 h-14 object-cover"
-            onError={(e) => {
-              // Fallback to a placeholder if thumbnail fails to load
-              e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='56' viewBox='0 0 80 56'%3E%3Crect width='80' height='56' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%236b7280' font-size='8'%3E%3C/tspan%3E%3C/svg%3E";
-            }}
-          />
+          <div className="relative w-20 h-14 bg-gray-100">
+            <Image
+              src={video.thumbnail}
+              alt={video.title}
+              width={80}
+              height={56}
+              className="w-20 h-14 object-cover"
+              onError={(e) => {
+                // Fallback to a placeholder if thumbnail fails to load
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent) {
+                  parent.innerHTML = `
+                    <div class="w-20 h-14 bg-gray-200 flex items-center justify-center">
+                      <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                  `;
+                }
+              }}
+            />
+          </div>
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <div className="bg-red-600 rounded-full p-1">
               <Play className="w-3 h-3 text-white fill-current" />
@@ -162,7 +178,7 @@ const YouTubeVideoSelector = ({
 const TestimonialSection = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [selectedVideoId, setSelectedVideoId] = useState("ekd51s2WShk"); // Default to Shimla video

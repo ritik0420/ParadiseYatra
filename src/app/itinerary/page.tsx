@@ -1,15 +1,28 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ChevronRight, Clock, MapPin, Star, Users, Calendar, CheckCircle, XCircle, ArrowRight } from "lucide-react";
+import { ChevronRight, Clock, MapPin, Star, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { } from "react";
 import Link from "next/link";
+import Image from "next/image";
+
+interface Package {
+  title: string;
+  subtitle: string;
+  duration: string;
+  location: string;
+  price: string;
+  originalPrice: string;
+  rating: string;
+  totalBookings: number;
+  coverImage: string;
+  slug: string;
+}
 
 // Sample data for different packages - in real app this would come from API
-const packageData = {
+const packageData: Record<string, Package> = {
   "royal-rajasthan": {
     title: "Royal Rajasthan Adventure",
     subtitle: "Experience the grandeur of royal palaces and desert landscapes",
@@ -48,7 +61,7 @@ const packageData = {
   }
 };
 
-const PackageCard = ({ pkg }: { pkg: any }) => {
+const PackageCard = ({ pkg }: { pkg: Package }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -58,10 +71,12 @@ const PackageCard = ({ pkg }: { pkg: any }) => {
     >
       <Card className="modern-card hover-lift overflow-hidden">
         <div className="relative">
-          <img 
+          <Image 
             src={pkg.coverImage} 
             alt={pkg.title}
             className="w-full h-48 object-cover"
+            width={400}
+            height={300}
           />
           <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full font-semibold text-sm">
             Popular
@@ -113,7 +128,7 @@ const ItineraryPage = () => {
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center space-x-2 text-sm text-gray-600">
-            <a href="/" className="hover:text-blue-600 transition-colors">Home</a>
+                            <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
             <ChevronRight className="w-4 h-4" />
             <span className="text-gray-900 font-medium">Itineraries</span>
           </nav>
@@ -170,7 +185,7 @@ const ItineraryPage = () => {
           className="text-center mt-12"
         >
           <p className="text-gray-600 mb-4">
-            Can't find what you're looking for? Contact our travel experts for custom itineraries.
+                            Can&apos;t find what you&apos;re looking for? Contact our travel experts for custom itineraries.
           </p>
           <Button className="bg-blue-600 hover:bg-blue-700 text-white">
             Contact Travel Expert

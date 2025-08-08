@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Clock, Users, ArrowRight, ChevronLeft, ChevronRight, Mountain, Zap } from "lucide-react";
+import { Star, MapPin, Clock, ChevronLeft, ChevronRight, Mountain, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import React from "react";
 import Link from "next/link";
 import Loading from "@/components/ui/loading";
+import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 interface AdventurePackage {
   _id: string;
@@ -31,7 +33,7 @@ interface AdventurePackage {
 const AdventureEscapes = () => {
   const [adventurePackages, setAdventurePackages] = useState<AdventurePackage[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAdventurePackages = async () => {
@@ -189,10 +191,11 @@ const AdventureEscapes = () => {
             >
               <Card className="group overflow-hidden modern-card hover-lift rounded-3xl shadow-xl border-0 relative bg-gradient-to-br from-white via-green-50 to-green-100 h-full flex flex-col min-h-[600px]">
                 <div className="relative h-60 overflow-hidden card-image rounded-t-3xl">
-                  <img 
-                    src={pkg.images?.[0] || "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
+                  <Image 
+                    src={getImageUrl(pkg.images?.[0]) || "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"} 
                     alt={pkg.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />
                   

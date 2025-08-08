@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Save, X, Plus, Eye, Trash2 } from "lucide-react";
+import { Edit, Save, X, Plus, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
+import ImageUpload from "@/components/ui/image-upload";
 
 interface Package {
   _id?: string;
@@ -21,7 +23,7 @@ interface Package {
   description?: string;
   images?: string[];
   rating?: number;
-  reviews?: any[];
+  reviews?: unknown[];
   isActive: boolean;
 }
 
@@ -81,18 +83,62 @@ const AdminPackages = () => {
       const token = localStorage.getItem('adminToken');
       
       if (!token) {
-        alert('Please log in to save changes');
+        toast.error('Please log in to save changes');
         return;
       }
+
+      // Check if we need to upload a file
+      const hasFileUpload = formData.image && (formData.image.startsWith('blob:') || formData.image.startsWith('data:'));
       
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      let response;
+      if (hasFileUpload) {
+        // Handle file upload
+        const uploadFormData = new FormData();
+        
+        // Add all form fields
+        Object.keys(formData).forEach(key => {
+          const value = (formData as unknown as Record<string, unknown>)[key];
+          if (key === 'image' && typeof value === 'string' && value.startsWith('blob:')) {
+            // Convert blob URL to file and upload
+            fetch(value)
+              .then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (key === 'image' && typeof value === 'string' && value.startsWith('data:')) {
+            // Convert data URL to file and upload
+            const response = fetch(value);
+            response.then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (Array.isArray(value)) {
+            uploadFormData.append(key, JSON.stringify(value));
+          } else {
+            uploadFormData.append(key, String(value));
+          }
+        });
+
+        response = await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+      } else {
+        // Handle regular JSON data
+        response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+      }
 
       const data = await response.json();
 
@@ -101,14 +147,15 @@ const AdminPackages = () => {
         setEditing(null);
         setShowAddForm(false);
         resetForm();
-        alert(editing ? 'Package updated successfully!' : 'Package added successfully!');
+        const action = editing ? 'updated' : 'added';
+        toast.success(`Package ${action} successfully!`);
       } else {
         console.error('Failed to save package:', data.message);
-        alert(`Failed to save: ${data.message || 'Unknown error'}`);
+        toast.error(`Failed to save: ${data.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error saving package:', error);
-      alert('Network error. Please try again.');
+      toast.error('Network error. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -314,17 +361,11 @@ const AdminPackages = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Main Image URL
-              </label>
-              <Input
-                value={formData.image}
-                onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                placeholder="https://example.com/image.jpg"
-                className="bg-white"
-              />
-            </div>
+            <ImageUpload
+              value={formData.image}
+              onChange={(value) => setFormData(prev => ({ ...prev, image: value }))}
+              label="Package Image"
+            />
 
             <div className="flex gap-4">
               <label className="flex items-center gap-2">

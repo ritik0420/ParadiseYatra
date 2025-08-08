@@ -1,14 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Save, X, Plus, Eye, Trash2, MapPin, Package } from "lucide-react";
+import { Edit, Save, X, Plus, Trash2, MapPin, Package } from "lucide-react";
 import { toast } from "react-toastify";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
+import ImageUpload from "@/components/ui/image-upload";
+import { getImageUrl } from "@/lib/utils";
+import Image from "next/image";
 
 interface Destination {
   _id?: string;
@@ -40,7 +43,7 @@ interface Package {
   description?: string;
   images?: string[];
   rating?: number;
-  reviews?: any[];
+  reviews?: unknown[];
   isActive: boolean;
 }
 
@@ -96,11 +99,7 @@ const AdminPopularDestinations = () => {
     isActive: true
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       await Promise.all([fetchDestinations(), fetchPackages()]);
@@ -109,7 +108,11 @@ const AdminPopularDestinations = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const fetchDestinations = async () => {
     try {
@@ -153,15 +156,59 @@ const AdminPopularDestinations = () => {
         toast.error('Please log in to save changes');
         return;
       }
+
+      // Check if we need to upload a file
+      const hasFileUpload = formData.image && (formData.image.startsWith('blob:') || formData.image.startsWith('data:'));
       
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      let response;
+      if (hasFileUpload) {
+        // Handle file upload
+        const uploadFormData = new FormData();
+        
+        // Add all form fields
+        Object.keys(formData).forEach(key => {
+          const value = (formData as unknown as Record<string, unknown>)[key];
+          if (key === 'image' && typeof value === 'string' && value.startsWith('blob:')) {
+            // Convert blob URL to file and upload
+            fetch(value)
+              .then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (key === 'image' && typeof value === 'string' && value.startsWith('data:')) {
+            // Convert data URL to file and upload
+            const response = fetch(value);
+            response.then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (Array.isArray(value)) {
+            uploadFormData.append(key, JSON.stringify(value));
+          } else {
+            uploadFormData.append(key, String(value));
+          }
+        });
+
+        response = await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+      } else {
+        // Handle regular JSON data
+        response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+      }
 
       const data = await response.json();
 
@@ -392,17 +439,11 @@ const AdminPopularDestinations = () => {
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Image URL
-          </label>
-          <Input
-            value={destinationFormData.image}
-            onChange={(e) => setDestinationFormData(prev => ({ ...prev, image: e.target.value }))}
-            placeholder="https://example.com/image.jpg"
-            className="bg-white"
-          />
-        </div>
+        <ImageUpload
+          value={destinationFormData.image}
+          onChange={(value) => setDestinationFormData(prev => ({ ...prev, image: value }))}
+          label="Destination Image"
+        />
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -551,17 +592,11 @@ const AdminPopularDestinations = () => {
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Main Image URL
-          </label>
-          <Input
-            value={packageFormData.image}
-            onChange={(e) => setPackageFormData(prev => ({ ...prev, image: e.target.value }))}
-            placeholder="https://example.com/image.jpg"
-            className="bg-white"
-          />
-        </div>
+        <ImageUpload
+          value={packageFormData.image}
+          onChange={(value) => setPackageFormData(prev => ({ ...prev, image: value }))}
+          label="Package Image"
+        />
 
         <div className="flex gap-4">
           <label className="flex items-center gap-2">
@@ -686,6 +721,24 @@ const AdminPopularDestinations = () => {
                     </div>
                   </div>
                 </CardHeader>
+                {destination.image && (
+                  <div className="px-6 pb-4">
+                    <Image
+                      src={getImageUrl(destination.image)}
+                      alt={destination.name}
+                      width={128}
+                      height={64}
+                      className="w-full h-32 object-cover rounded-lg"
+                      onError={(e) => {
+                        console.error('Destination image failed to load:', destination.image);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      onLoad={() => {
+                        console.log('Destination image loaded successfully:', destination.image);
+                      }}
+                    />
+                  </div>
+                )}
                 <CardContent>
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600">
@@ -763,6 +816,24 @@ const AdminPopularDestinations = () => {
                     </div>
                   </div>
                 </CardHeader>
+                {pkg.image && (
+                  <div className="px-6 pb-4">
+                    <Image
+                      src={getImageUrl(pkg.image)}
+                      alt={pkg.title}
+                      width={128}
+                      height={64}
+                      className="w-full h-32 object-cover rounded-lg"
+                      onError={(e) => {
+                        console.error('Package image failed to load:', pkg.image);
+                        e.currentTarget.style.display = 'none';
+                      }}
+                      onLoad={() => {
+                        console.log('Package image loaded successfully:', pkg.image);
+                      }}
+                    />
+                  </div>
+                )}
                 <CardContent>
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600">

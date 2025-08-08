@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, MapPin, Calendar, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
+
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { formatPrice, getCategoryColor } from '@/lib/utils';
 
@@ -31,7 +31,6 @@ const SearchSuggestions = ({
   query, 
   onQueryChange, 
   onSelect, 
-  isOpen, 
   onClose,
   variant = 'default'
 }: SearchSuggestionsProps) => {
@@ -303,7 +302,7 @@ const SearchSuggestions = ({
 
             {!isLoading && !error && suggestions.length === 0 && query.trim() && (
               <div className="p-4 text-center text-gray-500">
-                <p className="text-sm">No packages found for "{query}"</p>
+                <p className="text-sm">No packages found for &quot;{query}&quot;</p>
                 <p className="text-xs mt-1">Try different keywords</p>
               </div>
             )}

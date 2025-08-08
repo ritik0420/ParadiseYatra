@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 interface NavigationItem {
   name: string;
-  icon: any;
+  icon: unknown;
   submenu: Array<{
     name: string;
     href: string;
@@ -19,11 +19,7 @@ interface Package {
   isFeatured?: boolean; // Added isFeatured to Package interface
 }
 
-interface HolidayType {
-  _id: string;
-  title: string;
-  slug: string;
-}
+
 
 // Fallback navigation items
 const fallbackNavItems: NavigationItem[] = [
@@ -107,10 +103,9 @@ export const useNavigation = () => {
         }
 
         const packagesData = await packagesResponse.json();
-        const holidayTypesData = await holidayTypesResponse.json();
 
         // Group packages by category
-        const packagesByCategory = packagesData.packages?.reduce((acc: any, pkg: Package) => {
+        const packagesByCategory = packagesData.packages?.reduce((acc: Record<string, Package[]>, pkg: Package) => {
           if (!acc[pkg.category]) {
             acc[pkg.category] = [];
           }

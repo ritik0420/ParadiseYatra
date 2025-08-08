@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
@@ -100,7 +100,7 @@ const Dialog = ({ isOpen, onClose, onSubmit, title, placeholder, buttonText }: D
   );
 };
 
-const MenuBar = ({ editor }: { editor: any }) => {
+const MenuBar = ({ editor }: { editor: Editor }) => {
   const [linkDialog, setLinkDialog] = useState(false);
   const [imageDialog, setImageDialog] = useState(false);
 
@@ -420,11 +420,19 @@ export const RichTextEditor = ({
     immediatelyRender: false,
   });
 
+  if (!editor) {
+    return (
+      <div className={cn("border border-gray-300 rounded-md bg-white p-4", className)}>
+        <div className="text-gray-400">Loading editor...</div>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("border border-gray-300 rounded-md bg-white", className)}>
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
-      {!editor?.getText() && (
+      {!editor.getText() && (
         <div className="absolute top-[60px] left-4 text-gray-400 pointer-events-none">
           {placeholder}
         </div>

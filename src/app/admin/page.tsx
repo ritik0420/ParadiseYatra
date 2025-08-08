@@ -86,7 +86,7 @@ const AdminPage = () => {
         }
 
         setIsAuthenticated(true);
-      } catch (error) {
+      } catch {
         localStorage.removeItem("adminToken");
         localStorage.removeItem("adminUser");
         router.push("/admin/login");

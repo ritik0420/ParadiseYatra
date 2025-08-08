@@ -186,7 +186,7 @@ export default function LeadCaptureForm({ isOpen, onClose, packageTitle, package
                       Thank You!
                     </h3>
                     <p className="text-gray-600">
-                      We've received your inquiry and will get back to you within 24 hours.
+                      We&apos;ve received your inquiry and will get back to you within 24 hours.
                     </p>
                   </motion.div>
                 ) : submitStatus === "error" ? (

@@ -1,8 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, MapPin, Sparkles, Star, Youtube } from "lucide-react";
+import { Search, Sparkles, Star, Youtube } from "lucide-react";
 import { motion } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import Loading from "@/components/ui/loading";
@@ -23,7 +22,7 @@ interface HeroContent {
 const HeroSection = () => {
   const [heroContent, setHeroContent] = useState<HeroContent | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const router = useRouter();
@@ -113,7 +112,7 @@ const HeroSection = () => {
     }
   };
 
-  const handleSearchSelect = (suggestion: any) => {
+  const handleSearchSelect = (suggestion: { slug: string }) => {
     setSearchQuery("");
     setIsSearchOpen(false);
     // Navigate to the itinerary page

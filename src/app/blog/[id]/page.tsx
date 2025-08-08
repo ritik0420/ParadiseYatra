@@ -2,10 +2,12 @@
 
 import { useState, useEffect, use } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Clock, User, ArrowRight, BookOpen, Heart, Share2, ChevronRight, ArrowLeft, Tag, Eye } from "lucide-react";
+import { Clock, User, ChevronRight, ArrowLeft, Tag, Eye, Heart, Share2, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import Loading from "@/components/ui/loading";
 
@@ -133,10 +135,12 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
               {/* Hero Image */}
               <div className="relative h-64 md:h-96 overflow-hidden">
                 {post.image && post.image.startsWith('http') ? (
-                  <img 
+                  <Image 
                     src={post.image} 
                     alt={post.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    width={800}
+                    height={400}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
@@ -260,10 +264,12 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                     >
                       <div className="relative h-40 overflow-hidden">
                         {relatedPost.image && relatedPost.image.startsWith('http') ? (
-                          <img 
+                          <Image 
                             src={relatedPost.image} 
                             alt={relatedPost.title}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            width={400}
+                            height={300}
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
@@ -321,7 +327,7 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   </div>
                 </div>
                 <p className="text-slate-600 text-sm leading-relaxed">
-                  Passionate travel writer with years of experience exploring the world's most beautiful destinations.
+                  Passionate travel writer with years of experience exploring the world&apos;s most beautiful destinations.
                 </p>
               </div>
 
@@ -329,7 +335,7 @@ const BlogDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
               <div className="bg-white rounded-3xl p-6 shadow-xl border border-white/20">
                 <h3 className="text-lg font-bold text-slate-900 mb-4">Popular Posts</h3>
                 <div className="space-y-4">
-                  {relatedPosts.slice(0, 3).map((popularPost, index) => (
+                  {relatedPosts.slice(0, 3).map((popularPost) => (
                     <Link key={popularPost._id} href={`/blog/${popularPost._id}`}>
                       <div className="flex items-center mb-2 space-x-3 group cursor-pointer">
                         <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center text-2xl">

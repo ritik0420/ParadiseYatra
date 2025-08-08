@@ -70,6 +70,32 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      // Add Imgur support
+      {
+        protocol: 'https',
+        hostname: 'i.imgur.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'imgur.com',
+        port: '',
+        pathname: '/**',
+      },
+      // Add YouTube thumbnail support
+      {
+        protocol: 'https',
+        hostname: 'img.youtube.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'yt3.ggpht.com',
+        port: '',
+        pathname: '/**',
+      },
       {
         protocol: 'http',
         hostname: 'localhost',
@@ -94,6 +120,19 @@ const nextConfig: NextConfig = {
         hostname: 'localhost',
         port: '3000',
         pathname: '/api/proxy-image/**',
+      },
+      // Allow images from our uploaded-images API route
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/uploaded-images/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/uploaded-images/**',
       },
     ],
   },

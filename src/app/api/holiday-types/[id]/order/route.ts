@@ -4,13 +4,14 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/a
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const token = request.headers.get('authorization')?.split(' ')[1];
     
-    const response = await fetch(`${API_BASE_URL}/holiday-types/${params.id}/order`, {
+    const response = await fetch(`${API_BASE_URL}/holiday-types/${id}/order`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

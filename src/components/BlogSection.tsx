@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Loading from "@/components/ui/loading";
 import Link from "next/link";
+import Image from "next/image";
 
 interface BlogPost {
   _id: string;
@@ -67,26 +68,7 @@ const BlogSection = () => {
     return <Loading size="lg" className="min-h-[400px]" />;
   }
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5
-      }
-    }
-  };
 
   // Don't render if blogPosts is not an array
   if (!Array.isArray(blogPosts)) {
@@ -147,15 +129,17 @@ const BlogSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: index * 0.1 }}
               whileHover={{ y: -10, scale: 1.02 }}
-              className="group cursor-pointer modern-card overflow-hidden hover-lift rounded-3xl shadow-xl border-0 relative bg-gradient-to-br from-white via-gray-50 to-gray-100 min-h-[520px] flex flex-col"
+              className="group cursor-pointer modern-card overflow-hidden hover-lift rounded-3xl shadow-xl border-0 relative bg-gradient-to-br from-white via-gray-50 to-gray-100 min-h-[580px] flex flex-col"
             >
               {/* Blog Image */}
-              <div className="relative h-48 overflow-hidden card-image">
+              <div className="relative h-56 overflow-hidden card-image rounded-t-3xl">
                 {post.image && post.image.startsWith('http') ? (
-                  <img 
+                  <Image 
                     src={post.image} 
                     alt={post.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
                     onError={(e) => {
                       // Fallback to emoji if image fails to load
                       const target = e.target as HTMLImageElement;
@@ -164,17 +148,18 @@ const BlogSection = () => {
                     }}
                   />
                 ) : null}
-                <div className={`h-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-4xl ${post.image && post.image.startsWith('http') ? 'hidden' : ''}`}>
+                <div className={`absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-4xl ${post.image && post.image.startsWith('http') ? 'hidden' : ''}`}>
                   {post.image || '📝'}
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 
                 {/* Category Badge */}
                 <div className="absolute top-4 left-4 z-20">
-                  <Badge className="badge bg-gradient-to-r from-blue-600 to-blue-400 text-white px-3 py-1 text-xs font-bold shadow-md">
-                    {post.category}
-                  </Badge>
-                </div>
+  <Badge className="badge bg-gradient-to-r from-blue-600 to-blue-400 text-white px-4 py-2 text-lg font-bold shadow-md whitespace-nowrap">
+    {post.category}
+  </Badge>
+</div>
+
                 
                 {/* Action Buttons */}
                 <div className="absolute top-4 right-4 z-20 flex gap-2">
@@ -197,24 +182,32 @@ const BlogSection = () => {
 
               {/* Blog Content */}
               <div className="p-6 card-content flex flex-col flex-1">
+                {/* Title Section */}
                 <div className="mb-4">
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2 leading-tight">
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                  <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
                     {post.excerpt}
                   </p>
                 </div>
                 
-                <div className="space-y-3 mb-4">
+                {/* Metadata Section */}
+                <div className="space-y-3 mb-6 flex-1">
                   <div className="flex items-center justify-between text-sm text-gray-600">
                     <div className="flex items-center space-x-2">
-                      <User className="w-4 h-4 text-blue-500" />
-                      <span className="font-semibold">{post.author}</span>
+                      <User className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                      <span className="font-medium text-gray-700 truncate">{post.author}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Calendar className="w-4 h-4 text-green-500" />
-                      <span className="font-semibold">
+                      <Clock className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                      <span className="font-medium text-gray-700">{post.readTime} min read</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-gray-600">
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      <span className="font-medium text-gray-700">
                         {new Date(post.createdAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
@@ -222,22 +215,17 @@ const BlogSection = () => {
                         })}
                       </span>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between text-sm text-gray-600">
                     <div className="flex items-center space-x-2">
-                      <Clock className="w-4 h-4 text-blue-500" />
-                      <span className="font-semibold">{post.readTime} min read</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <BookOpen className="w-4 h-4 text-purple-500" />
-                      <span className="font-semibold">{post.views}+ views</span>
+                      <BookOpen className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                      <span className="font-medium text-gray-700">{post.views}+ views</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="mt-auto">
+                {/* Read More Button */}
+                <div className="mt-auto pt-4">
                   <Link href={`/blog/${post._id}`}>
-                    <Button className="w-full py-2 text-sm font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-blue-300 group">
+                    <Button className="w-full py-3 text-sm font-bold bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-500 hover:cursor-pointer hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-blue-300 group">
                       <span>Read More</span>
                       <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>

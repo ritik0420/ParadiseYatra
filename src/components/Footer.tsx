@@ -1,8 +1,9 @@
 "use client";
 
-import { Facebook, Twitter, Instagram, Youtube, Linkedin, Phone, Mail, MapPin, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Facebook, Twitter, Instagram, Youtube, Linkedin, Phone, Mail, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import Image from "next/image";
 
 const Footer = () => {
   const [expandedSections, setExpandedSections] = useState({
@@ -85,7 +86,7 @@ const Footer = () => {
               className="mb-4 md:mb-6"
             >
               <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-200">
-                <img src="/footerLogo.png" alt="logo" className="h-28 w-28 md:h-35 md:w-35" />
+                <Image src="/footerLogo.png" alt="logo" width={112} height={112} className="h-28 w-28 md:h-35 md:w-35" />
               </span>
             </motion.div>
             <motion.p 

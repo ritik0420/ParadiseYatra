@@ -5,24 +5,21 @@ import { Menu, Shield, Users, Headphones, Star, Phone, ChevronDown, X, MapPin, C
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import LeadCaptureForm from "./LeadCaptureForm";
-import SearchSuggestions from "./SearchSuggestions";
-import { useRouter } from "next/navigation";
+
 import { useNavigation } from "@/hooks/useNavigation";
+import Image from "next/image";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [isLeadFormOpen, setIsLeadFormOpen] = useState(false);
-  const router = useRouter();
   
   // Use the custom hook for dynamic navigation
-  const { navItems, loading, error } = useNavigation();
+  const { navItems, loading } = useNavigation();
 
   // Icon mapping for dynamic navigation
-  const iconMap: { [key: string]: any } = {
+  const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
     Globe,
     MapPin,
     Mountain,
@@ -105,16 +102,16 @@ const Header = () => {
     { icon: Headphones, text: "24/7", color: "text-amber-500" },
   ];
 
-  const handleSearchSelect = (suggestion: any) => {
-    setSearchQuery("");
-    setIsMobileMenuOpen(false);
-    // Navigate to the itinerary page
-    router.push(`/itinerary/${suggestion.slug}`);
-  };
+  // const handleSearchSelect = (suggestion: { slug: string }) => {
+  //   setSearchQuery("");
+  //   setIsMobileMenuOpen(false);
+  //   // Navigate to the itinerary page
+  //   router.push(`/itinerary/${suggestion.slug}`);
+  // };
 
-  const handleSearchClose = () => {
-    // setIsSearchOpen(false); // This line is removed as per the edit hint
-  };
+  // const handleSearchClose = () => {
+  //   // setIsSearchOpen(false); // This line is removed as per the edit hint
+  // };
 
   // Show loading state or fallback navigation if data is not available
   if (loading) {
@@ -160,10 +157,12 @@ const Header = () => {
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center flex-shrink-0"
               >
-                <img 
+                <Image 
                   src="/headerLogo.png" 
                   alt="Paradise Yatra" 
-                  className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
+                  width={80}
+                  height={80}
+                  className="w-12 h-12 sm:w-16 sm:h-18 lg:w-20 lg:h-20"
                 />
               </motion.div>
 
@@ -277,9 +276,11 @@ const Header = () => {
               whileHover={{ scale: 1.05 }}
               className="flex items-center flex-shrink-0 w-40 -ml-2"
             >
-              <img 
+              <Image 
                 src="/headerLogo.png" 
                 alt="Paradise Yatra" 
+                width={80}
+                height={80}
                 className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
               />
             </motion.div>
@@ -288,7 +289,7 @@ const Header = () => {
             <nav className="hidden lg:flex items-center justify-center flex-1 px-8">
               <div className="flex items-center space-x-6">
                 {navItems.map((item, index) => {
-                  const IconComponent = iconMap[item.icon];
+                  const IconComponent = iconMap[item.icon as keyof typeof iconMap];
                   return (
                     <div 
                       key={index}
@@ -404,7 +405,7 @@ const Header = () => {
                 {/* Mobile Navigation Items */}
                 <nav className="space-y-4 mb-6">
                   {navItems.map((item, index) => {
-                    const IconComponent = iconMap[item.icon];
+                    const IconComponent = iconMap[item.icon as keyof typeof iconMap];
                     return (
                       <motion.div 
                         key={index} 

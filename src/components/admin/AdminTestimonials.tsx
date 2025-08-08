@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Save, X, Plus, Trash2, Star } from "lucide-react";
 import { toast } from "react-toastify";
+import Image from "next/image";
+import ImageUpload from "@/components/ui/image-upload";
+import { getImageUrl } from "@/lib/utils";
 
 interface Testimonial {
   _id?: string;
@@ -73,18 +76,60 @@ const AdminTestimonials = () => {
       const token = localStorage.getItem('adminToken');
       
       if (!token) {
-        alert('Please log in to save changes');
+        toast.error('Please log in to save changes');
         return;
       }
+
+      // Check if we need to upload a file
+      const hasFileUpload = formData.image && (formData.image.startsWith('blob:') || formData.image.startsWith('data:'));
       
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      let response;
+      if (hasFileUpload) {
+        // Handle file upload
+        const uploadFormData = new FormData();
+        
+        // Add all form fields
+        Object.keys(formData).forEach(key => {
+          const value = (formData as unknown as Record<string, unknown>)[key];
+          if (key === 'image' && typeof value === 'string' && value.startsWith('blob:')) {
+            // Convert blob URL to file and upload
+            fetch(value)
+              .then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else if (key === 'image' && typeof value === 'string' && value.startsWith('data:')) {
+            // Convert data URL to file and upload
+            const response = fetch(value);
+            response.then(res => res.blob())
+              .then(blob => {
+                const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+                uploadFormData.append('image', file);
+              });
+          } else {
+            uploadFormData.append(key, String(value));
+          }
+        });
+
+        response = await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: uploadFormData,
+        });
+      } else {
+        // Handle regular JSON data
+        response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+      }
 
       const data = await response.json();
 
@@ -272,14 +317,10 @@ const AdminTestimonials = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Profile Image URL
-                </label>
-                <Input
+                <ImageUpload
                   value={formData.image}
-                  onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                  placeholder="https://example.com/avatar.jpg"
-                  className="text-white"
+                  onChange={(value) => setFormData(prev => ({ ...prev, image: value }))}
+                  label="Profile Image"
                 />
               </div>
               <div>
@@ -350,11 +391,14 @@ const AdminTestimonials = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
+                  <div className="w-12 h-12 rounded-full overflow-hidden relative">
+                    <Image 
+                      src={getImageUrl(testimonial.image)} 
+                      alt={testimonial.name}
+                      fill
+                      className="object-cover rounded-full"
+                    />
+                  </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">{testimonial.name}</h3>
                     <p className="text-sm text-gray-600">{testimonial.location}</p>

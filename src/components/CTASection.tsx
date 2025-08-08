@@ -17,7 +17,7 @@ interface CTAContent {
 const CTASection = () => {
   const [ctaContent, setCTAContent] = useState<CTAContent | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCTAContent = async () => {

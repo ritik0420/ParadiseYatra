@@ -540,9 +540,11 @@ const PackagesPage = () => {
             >
               <Card className="group overflow-hidden modern-card hover-lift rounded-3xl shadow-xl border-0 relative bg-gradient-to-br from-white via-blue-50 to-blue-100 h-full flex flex-col min-h-[540px]">
                 <div className="relative h-60 overflow-hidden card-image rounded-t-3xl">
-                  <img 
+                  <Image 
                     src={pkg.image} 
                     alt={pkg.title}
+                    width={400}
+                    height={240}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10" />

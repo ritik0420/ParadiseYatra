@@ -42,7 +42,7 @@ const makeRequest = async (url: string, options: RequestInit = {}) => {
 };
 
 export const packagesAPI = {
-  async getAll(params: Record<string, any> = {}): Promise<ApiResponse<Package[]>> {
+  async getAll(params: Record<string, unknown> = {}): Promise<ApiResponse<Package[]>> {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
@@ -64,13 +64,13 @@ export const packagesAPI = {
     return makeRequest(url);
   },
 
-  async getByCategory(category: string, params: Record<string, any> = {}): Promise<ApiResponse<Package[]>> {
+  async getByCategory(category: string, params: Record<string, unknown> = {}): Promise<ApiResponse<Package[]>> {
     const searchParams = new URLSearchParams({ category, ...params });
     const url = `${API_BASE_URL}/api/packages?${searchParams.toString()}`;
     return makeRequest(url);
   },
 
-  async search(query: string, params: Record<string, any> = {}): Promise<ApiResponse<Package[]>> {
+  async search(query: string, params: Record<string, unknown> = {}): Promise<ApiResponse<Package[]>> {
     const searchParams = new URLSearchParams({ q: query, ...params });
     const url = `${API_BASE_URL}/api/packages/search?${searchParams.toString()}`;
     return makeRequest(url);

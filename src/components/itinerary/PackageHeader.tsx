@@ -25,7 +25,6 @@ const PackageHeader = ({
   coverImage 
 }: PackageHeaderProps) => {
   const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   
   // Multiple fallback images for better reliability - using more reliable Unsplash URLs
   const fallbackImages = [
@@ -56,11 +55,7 @@ const PackageHeader = ({
     setImageError(true);
   };
 
-  const handleImageLoad = () => {
-    console.log('PackageHeader - Image loaded successfully:', finalImage);
-    setImageLoaded(true);
-    setImageError(false);
-  };
+  
 
   return (
     <section className="relative h-96 overflow-hidden">

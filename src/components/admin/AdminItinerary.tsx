@@ -13,7 +13,6 @@ import {
   Clock,
   Utensils,
   Hotel,
-  Image as ImageIcon,
   AlertCircle,
   CheckCircle,
   Package,
@@ -23,9 +22,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import ImageUpload from "@/components/ui/image-upload";
 
 interface DayItinerary {
-  day: number;
+  day: number;    
   title: string;
   activities: string[];
   accommodation: string;
@@ -629,15 +629,10 @@ const AdminItinerary = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Image URL (Optional)
-                  </label>
-                  <Input
+                  <ImageUpload
                     value={newDay.image}
-                    onChange={(e) => setNewDay(prev => ({ ...prev, image: e.target.value }))}
-                    placeholder="https://example.com/image.jpg"
-                    disabled={isSaving}
-                    className="text-white"
+                    onChange={(value) => setNewDay(prev => ({ ...prev, image: value }))}
+                    label="Day Image (Optional)"
                   />
                 </div>
 
@@ -676,7 +671,7 @@ const AdminItinerary = () => {
                 <CardContent className="p-8 text-center">
                   <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No Itinerary Days</h3>
-                  <p className="text-gray-600 mb-4">This {selectedItem.type === 'package' ? 'package' : 'holiday type'} doesn't have any itinerary days yet.</p>
+                  <p className="text-gray-600 mb-4">This {selectedItem.type === 'package' ? 'package' : 'holiday type'} doesn&apos;t have any itinerary days yet.</p>
                   <Button
                     onClick={() => setIsAddingDay(true)}
                     className="bg-blue-600 hover:bg-blue-700"
@@ -687,7 +682,7 @@ const AdminItinerary = () => {
                 </CardContent>
               </Card>
             ) : (
-              selectedItem.data.itinerary.map((day, index) => (
+              selectedItem.data.itinerary.map((day) => (
                 <Card key={day.day} className="relative">
                   <CardHeader>
                     <div className="flex items-center justify-between">
